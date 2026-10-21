@@ -1,0 +1,1 @@
+Software engineering with AI is changing how teams design, write, and review code. An assistant can draft a feature in minutes, but a careful engineer still decides what ships, and checks every claim by running the tests. The best results come from small, verified steps, clear specifications, and humans who stay in the loop.
