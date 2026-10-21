@@ -6,3 +6,4 @@ __pycache__/
 talks/*/build/
 talks/*/out/
 talks/*/audio/
+talks/*/talk.state.json
