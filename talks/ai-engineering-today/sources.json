@@ -1,0 +1,340 @@
+{
+  "sources": [
+    {
+      "id": "s1",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "As of May 2026, more than 80% of the code we merge into Anthropic’s codebase was authored by Claude.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s2",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "A caveat: Lines of code is an imperfect measure, as it measures quantity over quality.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s3",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "This is because much of the code is written by Claude, with the engineer directing and reviewing, rather than typing it themselves.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s4",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Most best practices are based on one constraint: Claude’s context window fills up fast, and performance degrades as it fills. Claude’s context window holds your entire conversation, including every message, every file Claude reads, and every command output.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s5",
+      "title": "Building effective agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "Workflows are systems where LLMs and tools are orchestrated through predefined code paths.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s6",
+      "title": "Building effective agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "Agents, on the other hand, are systems where LLMs dynamically direct their own processes and tool usage, maintaining control over how they accomplish tasks.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s7",
+      "title": "Building effective agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "We'll start with our foundational building block—the augmented LLM—and progressively increase complexity, from simple compositional workflows to autonomous agents.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s8",
+      "title": "Building agents with the Claude Agent SDK",
+      "publisher": "Anthropic (Claude blog)",
+      "url": "https://claude.com/blog/building-agents-with-the-claude-agent-sdk",
+      "quote": "Agents often operate in a specific feedback loop: gather context -> take action -> verify work -> repeat.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s9",
+      "title": "Equipping agents for the real world with Agent Skills",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "quote": "A skill is a directory containing a SKILL.md file that contains organized folders of instructions, scripts, and resources that give agents additional capabilities.",
+      "date": "2025-10-16"
+    },
+    {
+      "id": "s10",
+      "title": "Equipping agents for the real world with Agent Skills",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "quote": "Like a well-organized manual that starts with a table of contents, then specific chapters, and finally a detailed appendix, skills let Claude load information only as needed",
+      "date": "2025-10-16"
+    },
+    {
+      "id": "s11",
+      "title": "Create custom subagents",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/sub-agents",
+      "quote": "Each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s12",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "An instruction like “never edit .env” in CLAUDE.md or a skill is a request, not a guarantee. A PreToolUse hook that blocks the edit is enforcement.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s13",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "A plugin bundles skills, hooks, subagents, and MCP servers into a single installable unit.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s14",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "MCP connects Claude to external services and tools",
+      "date": "2026-10"
+    },
+    {
+      "id": "s15",
+      "title": "Building effective agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "When building applications with LLMs, we recommend finding the simplest solution possible, and only increasing complexity when needed.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s16",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Use plan mode to separate exploration from execution. The recommended workflow has four phases:",
+      "date": "2026-10"
+    },
+    {
+      "id": "s17",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Give Claude a check it can run: tests, a build, a screenshot to compare.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s18",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Always provide verification (tests, scripts, screenshots). If you can’t verify it, don’t ship it.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s19",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "There’s no required format for CLAUDE.md files, but keep it short and human-readable.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s20",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "Given that LLMs are constrained by a finite attention budget, good context engineering means finding the smallest possible set of high-signal tokens that maximize the likelihood of some desired outcome.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s21",
+      "title": "AI Engineering OS: README",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L43-L45",
+      "quote": "A rule the model can reason its way around is not a rule. Doctrine states intent; hooks enforce it; evals measure whether it actually happened. All three, or the claim is decoration.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s22",
+      "title": "AI Engineering OS: README, What's inside",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L171",
+      "quote": "29 skills | skills/ | Executable workflows — clarify, design for scale, slice, execute a sliced plan, implement, debug, test, review, evolve APIs, document, ship, observe, run incidents, hand off. The skills reference lists them all.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s23",
+      "title": "AI Engineering OS: README, What's inside",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L172",
+      "quote": "13 subagents | agents/ | Focused, usually read-only workers (researcher, architect, reviewer, security, qa, docs, release, implementer) plus specialists (debugger, backend, db-migration, performance, verifier).",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s24",
+      "title": "AI Engineering OS: README, What's inside",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L173",
+      "quote": "55 patterns | patterns/ | Compact reference playbooks skills and agents link to (orchestration, engineering, reviews, anti-patterns, failure recovery).",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s25",
+      "title": "ADR 0061: Harvest round 6",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/adr/0061-harvest-round-6.md?plain=1#L1",
+      "quote": "ADR 0061: Harvest round 6: measured baselines, Bash-path containment, inter-session coordination, loop liveness, and a combined dogfood",
+      "date": "2026-10-20"
+    },
+    {
+      "id": "s26",
+      "title": "AI Engineering OS: AGENTS.md, routing a task",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L10",
+      "quote": "Vague or underspecified request → intake-grill → design-doc → to-slices → execute-slices.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s27",
+      "title": "talkreel M1: design",
+      "publisher": "mohamedzhioua/talkreel (GitHub)",
+      "url": "https://github.com/mohamedzhioua/talkreel/blob/main/docs/design/m1-pipeline.md?plain=1#L3",
+      "quote": "Status: draft for gate 1. The Windows feasibility spike (2026-10-21, CPU-only i7-1165G7) passed every component:",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s28",
+      "title": "AI Engineering OS: AGENTS.md, operating modes",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L47",
+      "quote": "Claude + Codex partnership — the initiating session stays the single root; one side implements and a fresh context on the other reviews the real candidate diff, every finding evidence-verified; decisions are formed jointly and presented for confirmation.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s29",
+      "title": "AI Engineering OS: AGENTS.md, confirm gates",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L50",
+      "quote": "Confirm gates (the only pauses): (1) the spec before any code; (2) User-Challenge decisions — decide, then present the call for a quick confirm, do not bounce open questions; (3) human-owned boundaries — PR merge, tag, publish, destructive actions.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s30",
+      "title": "AI Engineering OS: AGENTS.md, decision classes",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L52",
+      "quote": "Mechanical (code/spec/convention determines it → just do it), Taste (reasonable options, cheap to reverse → decide, state the call, proceed), User-Challenge (irreversible, boundary-crossing, or preference not inferable → pause at gate 2 with a recommended call).",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s31",
+      "title": "AI Engineering OS: AGENTS.md, working agreements",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L29",
+      "quote": "Push once per finished plan, never per commit: commit and verify locally as often as useful, then push once. Every push bills metered CI twice (push + pull_request), and this repo has exhausted its monthly quota twice.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s32",
+      "title": "AI Engineering OS: AGENTS.md, default-on hooks",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L80",
+      "quote": "Default-on hooks: verify-gate (Stop-completion evidence gate), loop-guard (repeated-failure stop), scope-addition-guard (PreToolUse: blocks a new non-ignored path or a dependency-manifest mutation; exempt in headless/CI unless ZOS_SCOPE_GUARD=1)",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s33",
+      "title": "AI Engineering OS: hooks, verify-gate",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/hooks.md?plain=1#L623-L625",
+      "quote": "This is a forcing function, not a verifier: it only checks that the ledger is non-empty; it does not inspect what was checked or whether it passed.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s34",
+      "title": "AI Engineering OS: AGENTS.md, model routing",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L64",
+      "quote": "Stop an owner leg at N repeated failures (default 3), preserve the evidence and return to the orchestrator; changing model or owner never erases attempts.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s35",
+      "title": "AI Engineering OS: README, strict scope",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L123-L124",
+      "quote": "The most common failure with a capable agent is not a wrong line of code. It is work you never asked for, discovered later",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s36",
+      "title": "AI Engineering OS: README, strict scope",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L138-L140",
+      "quote": "scope-addition-guard (default-on PreToolUse) surfaces it at the moment it happens: a new non-ignored path, or a dependency/lockfile change, prompts you in an interactive session.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s37",
+      "title": "AI Engineering OS: CHANGELOG, 0.19.0-beta.4",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/CHANGELOG.md?plain=1#L281-L283",
+      "quote": "The two heaviest of those were independently reproduced by a fresh-context reviewer — hook tests: 472 passed, 0 failed and validated 44 scenario(s), 0 invalid, re-run from scratch in a separate 25-minute pass",
+      "date": "2026-09-08"
+    },
+    {
+      "id": "s38",
+      "title": "AI Engineering OS: hooks",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/hooks.md?plain=1#L12-L14",
+      "quote": "On 2026-07-21 every safety hook on the maintainer's workstation went inert this way and it took four days to notice.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s39",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "In the second quarter of 2026, the typical engineer was merging 8× as much code per day as they were in 2024.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s40",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "So 8× lines of code/engineer/day in the second quarter of 2026 is almost certainly an overstatement of the true productivity gain.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s41",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "In a March 2026 poll of 130 employees from across Anthropic research teams, the median respondent estimated that they produced around 4x as much output with Mythos Preview as they would have without access to any AI models, on the kinds of projects they would have been working on regardless.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s42",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "We expect that the true degree of uplift in March was somewhat lower.",
+      "date": "2026-09"
+    }
+  ]
+}
