@@ -22,18 +22,29 @@ const CLOSE = `["'”’»)\\]]*$`;
 const SENTENCE_END = new RegExp(`[.?!]${CLOSE}`);
 const CLAUSE_END = new RegExp(`[,;:]${CLOSE}`);
 /** A line never ends on one of these (a bare word, no punctuation). */
-export const CAPTION_FUNCTION_WORDS = new Set(["a", "an", "the", "to", "of", "and", "or", "toward", "for", "with", "in", "on"]);
+export const CAPTION_FUNCTION_WORDS = new Set([
+  "a", "an", "the", "to", "of", "and", "or", "toward", "for", "with", "in", "on",
+  "this", "that", "its", "it", "what", "while", "their", "our", "your", "my",
+  "is", "are", "be", "by", "from", "as", "at", "into", "than",
+]);
 /** A line this short inside a multi-line segment is a fragment ("My rule:"). */
 const FRAGMENT_CHARS = 14;
 
-const COST = { line: 20, slack: 100, clause: 0.35, functionWord: 500, fragment: 300, orphan: 1000, overflow: 800 };
+/** A word that ends a hyphenated compound split by the script ("human-" then "owned"). */
+const COMPOUND_OPEN = /[A-Za-z0-9]-$/;
+/** A word that continues one ("-owned"). */
+const COMPOUND_CLOSE = /^-[A-Za-z0-9]/;
+
+const COST = { line: 20, slack: 100, clause: 0.35, functionWord: 500, fragment: 300, orphan: 1000, overflow: 800, compound: 100000 };
 
 /**
  * Lines of at most 48 characters (spaces included). Always break after a word ending in . ? or !
  * and before a word that starts more than 0.6 s after the previous word ended. Inside such a
  * segment the breaks minimise a fixed cost: fill lines, prefer breaking after , ; or :, never end
- * a line on a function word, avoid short fragments and a lone last word. A line may reach 54
- * characters only when that is the cheapest way to avoid a lone word.
+ * a line on a function word, never split a hyphenated compound ("human-owned" is one word and
+ * never breaks; a compound written across words never breaks at its hyphen), avoid short
+ * fragments and a lone last word. A line may reach 54 characters only when that is the cheapest
+ * way to avoid a lone word.
  */
 export function captionLines(words: CaptionWord[], duration: number): CaptionLine[] {
   const groups: number[][] = [];
@@ -95,6 +106,7 @@ function lineCost(words: CaptionWord[], a: number, b: number, len: number, whole
     const slack = Math.max(0, CAPTION_MAX_CHARS - len) / CAPTION_MAX_CHARS;
     c += COST.slack * slack * slack * (CLAUSE_END.test(end) ? COST.clause : 1);
     if (CAPTION_FUNCTION_WORDS.has(end.toLowerCase())) c += COST.functionWord;
+    if (COMPOUND_OPEN.test(end) || COMPOUND_CLOSE.test(words[b]?.text ?? "")) c += COST.compound;
   }
   if (b - a === 1 && lastLine) c += COST.orphan;
   else if (len < FRAGMENT_CHARS) c += COST.fragment;
