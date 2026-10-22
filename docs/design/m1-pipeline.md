@@ -1,6 +1,6 @@
 # talkreel M1: design
 
-Status: draft for gate 1. The Windows feasibility spike (2026-10-21, CPU-only i7-1165G7) passed every component:
+Status: approved at gate 1 (2026-10-21). The Windows feasibility spike (2026-10-21, CPU-only i7-1165G7) passed every component:
 
 | Component | Result |
 |---|---|

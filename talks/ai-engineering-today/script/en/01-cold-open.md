@@ -1,5 +1,7 @@
-# Most of the code is no longer typed
+# The hottest new programming language
 
-{#stat-eighty} As of May this year, Anthropic says more than eighty percent of the code it merges was authored by Claude. [s:s1] In the same piece, they add {#caveat} their own caveat. Lines of code is an imperfect measure, because it counts quantity, not quality. [s:s2]
+{#tweet}In January twenty twenty-three, Andrej Karpathy posted a single line. The hottest new programming language is English. [s:s43]
 
-A big number, and an honest footnote. {#promise} That's the spirit of this talk. In ten minutes I'll show you where software engineering with AI stands today, the vocabulary you need, and {#how-i-work} exactly how I work with it.
+{#eighty}As of May this year, Anthropic says more than eighty percent of the code it merges was authored by Claude. [s:s1] {#needs-context}That number needs context. We'll get to it.
+
+{#this-video}And this video was made by a tool that AI agents built, under rules I wrote. {#promise}In ten minutes: the words, how I work, and what it changes for us.
