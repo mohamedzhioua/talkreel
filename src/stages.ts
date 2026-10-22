@@ -79,7 +79,8 @@ export async function currentRenderHash(talk: Talk, ch: ChapterFile, quality?: s
     wavHash: await sha256File(wav),
     themeHash: await themeHash(talk),
     hyperframesVersion: packageVersion("hyperframes"),
-    composeVersion: COMPOSE_VERSION,
+    // The ambient layer changes the page (composeChapter), so it is a render input too.
+    composeVersion: talk.config.ambient ? `${COMPOSE_VERSION}+ambient` : COMPOSE_VERSION,
     quality: quality ?? lastRenderQuality(talk, ch) ?? "standard",
   });
 }

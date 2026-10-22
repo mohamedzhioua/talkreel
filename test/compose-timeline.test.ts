@@ -163,6 +163,15 @@ describe("terminal lines (scenes.md section 5a)", () => {
     );
     expect(long.warnings.map((w) => w.message)).toEqual([expect.stringMatching(/finishes at 1\.50 s, after its beat "a" ends \(1\.00 s\)/)]);
   });
+
+  it("the first line starts 0.3 s after the window's own staggered entrance", () => {
+    const tl = resolveTimeline(parseScene(`<section data-beat="a"><h2>Title</h2><div data-block="terminal"><p data-out>x</p></div></section>`), {}, 10);
+    expect(targetsOf(tl).map((t) => [t.el, t.t])).toEqual([
+      ["h2", 0],
+      ["div[terminal]", 0.12],
+      ["p", 0.42],
+    ]);
+  });
 });
 
 describe("pipeline chips", () => {
@@ -181,6 +190,15 @@ describe("pipeline chips", () => {
     ]);
     // Chips are always on screen: they light up, they never enter.
     expect(targetsOf(tl).map((t) => t.el)).toEqual(["div[pipeline]"]);
+  });
+
+  it("uncued chips light no earlier than the pipeline's own staggered entrance", () => {
+    const tl = resolveTimeline(parseScene(`<section data-beat="a"><h2>Title</h2><div data-block="pipeline"><ol><li>A</li><li>B</li><li>C</li></ol></div></section>`), {}, 10);
+    expect(targetsOf(tl).map((t) => [t.el, t.t])).toEqual([
+      ["h2", 0],
+      ["div[pipeline]", 0.12],
+    ]);
+    expect(tl.chips.map((c) => r(c.t))).toEqual([0.12, 0.24, 0.36]);
   });
 });
 
