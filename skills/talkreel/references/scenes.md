@@ -317,7 +317,31 @@ between 11.80 and 14.12 the figure shows only its caption, "One slice at a
 time"; the diagram builds on the narration from there. The stat block receives
 `<p class="tr-source">Source: … · … · 2025</p>` from the `example-survey` entry.
 
-## 12. Authoring checklist for the skill
+## 12. Before writing a scene: brief and beat grid
+
+Write these at the top of your working notes for the chapter (not into the scene
+file), and only then write the HTML.
+
+1. **Four-part brief.**
+   - **Output:** what the viewer must understand after this chapter, in one sentence.
+   - **Technical route:** which blocks and which camera, from `blocks.md`.
+   - **Creative seed:** one visual idea that ties the chapter together.
+   - **Signature:** the one moment the viewer should remember.
+2. **Beat grid.** One row per cue: `cue | message | focal action | reaction`.
+   - The **focal action** is the single thing that moves or appears.
+   - The **reaction** is what the viewer should notice or feel.
+   - Use only the script's existing cue names and the theme's tokens.
+3. **Storyboard rules.**
+   - One focal action at a time: never two competing primary reads in one beat.
+   - No decorative effect that doesn't serve the message: no stray particles, spins or bounces.
+   - Keep the fade-then-enter rule from section 2.
+   - The talk's final beat visually echoes its opening beat.
+
+Design ideas adapted from lemo-opuscar (MIT), mg-styles-15 (MIT),
+ClaudeAnimationBase (MIT) and opus-video-prompts (ideas only). No code or assets
+were copied.
+
+## 13. Authoring checklist for the skill
 
 - One idea per beat; one primary block per beat. A new beat at each `{#cue}`
   where the narration turns to a new idea; element cues for builds inside one.

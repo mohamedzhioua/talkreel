@@ -6,4 +6,4 @@
 
 {#adapt}So here's how I think we adapt. {#adapt-spec}One, write the spec before the prompt. {#adapt-verify}Two, make every task verifiable. If you can't verify it, don't ship it. [s:s18] {#adapt-review}Three, get fast at reviewing diffs. {#adapt-encode}Four, when the agent repeats a mistake, encode the fix in a skill, a check or a hook. {#adapt-skills}Five, keep your own skills sharp. As one person at Anthropic put it, when producing output is so easy and fast, it gets harder and harder to actually take the time to learn something. [s:s71]
 
-[[OPINION: one or two sentences on what this means for our team specifically]]
+{#for-us}I want us to try one task, define success, and review together.

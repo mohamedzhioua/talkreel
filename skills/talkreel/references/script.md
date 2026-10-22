@@ -43,8 +43,10 @@ tools. [s:example-survey] {#loop}So I work in a loop.
 - Short sentences, mostly under 20 words. One idea per sentence.
 - Plain spoken language: "we", "you", contractions are fine. No "as you can see
   on this slide".
-- Say numbers the way they appear on screen: write `46%`, `3 times`, `2025`. Do
-  not spell out a number in the script and show digits on screen.
+- Write numbers as words in the narration ("forty-six percent", "twenty
+  twenty-six"), because the voice reads them reliably. Captions show the script's
+  spelling, so they show the words too. Stat blocks on screen still show digits
+  (`46%`). A spoken/display marker that puts digits in captions is planned for M2.
 - Spell out acronyms on first use if listeners may not know them ("MCP, the
   Model Context Protocol").
 - Avoid words that are hard to voice: long chains of nouns, symbols (`->`,

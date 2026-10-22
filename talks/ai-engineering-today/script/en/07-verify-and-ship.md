@@ -6,6 +6,6 @@
 
 {#push-once}Then ship. Push once per finished plan, never per commit, because this repo has used up its monthly C I quota twice. [s:s31] {#land-verify}And merge isn't the finish line. Land verify waits for the real C I result and keeps a receipt. [s:s66]
 
-[[OPINION: a short, real moment where a gate, a skeptic vote or a cross review caught something you would otherwise have shipped]]
+{#frame-catch}An AI reviewing my rendered frames caught two slides overlapping mid-transition. Fixed before you saw it.
 
 {#payoff}That's the whole path, and you're watching what came out of it. An idea, researched, grilled, designed, spiked, approved, built by subagents, tested, and rendered by the tool itself.

@@ -143,7 +143,7 @@ EARS acceptance:
 | A free tool fails on Windows without a GPU | Retired by the 2026-10-21 spike (all components passed) |
 | Kokoro's French is weak (single B- voice) | Accepted for the M1 French sample; full French videos and voice cloning (Chatterbox, MIT) move to M2 |
 | GPL-3.0 in the audio chain (kokoro-onnx pulls `phonemizer` and a bundled espeak-ng) | Repo stays MIT. talkreel never bundles or vendors GPL code: the user's `uv sync` installs it, and the TS CLI talks to the helper only through a process boundary. `THIRD_PARTY.md` names it. Not legal advice. |
-| Full 10-minute render takes about 30 min on CPU (3× realtime) | Per-chapter render plus cache, so only stale chapters re-render; `--quality draft` while iterating |
+| Full 10-minute render is slow on CPU. The spike measured about 3× realtime, but the first full pipeline measured about 14× (around 140 min for 10 minutes); a performance investigation is open | Per-chapter render plus cache, so only stale chapters re-render; `--quality draft` while iterating; budget around 140 min for a full render until the investigation reports |
 | HyperFrames API churn (young project) | Pin the exact version; isolate it in `src/compose.ts` |
 | Whisper mishears technical terms | Script text is the caption truth; Whisper supplies only the timing |
 | Agent-written scenes look broken | Visual review loop on extracted frames, capped at 3 rounds |

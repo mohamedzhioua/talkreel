@@ -137,38 +137,6 @@
       "date": "2026-10-21"
     },
     {
-      "id": "s22",
-      "title": "AI Engineering OS: README, What's inside",
-      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
-      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L171",
-      "quote": "29 skills | skills/ | Executable workflows — clarify, design for scale, slice, execute a sliced plan, implement, debug, test, review, evolve APIs, document, ship, observe, run incidents, hand off. The skills reference lists them all.",
-      "date": "2026-10-21"
-    },
-    {
-      "id": "s23",
-      "title": "AI Engineering OS: README, What's inside",
-      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
-      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L172",
-      "quote": "13 subagents | agents/ | Focused, usually read-only workers (researcher, architect, reviewer, security, qa, docs, release, implementer) plus specialists (debugger, backend, db-migration, performance, verifier).",
-      "date": "2026-10-21"
-    },
-    {
-      "id": "s24",
-      "title": "AI Engineering OS: README, What's inside",
-      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
-      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L173",
-      "quote": "55 patterns | patterns/ | Compact reference playbooks skills and agents link to (orchestration, engineering, reviews, anti-patterns, failure recovery).",
-      "date": "2026-10-21"
-    },
-    {
-      "id": "s25",
-      "title": "ADR 0061: Harvest round 6",
-      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
-      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/adr/0061-harvest-round-6.md?plain=1#L1",
-      "quote": "ADR 0061: Harvest round 6: measured baselines, Bash-path containment, inter-session coordination, loop liveness, and a combined dogfood",
-      "date": "2026-10-21"
-    },
-    {
       "id": "s26",
       "title": "AI Engineering OS: AGENTS.md, routing a task",
       "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
