@@ -130,7 +130,7 @@ Every `{#cue}` is kebab-case and unique within its chapter, with 5 to 14 per cha
 ## Q&A prep (not in the talk)
 
 - The build started 2026-10-21; count the days to the render.
-- Render is about 14× realtime CPU-only (about 140 min; the 22-s spike ran at 3×). The investigation is open.
+- Render: the first pipeline ran at about 14× realtime CPU-only; after the 2026-10-22 fix it renders at about 4× (a 10-minute talk in about 40 min; the 22-s spike ran at 3×).
 - The 05 catch was the builder check on 2026-10-21: a fresh-context reviewer given only the design doc → "Builder decisions, Timeline ownership".
 - The 07 catch was on a development render. The fix is the fade-then-enter rule (`scenes.md` §4). The frame review is a separate stage after render, not a different model.
 - Verification caught my own stale numbers ("472 hook tests", "59 ADRs"; the actual count is 61).
