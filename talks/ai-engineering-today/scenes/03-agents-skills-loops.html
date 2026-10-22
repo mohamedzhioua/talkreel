@@ -38,7 +38,7 @@
 <section data-beat="skill" data-cue="skill">
   <div data-block="definition" data-source="s:s9">
     <p class="term">Skill</p>
-    <p class="text">A folder with a SKILL.md file, plus instructions, scripts and resources.</p>
+    <p class="text">A folder: SKILL.md plus instructions, scripts, resources.</p>
   </div>
 </section>
 
@@ -52,10 +52,12 @@
 <section data-beat="agent-loop" data-cue="agent-loop">
   <h2>The agent loop</h2>
   <figure data-block="diagram">
-    <pre data-mermaid>flowchart LR
+    <pre data-mermaid>%%{init: {"flowchart": {"wrappingWidth": 600}}}%%
+flowchart LR
   G[Gather context] --> T[Take action]
   T --> V[Verify work]
-  V -->|repeat| G</pre>
+  V --> R[Repeat]
+  R --> G</pre>
     <figcaption data-cue="verify-beat">Verify is a beat, not an extra</figcaption>
   </figure>
 </section>
@@ -63,7 +65,7 @@
 <section data-beat="slash-loop" data-cue="slash-loop">
   <div data-block="definition" data-source="s:s50">
     <p class="term">/loop</p>
-    <p class="text">Re-runs a prompt on an interval, inside a Claude Code session.</p>
+    <p class="text">Re-runs a prompt on an interval.</p>
   </div>
 </section>
 

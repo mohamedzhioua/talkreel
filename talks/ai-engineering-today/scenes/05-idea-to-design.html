@@ -17,7 +17,7 @@
 
 <section data-beat="central-bet" data-cue="central-bet">
   <figure data-block="quote" data-source="s:s21">
-    <blockquote>A rule the model can reason its way around is not a rule.</blockquote>
+    <blockquote>A rule the model can reason its way around is not a rule. Doctrine states intent; hooks enforce it</blockquote>
     <figcaption>AI Engineering OS, its central bet</figcaption>
   </figure>
   <p data-cue="why-i-built-it">Same process every session. Rules that hold.</p>
@@ -26,15 +26,15 @@
 <section data-beat="case-study" data-cue="this-video">
   <h2>Case study: this video</h2>
   <figure data-block="diagram">
-    <pre data-mermaid>flowchart LR
+    <pre data-mermaid>%%{init: {"flowchart": {"wrappingWidth": 600}}}%%
+flowchart LR
   I[Idea] --> R[Research]
   R --> G[Intake grill]
   G --> D[Design doc]</pre>
-    <i data-step data-nodes="I" data-cue="idea"></i>
     <i data-step data-nodes="R" data-edges="I-R" data-cue="research"></i>
     <i data-step data-nodes="G" data-edges="R-G" data-cue="intake-grill"></i>
     <i data-step data-nodes="D" data-edges="G-D" data-cue="design-doc"></i>
-    <figcaption data-cue="idea">talkreel: a topic in, a narrated video out, on my machine</figcaption>
+    <figcaption>talkreel: a topic in, a narrated video out, on my machine</figcaption>
   </figure>
 </section>
 
@@ -43,7 +43,7 @@
   <div data-block="split">
     <div class="col">
       <h3>Nobody owned the timeline</h3>
-      <p>Change one sentence, and every slide after it drifts.</p>
+      <p>Change one sentence: later slides drift.</p>
     </div>
     <div class="col" data-cue="fixed">
       <h3>Fixed on paper</h3>
@@ -55,12 +55,13 @@
 <section data-beat="spike" data-cue="spike">
   <h2>Case study: this video</h2>
   <figure data-block="diagram">
-    <pre data-mermaid>flowchart LR
+    <pre data-mermaid>%%{init: {"flowchart": {"wrappingWidth": 600}}}%%
+flowchart LR
   I[Idea] --> R[Research]
   R --> G[Intake grill]
   G --> D[Design doc]
   D --> S[Spike]</pre>
-    <i data-step data-nodes="S" data-edges="D-S" data-cue="spike"></i>
-    <figcaption>No graphics card: every component passed</figcaption>
+    <i data-step data-nodes="S" data-edges="D-S" data-cue="spiked"></i>
+    <figcaption data-cue="spike-result">No graphics card: every component passed</figcaption>
   </figure>
 </section>

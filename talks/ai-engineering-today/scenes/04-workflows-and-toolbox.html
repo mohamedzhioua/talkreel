@@ -14,9 +14,11 @@
   L[Augmented LLM] --> C[Prompt chaining]
   C --> R[Routing]
   R --> P[Parallelization]
-  P --> O[Orchestrator]
-  O --> E[Evaluator]
-  E --> A[Autonomous agent]</pre>
+  P --> O[Orchestrator-workers]
+  O --> E[Evaluator-optimizer]
+  E --> A[Autonomous agent]
+  classDef box height:114px,y:-57px
+  class L,C,R,P,O,E,A box</pre>
     <i data-step data-nodes="C,R,P" data-edges="L-C,C-R,R-P" data-cue="patterns-simple"></i>
     <i data-step data-nodes="O,E" data-edges="P-O,O-E,E-A" data-cue="patterns-complex"></i>
   </figure>
@@ -54,14 +56,13 @@
 </section>
 
 <section data-beat="toolbox" data-cue="toolbox">
-  <h2>Three more words</h2>
-  <div data-block="definition" data-source="s:s11" data-cue="subagent">
+  <div data-block="definition" data-source="s:s11">
     <p class="term">Subagent</p>
-    <p class="text">Runs in its own context window, with its own prompt, tools and permissions.</p>
+    <p class="text">Its own context window, prompt, tools and permissions.</p>
   </div>
 </section>
 
-<section data-beat="hook" data-cue="hook" data-camera="pan-left">
+<section data-beat="hook" data-cue="hook">
   <div data-block="definition" data-source="s:s57">
     <p class="term">Hook</p>
     <p class="text">A command that runs at a fixed point, so an action always happens instead of relying on the model.</p>
