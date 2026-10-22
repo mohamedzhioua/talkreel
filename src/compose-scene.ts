@@ -332,6 +332,13 @@ export interface ResolvedScroll {
   y: number;
 }
 
+/** A terminal window grows to show `rows` rows at `t` (it opens one row tall). */
+export interface ResolvedGrow {
+  block: HtmlElement;
+  t: number;
+  rows: number;
+}
+
 /** The cursor after a typed prompt: blinking from `show` until `hide`. */
 export interface ResolvedCursor {
   line: HtmlElement;
@@ -356,6 +363,7 @@ export interface ResolvedTimeline {
   steps: ResolvedStep[];
   diagrams: ResolvedDiagram[];
   scrolls: ResolvedScroll[];
+  grows: ResolvedGrow[];
   cursors: ResolvedCursor[];
   chips: ResolvedChip[];
   issues: SceneIssue[];
@@ -468,6 +476,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
   const steps: ResolvedStep[] = [];
   const diagrams: ResolvedDiagram[] = [];
   const scrolls: ResolvedScroll[] = [];
+  const grows: ResolvedGrow[] = [];
   const cursors: ResolvedCursor[] = [];
   const chips: ResolvedChip[] = [];
 
@@ -515,6 +524,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       const row = st.rows++;
       const rows = terminalRows(block);
       if (row >= rows) scrolls.push({ block, t, y: -(row - (rows - 1)) * TERM_ROW_PX });
+      else if (row > 0) grows.push({ block, t, rows: row + 1 });
       if (st.cursor) st.cursor.hide = t;
       st.cursor = null;
       if (anim === "type") {
@@ -584,7 +594,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
     }
   });
 
-  return { duration: D, beats, targets, steps, diagrams, scrolls, cursors, chips, issues, warnings };
+  return { duration: D, beats, targets, steps, diagrams, scrolls, grows, cursors, chips, issues, warnings };
 }
 
 /** Cue names used anywhere in the scene (beats, elements, steps). */
