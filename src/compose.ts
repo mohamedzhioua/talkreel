@@ -17,13 +17,18 @@ import { loadSources, paths, readJson, type ChapterFile, type Talk } from "./tal
 import { readWavInfo } from "./wav.js";
 
 /** Bump when the generated page or timeline changes in a way that must re-render chapters. */
-export const COMPOSE_VERSION = "6";
+export const COMPOSE_VERSION = "7";
 
 /** talkreel's own package root (the folder holding dist/, src/, themes/). */
 export const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** Locate an installed npm package by walking up node_modules folders from talkreel's root. */
 export const TAG_MAX_CHARS = 14;
+
+/** Caption display only: an apostrophe inside a word becomes ’ ("don't" -> "don’t"). */
+export function typographic(word: string): string {
+  return word.replace(/(\p{L})'(?=\p{L})/gu, "$1’");
+}
 
 export function packageDir(name: string): string {
   for (let dir = PACKAGE_ROOT; ; dir = dirname(dir)) {
@@ -184,7 +189,7 @@ export function buildPage(input: PageInput): Page {
   // Every word starts with an explicit data-state: GSAP records it as the start value, so seeking
   // back before a word reverts it to "upcoming" (a missing attribute cannot be restored).
   const lineHtml = lines
-    .map((l, j) => `      <div class="tr-cap-line" id="tr-cap-${j}">${l.words.map((k) => `<span class="tr-word" id="tr-w-${k}" data-state="upcoming">${escapeText(captions.words[k]!.text)}</span>`).join(" ")}</div>`)
+    .map((l, j) => `      <div class="tr-cap-line" id="tr-cap-${j}">${l.words.map((k) => `<span class="tr-word" id="tr-w-${k}" data-state="upcoming">${escapeText(typographic(captions.words[k]!.text))}</span>`).join(" ")}</div>`)
     .join("\n");
 
   const beatsHtml = scene.beats.map((b) => "      " + serialize(b.el)).join("\n");

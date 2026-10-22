@@ -12,9 +12,9 @@ export const ANIMS = ["fade-up", "fade", "pop", "type", "draw", "stream", "slide
 // Terminal geometry and pacing (scenes.md section 5a). Rows are fixed height and never wrap, so
 // the scroll offsets are computed here instead of measured in the browser.
 export const TERM_ROWS = 13;
-export const TERM_MIN_ROWS = 2;
+export const TERM_MIN_ROWS = 1;
 
-/** Visible rows of a terminal: data-rows (2..13), else 13. */
+/** Visible rows of a terminal: data-rows (1..13), else 13. */
 export function terminalRows(block: HtmlElement): number {
   const n = Number(getAttr(block, "data-rows"));
   return Number.isInteger(n) && n >= TERM_MIN_ROWS && n <= TERM_ROWS ? n : TERM_ROWS;
@@ -29,6 +29,8 @@ export const TERM_GAP = 0.07;
 export const TERM_ENTER = 0.25;
 /** A prompt after the previous line has entered. */
 export const TERM_THINK = 0.4;
+/** A window starts growing this long before the row that needs the space. */
+export const TERM_GROW_LEAD = 0.1;
 export const TERM_ROLES = ["data-prompt", "data-out", "data-tool", "data-result", "data-diff"] as const;
 export const TERM_TONES = ["ok", "err", "warn", "dim", "accent"] as const;
 export const PIPELINE_MIN = 3;
@@ -524,7 +526,8 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       const row = st.rows++;
       const rows = terminalRows(block);
       if (row >= rows) scrolls.push({ block, t, y: -(row - (rows - 1)) * TERM_ROW_PX });
-      else if (row > 0) grows.push({ block, t, rows: row + 1 });
+      // Grow just before the row fades in, never before the row above it entered.
+      else if (row > 0) grows.push({ block, t: Math.max(st.prev?.t ?? t, t - TERM_GROW_LEAD), rows: row + 1 });
       if (st.cursor) st.cursor.hide = t;
       st.cursor = null;
       if (anim === "type") {

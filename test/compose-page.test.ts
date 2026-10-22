@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { applyDisplays, CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
-import { buildPage, composeChapter, sourceLabel, timelineScript } from "../src/compose.js";
+import { buildPage, composeChapter, sourceLabel, timelineScript, typographic } from "../src/compose.js";
 import { parseScene, resolveTimeline } from "../src/compose-scene.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
 import type { Source } from "../src/schema.js";
@@ -295,5 +295,11 @@ describe("terminal, pipeline and ambient markup", () => {
     expect(on.html).toContain('<p class="tr-tag" id="tr-tag">03 · Spec</p>');
     expect(on.html).toContain('class="tr-ambient"');
     expect(on.plan.ambient).toBe(true);
+  });
+});
+
+describe("caption typography", () => {
+  it("turns an apostrophe inside a word into a typographic one, and nothing else", () => {
+    expect(["don't", "That's", "'quoted'", "rock'n'roll", "l'équipe", "it’s"].map(typographic)).toEqual(["don’t", "That’s", "'quoted'", "rock’n’roll", "l’équipe", "it’s"]);
   });
 });

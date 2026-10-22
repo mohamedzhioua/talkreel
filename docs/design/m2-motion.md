@@ -109,7 +109,7 @@ The pipeline is unchanged: script → scenes → `talkreel voice` → `align` �
 
 **Loudness:** measure the final mix with `ffmpeg -af ebur128`. Only if the result is outside −20…−14 LUFS, add `loudnorm I=-16` to concat in this PR.
 
-`COMPOSE_VERSION` becomes "6" (5 was the first M2a build; 6 adds growing terminals).
+`COMPOSE_VERSION` becomes "7" (5 was the first M2a build, 6 added growing terminals, 7 the frame-review fixes: fade-only chip lighting, grow lead, typographic caption apostrophes).
 
 ## Files Likely Touched
 

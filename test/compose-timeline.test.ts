@@ -153,7 +153,9 @@ describe("terminal lines (scenes.md section 5a)", () => {
     expect(tl.scrolls.map((s) => [r(s.t), s.y])).toEqual([[1.21, -40], [1.28, -80]]);
     // Until then the window grows one row per line, from one row to thirteen.
     expect(tl.grows.map((g) => g.rows)).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
-    expect(r(tl.grows[0]!.t)).toBe(0.37);
+    // Each grow starts 0.1 s before its row, but never before the row above it entered.
+    expect(r(tl.grows[0]!.t)).toBe(0.3);
+    expect(r(tl.grows[5]!.t)).toBe(0.65); // row 6 is at 0.72; 0.62 would precede row 5 (0.65)
   });
 
   it("warns when a cue lands before the line above finished, and when a chain runs past its beat", () => {
