@@ -24,6 +24,8 @@ export interface Marker {
 
 export interface ParsedChapter {
   title: string;
+  /** Short chapter label from `# Title {tag: X}`; the title when there is none. */
+  tag: string;
   /** Spoken words in order, with the script's spelling and punctuation. */
   words: string[];
   /** Text sent to TTS: paragraphs joined by a blank line, words by one space. */
@@ -44,6 +46,7 @@ export interface DisplayForm {
 }
 
 const CITE_RE = /\[s:([^\]]+)\]/g;
+const TAG_RE = /\{tag:\s*([^}]*?)\s*\}/;
 const CUE_RE = /\{#([A-Za-z0-9][A-Za-z0-9_-]*)\}/g;
 const MARKER_RE = /\[s:([^\]]+)\]|\{#([A-Za-z0-9][A-Za-z0-9_-]*)\}|\[\[([^\]|]+)\|([^\]|]+)\]\]/g;
 
@@ -71,7 +74,9 @@ export function parseScript(source: string): ParsedChapter {
   const first = lines[i];
   const titleMatch = first === undefined ? null : /^#\s+(.+?)\s*#*\s*$/.exec(first);
   if (!titleMatch) throw new ScriptError('the first line must be a "# Chapter title" heading');
-  const title = titleMatch[1]!.replace(CITE_RE, "").replace(CUE_RE, "").trim();
+  const heading = titleMatch[1]!;
+  const title = heading.replace(CITE_RE, "").replace(CUE_RE, "").replace(TAG_RE, "").replace(/\s+/g, " ").trim();
+  const tag = TAG_RE.exec(heading)?.[1] || title;
 
   // Collect paragraphs as lists of (text, line) segments.
   const paragraphs: { text: string; line: number }[][] = [];
@@ -176,7 +181,7 @@ export function parseScript(source: string): ParsedChapter {
     if (words.length > paraStart) paraTexts.push(words.slice(paraStart).join(" "));
   }
 
-  return { title, words, spokenText: paraTexts.join("\n\n"), cues, citations, displays };
+  return { title, tag, words, spokenText: paraTexts.join("\n\n"), cues, citations, displays };
 }
 
 export function parseScriptFile(file: string): ParsedChapter {

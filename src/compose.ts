@@ -329,6 +329,7 @@ export function sceneInputHash(sceneSource: string, chapter: ParsedChapter, sour
     scene: sha256(sceneSource),
     cues: chapter.cues.map((c) => [c.id, c.wordIndex]),
     displays: chapter.displays.map((d) => [d.first, d.count, d.text]),
+    tag: chapter.tag,
     sources: cited.map((id) => sources.get(id) ?? null),
   });
 }

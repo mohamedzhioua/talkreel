@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cueWordIndex, parseScript, ScriptError, spokenHash } from "../src/script.js";
+import { sceneInputHash } from "../src/compose.js";
 import { resolveCues } from "../src/cues.js";
 
 const SAMPLE = `# Why agents need specs
@@ -95,5 +96,25 @@ describe("display forms", () => {
     const b = parseScript("# T\n\nRun [[npm run test|N P M test]] now.\n");
     expect(spokenHash(a)).toBe(spokenHash(b));
     expect(a.displays[0]!.text).not.toBe(b.displays[0]!.text);
+  });
+});
+
+describe("chapter tag", () => {
+  it("reads {tag: X} from the heading and falls back to the title", () => {
+    const a = parseScript("# Idea to spec {tag: Spec}\n\nHello.\n");
+    expect([a.title, a.tag]).toEqual(["Idea to spec", "Spec"]);
+    const b = parseScript("# Idea to spec\n\nHello.\n");
+    expect([b.title, b.tag]).toEqual(["Idea to spec", "Idea to spec"]);
+    expect(spokenHash(a)).toBe(spokenHash(b));
+  });
+});
+
+describe("scene input hash", () => {
+  it("changes when a display form or the tag changes, not when nothing does", () => {
+    const h = (src: string) => sceneInputHash("<section data-beat=\"a\"></section>", parseScript(src), new Map());
+    const base = h("# T {tag: A}\n\nRun [[npm test|N P M test]].\n");
+    expect(h("# T {tag: A}\n\nRun [[npm test|N P M test]].\n")).toBe(base);
+    expect(h("# T {tag: B}\n\nRun [[npm test|N P M test]].\n")).not.toBe(base);
+    expect(h("# T {tag: A}\n\nRun [[npm run test|N P M test]].\n")).not.toBe(base);
   });
 });
