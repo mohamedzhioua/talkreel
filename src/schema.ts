@@ -5,9 +5,14 @@ export type Lang = string;
 
 export interface VoiceConfig {
   mode: "ai" | "own";
+  /** TTS pace, 0.8..1.3 (default 1). Not a language key. */
+  speed?: number;
   /** Voice id per language, e.g. { en: "af_heart", fr: "ff_siwis" }. */
-  [lang: string]: string;
+  [lang: string]: string | number | undefined;
 }
+
+export const VOICE_SPEED_MIN = 0.8;
+export const VOICE_SPEED_MAX = 1.3;
 
 export interface TalkConfig {
   slug: string;
@@ -17,6 +22,8 @@ export interface TalkConfig {
   theme: string;
   fps: number;
   resolution: "landscape" | "portrait" | "square";
+  /** Composer-owned background drift and chapter tag; off unless true. */
+  ambient?: boolean;
 }
 
 export interface Source {
@@ -102,7 +109,9 @@ export function talkConfigProblems(v: unknown): Problems {
   } else {
     if (v.voice.mode !== "ai" && v.voice.mode !== "own") p.push('talk.json: voice.mode must be "ai" or "own"');
     for (const [k, val] of Object.entries(v.voice)) {
-      if (k !== "mode" && !isNonEmptyString(val)) p.push(`talk.json: voice.${k} must be a voice id string`);
+      if (k === "speed") {
+        if (!isFiniteNumber(val) || val < VOICE_SPEED_MIN || val > VOICE_SPEED_MAX) p.push(`talk.json: voice.speed must be a number from ${VOICE_SPEED_MIN} to ${VOICE_SPEED_MAX}`);
+      } else if (k !== "mode" && !isNonEmptyString(val)) p.push(`talk.json: voice.${k} must be a voice id string`);
     }
     if (v.voice.mode === "ai" && Array.isArray(v.languages)) {
       for (const lang of v.languages) {
@@ -111,6 +120,7 @@ export function talkConfigProblems(v: unknown): Problems {
     }
   }
   if (!isNonEmptyString(v.theme)) p.push("talk.json: theme must be a non-empty string");
+  if (v.ambient !== undefined && typeof v.ambient !== "boolean") p.push("talk.json: ambient must be true or false");
   if (!isFiniteNumber(v.fps) || v.fps <= 0 || !Number.isInteger(v.fps)) p.push("talk.json: fps must be a positive integer");
   if (typeof v.resolution !== "string" || !(RESOLUTIONS as readonly string[]).includes(v.resolution)) {
     p.push("talk.json: resolution must be one of " + RESOLUTIONS.join(", "));

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cueWordIndex, parseScript, ScriptError, spokenHash } from "../src/script.js";
+import { sceneInputHash } from "../src/compose.js";
 import { resolveCues } from "../src/cues.js";
 
 const SAMPLE = `# Why agents need specs
@@ -74,5 +75,46 @@ describe("resolveCues", () => {
   it("refuses captions that do not match the script", () => {
     const ch = parseScript("# T\n\nOne two {#b}three four");
     expect(() => resolveCues(ch, { lang: "en", words: [] })).toThrow(/re-run/);
+  });
+});
+
+describe("display forms", () => {
+  it("speaks the second form, records the first for captions, keeps the punctuation around it", () => {
+    const ch = parseScript("# T\n\nIt speaks [[MCP|M C P]], and ([[122|one hundred twenty-two]]) {#n}tests pass.\n");
+    expect(ch.spokenText).toBe("It speaks M C P, and (one hundred twenty-two) tests pass.");
+    expect(ch.displays).toEqual([
+      { first: 2, count: 3, text: "MCP," },
+      { first: 6, count: 3, text: "(122)" },
+    ]);
+    // Cues still count spoken words.
+    expect(ch.cues[0]!.wordIndex).toBe(9);
+    expect(ch.words[9]).toBe("tests");
+  });
+
+  it("changes the spoken hash only through the spoken form", () => {
+    const a = parseScript("# T\n\nRun [[npm test|N P M test]] now.\n");
+    const b = parseScript("# T\n\nRun [[npm run test|N P M test]] now.\n");
+    expect(spokenHash(a)).toBe(spokenHash(b));
+    expect(a.displays[0]!.text).not.toBe(b.displays[0]!.text);
+  });
+});
+
+describe("chapter tag", () => {
+  it("reads {tag: X} from the heading and falls back to the title", () => {
+    const a = parseScript("# Idea to spec {tag: Spec}\n\nHello.\n");
+    expect([a.title, a.tag]).toEqual(["Idea to spec", "Spec"]);
+    const b = parseScript("# Idea to spec\n\nHello.\n");
+    expect([b.title, b.tag]).toEqual(["Idea to spec", "Idea to spec"]);
+    expect(spokenHash(a)).toBe(spokenHash(b));
+  });
+});
+
+describe("scene input hash", () => {
+  it("changes when a display form or the tag changes, not when nothing does", () => {
+    const h = (src: string) => sceneInputHash("<section data-beat=\"a\"></section>", parseScript(src), new Map());
+    const base = h("# T {tag: A}\n\nRun [[npm test|N P M test]].\n");
+    expect(h("# T {tag: A}\n\nRun [[npm test|N P M test]].\n")).toBe(base);
+    expect(h("# T {tag: B}\n\nRun [[npm test|N P M test]].\n")).not.toBe(base);
+    expect(h("# T {tag: A}\n\nRun [[npm run test|N P M test]].\n")).not.toBe(base);
   });
 });

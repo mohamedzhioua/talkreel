@@ -114,10 +114,53 @@ are GSAP `fromTo` tweens at absolute position `t` on the chapter timeline:
 | `pop` | opacity 0, scale 0.85 → opacity 1, scale 1 | 0.5 | `back.out(1.7)` | diagram nodes |
 | `type` | clipPath `inset(0 100% 0 0)` → `inset(0 0% 0 0)` | `clamp(0.035 × n, 0.3, 1.2)` | `steps(n)` | code `[data-line]` |
 | `draw` | each SVG `path, line, polyline, polygon, rect, circle, ellipse` in or equal to the target: strokeDasharray = L, strokeDashoffset L → 0, with L = `getTotalLength()`; the target's opacity is set to 1 at `t` | 0.8 | `power2.inOut` | diagram edges |
+| `stream` | opacity 0, y 6 → opacity 1, y 0 | 0.12 | `power1.out` | terminal rows other than prompts |
+| `slide` | opacity 0, x 80 → opacity 1, x 0 | 0.6 | `power3.out` | none (opt in) |
 
 `n` is the length of the target's trimmed `textContent` (minimum 1); an empty
 code line has no tween and appears with its block. `draw` on an element with no
 SVG geometry falls back to `fade`.
+
+## 5a. Terminal and pipeline timing
+
+These rules replace the stagger of section 5 for terminal rows and pipeline
+chips. Every time is resolved in Node (`src/compose-scene.ts`); the page only
+plays tweens, so check and render can never disagree.
+
+**Terminal rows** (`<p>` children of `[data-block="terminal"]`) are targets.
+Let `w` be the terminal's own entrance time and `prev` the row above:
+
+| Row | Start |
+|---|---|
+| first row, no cue | `w + 0.3` |
+| prompt (`data-prompt`), no cue | `prev.t + prev.duration + 0.4` |
+| other row after a prompt, no cue | `prev.t + prev.duration + 0.25` |
+| other row after a non-prompt, no cue | `prev.t + 0.07` |
+| row with `data-cue` | `max(cue, beat floor)`; a cue earlier than the chained time warns, and the cue wins |
+
+- A prompt types its text only (the `>` or `$` glyph appears with the row), with
+  the `type` duration of section 5. Other rows `stream`.
+- A cursor blinks (0.53 s on, 0.53 s off) from the end of a prompt's typing
+  until the next row starts, or until the beat unmounts.
+- The window opens one row tall. Row `i` (0-based) with `0 < i < rows`
+  (`rows = data-rows`, default 13) grows the viewport to `(i + 1) * 40 + 48` px at
+  the row's start; row `i >= rows` scrolls the content to
+  `y = -(i - (rows - 1)) * 40` px instead (both 0.15 s tweens). The block keeps
+  the final height, so the layout never moves.
+- A row without a cue that ends after its beat ends warns.
+
+**Pipeline chips** (`<li>` of `[data-block="pipeline"] > ol`) are never targets;
+they are always on screen and light up. For the k-th of n chips (0-based) the
+rail fraction is `k / (n - 1)`:
+
+| Chip | Lights at |
+|---|---|
+| `data-done` | the pipeline's entrance, without a pop; the rail starts at the last done chip |
+| `data-cue` | `max(cue, pipeline entrance)` |
+| neither | the pipeline's entrance, staggered 0.12 s per such chip |
+
+When a chip lights, its lit layer pops in (0.4 s) and the rail tweens to that
+chip's fraction (0.5 s) if it is further than the rail already is.
 
 ## 6. Camera
 

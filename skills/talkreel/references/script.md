@@ -25,7 +25,14 @@ An assistant can draft a feature in minutes. {#doubt}But who checks it?
 tools. [s:example-survey] {#loop}So I work in a loop.
 ```
 
-- The first line is `# <chapter title>`. Headings are not spoken.
+- The first line is `# <chapter title>`. Headings are not spoken. An optional
+  `{tag: Short}` at the end of the heading (at most 14 characters) is the
+  chapter tag shown above the slides when talk.json has `"ambient": true`;
+  without it the tag is the title.
+- **`[[display|spoken]]`** writes one thing for the captions and another for the
+  voice: `[[MCP|M C P]]`, `[[122|one hundred twenty-two]]`. The voice says the
+  spoken side; the captions show the display side as one word, punctuation
+  around the marker included. Cues count spoken words.
 - Plain paragraphs only: no lists, tables, links, code blocks, bold or
   italics. Everything except the markers below is read aloud.
 - **`[s:id]`** after every figure, date, quote or attributed claim, placed
@@ -46,7 +53,8 @@ tools. [s:example-survey] {#loop}So I work in a loop.
 - Write numbers as words in the narration ("forty-six percent", "twenty
   twenty-six"), because the voice reads them reliably. Captions show the script's
   spelling, so they show the words too. Stat blocks on screen still show digits
-  (`46%`). A spoken/display marker that puts digits in captions is planned for M2.
+  (`46%`). To show digits or an acronym in the captions, use a display form:
+  `[[46%|forty-six percent]]`.
 - Spell out acronyms on first use if listeners may not know them ("MCP, the
   Model Context Protocol").
 - Avoid words that are hard to voice: long chains of nouns, symbols (`->`,

@@ -1,6 +1,6 @@
 # Default theme: building blocks
 
-Scenes are built from the nine blocks below. Each block is an HTML fragment
+Scenes are built from the eleven blocks below. Each block is an HTML fragment
 with `data-block="<name>"`, placed inside a `<section data-beat>` (see
 `skills/talkreel/references/scenes.md` for beats, cues and timing). The look
 lives in `theme.css`; scene files never carry styles.
@@ -32,7 +32,7 @@ and right edges of the safe area, never into the caption band.
   optional on `definition`; not allowed elsewhere.
 - **Default entrance** for every block is `fade-up` unless the table says
   otherwise; any block may set `data-anim` (`fade-up`, `fade`, `pop`, `type`,
-  `draw`).
+  `draw`, `slide`; `stream` is the terminal-row default).
 - **Classes** listed below are the only ones the theme styles. `.c` and `<mark>`
   exist only inside `code`; `<em>` is accent-coloured only in the hook title.
 - **Type floor.** No theme text renders under 28 px, so nothing is unreadable
@@ -189,7 +189,72 @@ Two columns, 800 px each with an 80 px gutter.
 A column holds either `h3` + `p`, or exactly one nested block of type `stat`,
 `list`, `code`, `definition` or `quote`. Nested blocks render at 0.7 scale, so
 their own text limits shrink by the same factor. Never nest `title`,
-`chapter-card`, `diagram` or `split`.
+`chapter-card`, `diagram`, `split`, `terminal` or `pipeline`.
+
+### `terminal`
+
+A terminal window: typed prompts, streamed output, Claude Code tool calls and
+results, diffs.
+
+```html
+<div data-block="terminal" data-title="claude · talkreel" data-rows="6">  <!-- title optional, ≤ 50 chars; rows 2..13, default 13 -->
+  <p data-prompt>run the tests</p>                  <!-- Claude prompt, ">" drawn by the theme; types in -->
+  <p data-prompt="sh">gh pr checks 1</p>            <!-- shell prompt, "$" -->
+  <p data-tool>Bash(npm test)</p>                   <!-- tool call, green dot -->
+  <p data-result data-cue="tests">9 passed</p>      <!-- indented result under the call -->
+  <p data-out data-tone="ok">all green</p>          <!-- plain output -->
+  <p data-diff="del">  return step();</p>           <!-- "-" row, red tint -->
+  <p data-diff="add">  return retry(step);</p>      <!-- "+" row, green tint -->
+</div>
+```
+
+- One `<p>` per row and exactly one role per row (`E_TERM_LINE`). Plain text
+  only, at most **72 characters**; rows never wrap. To continue a long line, add
+  an indented `data-out` row.
+- `data-tone`: `ok`, `err` (full-row red tint, for a block or failure), `warn`,
+  `dim`, `accent`.
+- **Timing.** Rows without a cue chain: the first appears 0.3 s after the
+  window, a prompt types (0.035 s per character, 0.3–1.2 s) 0.4 s after the row
+  above, output streams 0.07 s apart, 0.25 s after a prompt. A row with
+  `data-cue` starts at its cue, and the rows after it chain from there. A cursor
+  blinks after the last typed prompt until the next row.
+- **Growing and scrolling.** The window opens one row tall and grows by a row
+  as each row arrives, up to `data-rows`; the block reserves that final height,
+  so nothing else on the slide moves. Each row past `data-rows` scrolls the
+  content up by one row.
+- Default entrance `fade`; with a `<h2>` or `<p>` above it, keep `data-rows` ≤ 11.
+
+### `pipeline`
+
+A row of stage chips joined by a rail that fills as chips light up. Good as a
+recurring "where are we" motif.
+
+```html
+<div data-block="pipeline">
+  <ol>                                  <!-- 3..8 chips (E_PIPELINE) -->
+    <li data-done>Idea</li>             <!-- lit when the beat opens -->
+    <li data-done>Spec</li>
+    <li data-cue="review">Review</li>   <!-- lights at its cue -->
+    <li>Ship</li>                       <!-- lights with the block -->
+  </ol>
+</div>
+```
+
+- Chips are plain text, at most 14 characters, all the same width.
+- The rail fills from the first chip to the last lit one. Give the pipeline its
+  own beat, optionally with one `<h2>`, centred (`data-align="center"`).
+
+### `slide` entrance
+
+`data-anim="slide"` on any target: it slides in 80 px from the right while it
+fades in (0.6 s).
+
+## Ambient layer and chapter tag
+
+With `"ambient": true` in talk.json, the composer adds a slow background drift
+(two soft gradients and a faint grid) and a chapter tag `NN · Tag` above the
+safe area (y 16..56). The tag comes from `{tag: …}` in the script heading. Off by
+default.
 
 ## Theme files the composer uses
 

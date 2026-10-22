@@ -6,7 +6,10 @@ Turn any repo, doc or idea into a narrated explainer video. Free, local, bilingu
 
 <!-- demo: the first talk rendered by talkreel; added with the first release -->
 
-The demo video is talkreel's own first talk, "Software engineering with AI today, and how I work with the AI Engineering OS". Its source is committed in `talks/ai-engineering-today/`.
+Two talks made by talkreel ship as examples:
+
+- `talks/how-i-ship-with-ai/`: a 5-minute tour of how its maintainer works with an AI engineering OS, told through the build of talkreel itself, with terminal views and a stage pipeline.
+- `talks/ai-engineering-today/`: the first, 10-minute talk, "Software engineering with AI today".
 
 ## Why it exists
 
@@ -37,6 +40,13 @@ flowchart LR
 | review | Claude | frames checked and fixed, at most 3 rounds |
 
 Scenes never contain seconds. They anchor to cue words (`{#cue}` in the script, `data-cue` in the scene), so a chapter stays in sync when its audio length changes.
+
+Scenes are built from the default theme's blocks (`themes/default/blocks.md`). They include titles, lists, quotes, stats, code, Mermaid diagrams with step-by-step reveals, and:
+
+- a terminal with typed prompts, streamed output, tool calls, diffs and auto-scroll
+- a stage pipeline whose rail fills as stages light up
+
+Every animation is a deterministic tween on one paused timeline, so any frame renders the same at any worker count.
 
 ## Requirements
 
@@ -110,7 +120,7 @@ talks/<slug>/
 
 These are plans, not features.
 
-- **M2:** voice cloning (Chatterbox), cinematic upgrades, full French videos, a marker for digits in captions.
+- **M2:** voice cloning (Chatterbox), more cinematic upgrades, full French videos.
 - **M3:** an optional presenter avatar from a photo, on free cloud GPUs, with consent safeguards.
 
 ## Licence and credits

@@ -10,8 +10,13 @@ import type { Source, TalkState } from "./schema.js";
 
 export function voiceId(talk: Talk, lang: string): string {
   const v = talk.config.voice[lang];
-  if (!v) throw new Error(`talk.json has no voice.${lang}`);
+  if (typeof v !== "string" || !v) throw new Error(`talk.json has no voice.${lang}`);
   return v;
+}
+
+/** TTS pace from talk.json; 1 when unset. */
+export function voiceSpeed(talk: Talk): number {
+  return talk.config.voice.speed ?? 1;
 }
 
 /** Voice input hash, or null when an own-voice recording is missing. */
@@ -21,7 +26,9 @@ export async function currentVoiceHash(talk: Talk, ch: ChapterFile, parsed: Pars
     if (!existsSync(src)) return null;
     return voiceInputHash({ mode: "own", sourceWavHash: await sha256File(src), format: CANONICAL_AUDIO_ID });
   }
-  return voiceInputHash({ mode: "ai", spokenHash: spokenHash(parsed), voice: voiceId(talk, ch.lang), engine: TTS_ENGINE });
+  const speed = voiceSpeed(talk);
+  // Speed joins the hash only when set, so talks voiced before it existed stay fresh.
+  return voiceInputHash({ mode: "ai", spokenHash: spokenHash(parsed), voice: voiceId(talk, ch.lang), engine: TTS_ENGINE, ...(speed !== 1 ? { speed } : {}) });
 }
 
 export function voiceOutputs(talk: Talk, ch: ChapterFile): string[] {
@@ -72,7 +79,8 @@ export async function currentRenderHash(talk: Talk, ch: ChapterFile, quality?: s
     wavHash: await sha256File(wav),
     themeHash: await themeHash(talk),
     hyperframesVersion: packageVersion("hyperframes"),
-    composeVersion: COMPOSE_VERSION,
+    // The ambient layer changes the page (composeChapter), so it is a render input too.
+    composeVersion: talk.config.ambient ? `${COMPOSE_VERSION}+ambient` : COMPOSE_VERSION,
     quality: quality ?? lastRenderQuality(talk, ch) ?? "standard",
   });
 }
