@@ -142,8 +142,11 @@ Let `w` be the terminal's own entrance time and `prev` the row above:
   the `type` duration of section 5. Other rows `stream`.
 - A cursor blinks (0.53 s on, 0.53 s off) from the end of a prompt's typing
   until the next row starts, or until the beat unmounts.
-- Row `i` (0-based) at or past `rows = data-rows` (default 13) scrolls the
-  content to `y = -(i - (rows - 1)) * 40` px at the row's start (0.15 s tween).
+- The window opens one row tall. Row `i` (0-based) with `0 < i < rows`
+  (`rows = data-rows`, default 13) grows the viewport to `(i + 1) * 40 + 48` px at
+  the row's start; row `i >= rows` scrolls the content to
+  `y = -(i - (rows - 1)) * 40` px instead (both 0.15 s tweens). The block keeps
+  the final height, so the layout never moves.
 - A row without a cue that ends after its beat ends warns.
 
 **Pipeline chips** (`<li>` of `[data-block="pipeline"] > ol`) are never targets;

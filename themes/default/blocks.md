@@ -218,8 +218,10 @@ results, diffs.
   above, output streams 0.07 s apart, 0.25 s after a prompt. A row with
   `data-cue` starts at its cue, and the rows after it chain from there. A cursor
   blinks after the last typed prompt until the next row.
-- **Scrolling.** The window shows `data-rows` rows; each row past them scrolls
-  the content up by one row. Size `data-rows` to the rows the beat holds.
+- **Growing and scrolling.** The window opens one row tall and grows by a row
+  as each row arrives, up to `data-rows`; the block reserves that final height,
+  so nothing else on the slide moves. Each row past `data-rows` scrolls the
+  content up by one row.
 - Default entrance `fade`; with a `<h2>` or `<p>` above it, keep `data-rows` ≤ 11.
 
 ### `pipeline`
