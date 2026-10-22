@@ -1,0 +1,44 @@
+<section data-beat="slices">
+  <div data-block="terminal" data-title="build session" data-rows="5">
+    <p data-tool>Skill(zhioua-os:to-slices)</p>
+    <p data-result data-tone="err" data-cue="refused">Skill zhioua-os:to-slices cannot be used with Skill tool due to</p>
+    <p data-out data-tone="err">  disable-model-invocation. Ask the user to run /zhioua-os:to-slices</p>
+    <p data-out data-tone="err">  themselves</p>
+    <p data-prompt data-cue="go">go ahead build</p>
+  </div>
+</section>
+
+<section data-beat="agents" data-cue="agents">
+  <div data-block="definition">
+    <p class="term">33 subagents</p>
+    <p class="text">8 explore, 1 researcher, 9 implementer, 1 reviewer, 3 docs, 11 general.</p>
+  </div>
+</section>
+
+<section data-beat="path" data-cue="rail" data-align="center">
+  <h2>One path per slice</h2>
+  <div data-block="pipeline">
+    <ol>
+      <li data-cue="rail">Implement</li>
+      <li data-cue="reviews">Spec review</li>
+      <li data-cue="reviews">Quality review</li>
+      <li data-cue="fix-loop">Fix</li>
+      <li data-cue="verify">Verify</li>
+      <li data-cue="verify">Result</li>
+    </ol>
+  </div>
+</section>
+
+<section data-beat="crash" data-cue="crash">
+  <div data-block="terminal" data-title="render · build session" data-rows="9">
+    <p data-out data-tone="err">en/01: hyperframes check failed (exit 3221226505):</p>
+    <p data-out data-tone="err">render failed for 1 chapter(s); concat not run</p>
+    <p data-out data-tone="accent" data-cue="retry">fix(render): retry hyperframes once after a process crash</p>
+    <p data-diff="add">export function isProcessCrash(code: number): boolean {</p>
+    <p data-diff="add">  return code &gt;= 0xc0000000;</p>
+    <p data-diff="add">}</p>
+    <p data-diff="del">  const chk = await hfCheck(dir, composed.duration, { telemetry });</p>
+    <p data-diff="add">  const chk = await retryOnCrash(() =&gt; hfCheck(…), retryNote("check"));</p>
+    <p data-out data-tone="ok" data-cue="green">     Tests  122 passed (122)</p>
+  </div>
+</section>

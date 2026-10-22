@@ -1,0 +1,50 @@
+<section data-beat="hooks">
+  <div data-block="list">
+    <h3 class="heading">Default-on hooks</h3>
+    <ul>
+      <li>verify-gate</li>
+      <li>loop-guard</li>
+      <li>scope-addition-guard</li>
+      <li>session-autoload</li>
+    </ul>
+  </div>
+</section>
+
+<section data-beat="guards" data-cue="scope">
+  <div data-block="terminal" data-title="what each hook prints when it blocks" data-rows="11">
+    <p data-out data-tone="err">scope-sensitive: no approval on record</p>
+    <p data-out data-tone="err">  path: &lt;path&gt; (signal: &lt;signal&gt;)</p>
+    <p data-out data-tone="err" data-cue="scope-action">  action: if this addition was not requested, drop it and report it</p>
+    <p data-out data-tone="err">          under *Suggested, not done*.</p>
+    <p data-out data-tone="err" data-cue="verify-gate">verify-gate: no captured evidence for this session.</p>
+    <p data-out data-tone="warn">verify-gate: run your checks via … before finishing.</p>
+    <p data-out data-tone="warn" data-cue="loop-guard">loop-guard: this command has now failed 3 consecutive time(s):</p>
+    <p data-out data-tone="warn">loop-guard: repeated-failure stop rule (hard):</p>
+    <p data-out data-tone="warn">  3 failed attempts at the same target means STOP — question the</p>
+    <p data-out data-tone="warn">  hypothesis/architecture/plan; never attempt fix N+1.</p>
+    <p data-out data-tone="err">loop-guard: BLOCKED — this command already failed 3 consecutive time(s):</p>
+  </div>
+</section>
+
+<section data-beat="score" data-cue="scoreboard">
+  <div data-block="list">
+    <h3 class="heading">In this build</h3>
+    <ul>
+      <li>verify-gate: 51 stops, passed every time</li>
+      <li>scope-addition-guard: never fired</li>
+      <li>loop-guard: never fired</li>
+    </ul>
+  </div>
+</section>
+
+<section data-beat="real" data-cue="real-block">
+  <div data-block="terminal" data-title="2026-10-22 · while researching this video" data-rows="7">
+    <p data-out data-tone="err">read-only-agent-guard: blocked.</p>
+    <p data-out>  agent  : zhioua-os:researcher (read-only subagent — must not</p>
+    <p data-out>           mutate the working tree)</p>
+    <p data-out data-tone="warn" data-cue="blocked">  reason : write-shaped Bash — redirect to a file (&gt; or &gt;&gt;)</p>
+    <p data-out>  fix    : read-only agents report findings and hand writes back</p>
+    <p data-out>           to the main session or an implementer; do not improvise</p>
+    <p data-out>           a write.</p>
+  </div>
+</section>

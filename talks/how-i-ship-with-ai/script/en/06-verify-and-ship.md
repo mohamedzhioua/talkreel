@@ -1,0 +1,5 @@
+# Verify and ship {tag: Verify & ship}
+
+Then the evidence. Before I ship, the full check runs. Typecheck, then nine test files. [[122|One hundred twenty-two]] tests, all green. {#frames}An AI also reviewed the rendered frames. It tested a crossfade between beats, and the two beats' text overlapped. {#frame-fix}So the contract changed. It now delays the incoming beat until the old one has faded. {#bite}Then the tests had to prove they bite. An agent removed the [[0.3 s|zero point three second]] floor, and four tests failed. Then it put it back. {#gap}One reviewer even admitted that five chapters were never actually looked at. Fresh agents re-reviewed them.
+
+{#pr}Then I ship it as one [[PR|P R]], from the [[m1|M one]] branch to main. {#ci}On the [[PR|P R]], [[CI|C I]] ran the tests and passed in eighteen seconds. {#main}I merged it: that gate is mine. On main, [[CI|C I]] came back green in twenty-three seconds. {#land}In the OS, a merge isn't the finish line. [[land-verify|Land verify]] waits for [[CI|C I]], and reports green only when every run succeeded.
