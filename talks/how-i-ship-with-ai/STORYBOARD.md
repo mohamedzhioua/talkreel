@@ -10,7 +10,7 @@ Durations are estimates at 175 spoken words per minute (af_heart, speed 1.08). T
   - **OS hook message**: the text an OS hook prints
   - **OS instructions**: the OS's own operating text
   - **OS inventory**: the installed plugin, 0.19.0-beta.9
-  
+
   Lines may be cut short with `…`, but nothing is invented. No file path from the OS repo appears anywhere.
 - **Hooks that did not fire are never shown as events.**
   - scope-addition-guard and loop-guard never fired in this build. Their messages sit in a terminal titled "what each hook prints when it blocks".
