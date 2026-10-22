@@ -136,7 +136,7 @@ export const TIMELINE_RUNTIME = `(function () {
       list.forEach(function (c) {
         var lit = byId(c.id);
         if (c.done) { window.gsap.set(lit, { opacity: 1 }); return; }
-        tl.fromTo(lit, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, c.t);
+        tl.fromTo(lit, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, c.t);
         if (c.f > f) {
           tl.fromTo(el, { scaleX: f }, { scaleX: c.f, duration: 0.5, ease: "power2.inOut", immediateRender: false }, c.t);
           f = c.f;

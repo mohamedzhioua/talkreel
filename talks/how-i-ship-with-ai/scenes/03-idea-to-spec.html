@@ -18,12 +18,13 @@
 
 <section data-beat="design" data-cue="design">
   <h2>Committed before any code</h2>
-  <div data-block="terminal" data-title="talkreel · the first commit after the licence" data-rows="5">
+  <div data-block="terminal" data-title="talkreel · the first commit after the licence" data-rows="6">
+    <p data-prompt="sh">git log --oneline -1 5d6f2d2</p>
+    <p data-out data-tone="accent">5d6f2d2 docs: M1 design and research landscape</p>
     <p data-prompt="sh">git show 5d6f2d2:docs/design/m1-pipeline.md | head -3</p>
-    <p data-out data-tone="accent"># talkreel M1: design</p>
+    <p data-out># talkreel M1: design</p>
     <p data-out></p>
     <p data-out data-tone="ok">Status: draft for gate 1. The Windows feasibility spike …</p>
-    <p data-out data-tone="dim">5d6f2d2 docs: M1 design and research landscape</p>
   </div>
 </section>
 
@@ -42,11 +43,11 @@
   <div data-block="split" data-align="top">
     <div class="col">
       <h3>A fresh reviewer AI</h3>
-      <p>Read only the design doc. Returned 25&nbsp;questions.</p>
+      <p>Read only the design doc. 25&nbsp;questions back.</p>
     </div>
     <div class="col" data-cue="timeline">
       <h3>Biggest risk</h3>
-      <p>Timeline ownership: nobody owned the timeline.</p>
+      <p>Nobody owned the timeline.</p>
     </div>
   </div>
 </section>
@@ -68,4 +69,5 @@
       <li data-cue="advisors">gate 1</li>
     </ol>
   </div>
+  <p data-cue="advisors">Two advisor models rule the open calls · I confirm the spec</p>
 </section>

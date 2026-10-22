@@ -491,6 +491,8 @@ section[data-beat] > p {
   height: calc(var(--rows, 13) * 40px + 48px);
   padding: 24px 32px;
   overflow: hidden;
+  /* Rows scrolled past the top (or not yet grown into) are hidden, never half shown. */
+  clip-path: inset(24px 0);
 }
 [data-block="terminal"] .tr-term-track { will-change: transform; }
 [data-block="terminal"] .tr-term-track > p {
@@ -527,11 +529,13 @@ section[data-beat] > p {
   border-radius: 50%;
   background: #3fb950;
 }
-[data-block="terminal"] p[data-result] { padding-left: 96px; color: var(--tr-muted); }
+/* The result elbow takes exactly 4 character cells, so a continuation row indented with
+   4 spaces lines up under the result's text. */
+[data-block="terminal"] p[data-result] { padding-left: calc(32px + 4ch); color: var(--tr-muted); }
 [data-block="terminal"] p[data-result]::before {
   content: "";
   position: absolute;
-  left: 50px;
+  left: calc(32px + 1ch);
   top: 4px;
   width: 22px;
   height: 18px;
