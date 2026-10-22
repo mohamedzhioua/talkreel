@@ -1,0 +1,1277 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "Then",
+      "start": 0,
+      "end": 0.16,
+      "matched": true
+    },
+    {
+      "text": "verify,",
+      "start": 0.16,
+      "end": 0.52,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 0.52,
+      "end": 0.96,
+      "matched": true
+    },
+    {
+      "text": "running",
+      "start": 0.96,
+      "end": 1.24,
+      "matched": true
+    },
+    {
+      "text": "checks,",
+      "start": 1.24,
+      "end": 1.62,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 1.84,
+      "end": 1.94,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 1.94,
+      "end": 2.18,
+      "matched": true
+    },
+    {
+      "text": "assuming.",
+      "start": 2.18,
+      "end": 2.52,
+      "matched": true
+    },
+    {
+      "text": "Boris",
+      "start": 3.16,
+      "end": 3.48,
+      "matched": true
+    },
+    {
+      "text": "Cherny,",
+      "start": 3.48,
+      "end": 3.92,
+      "matched": true
+    },
+    {
+      "text": "who",
+      "start": 4.06,
+      "end": 4.16,
+      "matched": true
+    },
+    {
+      "text": "created",
+      "start": 4.16,
+      "end": 4.46,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 4.46,
+      "end": 4.9,
+      "matched": true
+    },
+    {
+      "text": "Code,",
+      "start": 4.9,
+      "end": 5.2,
+      "matched": true
+    },
+    {
+      "text": "calls",
+      "start": 5.5,
+      "end": 5.68,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 5.68,
+      "end": 5.84,
+      "matched": true
+    },
+    {
+      "text": "probably",
+      "start": 5.84,
+      "end": 6.16,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 6.16,
+      "end": 6.44,
+      "matched": true
+    },
+    {
+      "text": "most",
+      "start": 6.44,
+      "end": 6.62,
+      "matched": true
+    },
+    {
+      "text": "important",
+      "start": 6.62,
+      "end": 7.08,
+      "matched": true
+    },
+    {
+      "text": "thing.",
+      "start": 7.08,
+      "end": 7.4,
+      "matched": true
+    },
+    {
+      "text": "Give",
+      "start": 7.98,
+      "end": 8.26,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 8.26,
+      "end": 8.64,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 8.64,
+      "end": 8.72,
+      "matched": true
+    },
+    {
+      "text": "way",
+      "start": 8.72,
+      "end": 8.86,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 8.86,
+      "end": 9.02,
+      "matched": true
+    },
+    {
+      "text": "verify",
+      "start": 9.02,
+      "end": 9.38,
+      "matched": true
+    },
+    {
+      "text": "its",
+      "start": 9.38,
+      "end": 9.72,
+      "matched": true
+    },
+    {
+      "text": "work.",
+      "start": 9.72,
+      "end": 9.96,
+      "matched": true
+    },
+    {
+      "text": "My",
+      "start": 10.46,
+      "end": 10.62,
+      "matched": true
+    },
+    {
+      "text": "verify",
+      "start": 10.62,
+      "end": 11.02,
+      "matched": true
+    },
+    {
+      "text": "gate",
+      "start": 11.02,
+      "end": 11.38,
+      "matched": true
+    },
+    {
+      "text": "hook",
+      "start": 11.38,
+      "end": 11.64,
+      "matched": true
+    },
+    {
+      "text": "enforces",
+      "start": 11.64,
+      "end": 12.2,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 12.2,
+      "end": 12.42,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 12.94,
+      "end": 13.04,
+      "matched": true
+    },
+    {
+      "text": "agent",
+      "start": 13.04,
+      "end": 13.36,
+      "matched": true
+    },
+    {
+      "text": "can't",
+      "start": 13.36,
+      "end": 13.76,
+      "matched": true
+    },
+    {
+      "text": "stop",
+      "start": 13.76,
+      "end": 14.08,
+      "matched": true
+    },
+    {
+      "text": "until",
+      "start": 14.08,
+      "end": 14.4,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 14.4,
+      "end": 14.52,
+      "matched": true
+    },
+    {
+      "text": "has",
+      "start": 14.52,
+      "end": 14.66,
+      "matched": true
+    },
+    {
+      "text": "captured",
+      "start": 14.66,
+      "end": 15.06,
+      "matched": true
+    },
+    {
+      "text": "evidence,",
+      "start": 15.06,
+      "end": 15.54,
+      "matched": true
+    },
+    {
+      "text": "like",
+      "start": 15.54,
+      "end": 15.82,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 15.82,
+      "end": 15.96,
+      "matched": true
+    },
+    {
+      "text": "test",
+      "start": 15.96,
+      "end": 16.14,
+      "matched": true
+    },
+    {
+      "text": "run.",
+      "start": 16.14,
+      "end": 16.46,
+      "matched": true
+    },
+    {
+      "text": "To",
+      "start": 16.96,
+      "end": 17.1,
+      "matched": true
+    },
+    {
+      "text": "be",
+      "start": 17.1,
+      "end": 17.22,
+      "matched": true
+    },
+    {
+      "text": "fair,",
+      "start": 17.22,
+      "end": 17.56,
+      "matched": true
+    },
+    {
+      "text": "it's",
+      "start": 17.82,
+      "end": 17.98,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 17.98,
+      "end": 18.08,
+      "matched": true
+    },
+    {
+      "text": "forcing",
+      "start": 18.08,
+      "end": 18.36,
+      "matched": true
+    },
+    {
+      "text": "function,",
+      "start": 18.36,
+      "end": 18.84,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 19.12,
+      "end": 19.24,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 19.24,
+      "end": 19.4,
+      "matched": true
+    },
+    {
+      "text": "verifier.",
+      "start": 19.4,
+      "end": 19.82,
+      "matched": true
+    },
+    {
+      "text": "It",
+      "start": 20.46,
+      "end": 20.58,
+      "matched": true
+    },
+    {
+      "text": "checks",
+      "start": 20.58,
+      "end": 20.86,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 20.86,
+      "end": 21.08,
+      "matched": true
+    },
+    {
+      "text": "evidence",
+      "start": 21.08,
+      "end": 21.38,
+      "matched": true
+    },
+    {
+      "text": "exists,",
+      "start": 21.38,
+      "end": 21.92,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 22.24,
+      "end": 22.48,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 22.48,
+      "end": 22.7,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 22.7,
+      "end": 22.8,
+      "matched": true
+    },
+    {
+      "text": "passed.",
+      "start": 22.8,
+      "end": 23.06,
+      "matched": true
+    },
+    {
+      "text": "Loop",
+      "start": 23.84,
+      "end": 23.96,
+      "matched": true
+    },
+    {
+      "text": "guard.",
+      "start": 23.96,
+      "end": 24.26,
+      "matched": true
+    },
+    {
+      "text": "After",
+      "start": 24.76,
+      "end": 25,
+      "matched": true
+    },
+    {
+      "text": "three",
+      "start": 25,
+      "end": 25.36,
+      "matched": true
+    },
+    {
+      "text": "failed",
+      "start": 25.36,
+      "end": 25.72,
+      "matched": true
+    },
+    {
+      "text": "attempts",
+      "start": 25.72,
+      "end": 26.02,
+      "matched": true
+    },
+    {
+      "text": "at",
+      "start": 26.02,
+      "end": 26.22,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 26.22,
+      "end": 26.32,
+      "matched": true
+    },
+    {
+      "text": "same",
+      "start": 26.32,
+      "end": 26.56,
+      "matched": true
+    },
+    {
+      "text": "command,",
+      "start": 26.56,
+      "end": 26.98,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 27.22,
+      "end": 27.34,
+      "matched": true
+    },
+    {
+      "text": "fourth",
+      "start": 27.34,
+      "end": 27.58,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 27.58,
+      "end": 27.82,
+      "matched": true
+    },
+    {
+      "text": "refused.",
+      "start": 27.82,
+      "end": 28.24,
+      "matched": true
+    },
+    {
+      "text": "Scope",
+      "start": 28.84,
+      "end": 29.24,
+      "matched": true
+    },
+    {
+      "text": "addition",
+      "start": 29.24,
+      "end": 29.6,
+      "matched": true
+    },
+    {
+      "text": "guard.",
+      "start": 29.6,
+      "end": 29.96,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 30.36,
+      "end": 30.56,
+      "matched": true
+    },
+    {
+      "text": "most",
+      "start": 30.56,
+      "end": 30.72,
+      "matched": true
+    },
+    {
+      "text": "common",
+      "start": 30.72,
+      "end": 31.1,
+      "matched": true
+    },
+    {
+      "text": "failure",
+      "start": 31.1,
+      "end": 31.56,
+      "matched": true
+    },
+    {
+      "text": "with",
+      "start": 31.56,
+      "end": 31.8,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 31.8,
+      "end": 31.9,
+      "matched": true
+    },
+    {
+      "text": "capable",
+      "start": 31.9,
+      "end": 32.24,
+      "matched": true
+    },
+    {
+      "text": "agent",
+      "start": 32.24,
+      "end": 32.7,
+      "matched": true
+    },
+    {
+      "text": "isn't",
+      "start": 32.7,
+      "end": 33.1,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 33.1,
+      "end": 33.22,
+      "matched": true
+    },
+    {
+      "text": "wrong",
+      "start": 33.22,
+      "end": 33.5,
+      "matched": true
+    },
+    {
+      "text": "line",
+      "start": 33.5,
+      "end": 33.78,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 33.78,
+      "end": 33.9,
+      "matched": true
+    },
+    {
+      "text": "code.",
+      "start": 33.9,
+      "end": 34.22,
+      "matched": true
+    },
+    {
+      "text": "It's",
+      "start": 34.64,
+      "end": 34.88,
+      "matched": true
+    },
+    {
+      "text": "work",
+      "start": 34.88,
+      "end": 35.04,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 35.04,
+      "end": 35.2,
+      "matched": true
+    },
+    {
+      "text": "never",
+      "start": 35.2,
+      "end": 35.4,
+      "matched": true
+    },
+    {
+      "text": "asked",
+      "start": 35.4,
+      "end": 35.74,
+      "matched": true
+    },
+    {
+      "text": "for.",
+      "start": 35.74,
+      "end": 35.96,
+      "matched": true
+    },
+    {
+      "text": "So",
+      "start": 36.4,
+      "end": 36.58,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 36.58,
+      "end": 36.72,
+      "matched": true
+    },
+    {
+      "text": "new",
+      "start": 36.72,
+      "end": 36.84,
+      "matched": true
+    },
+    {
+      "text": "file,",
+      "start": 36.84,
+      "end": 37.18,
+      "matched": true
+    },
+    {
+      "text": "or",
+      "start": 37.18,
+      "end": 37.6,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 37.6,
+      "end": 37.74,
+      "matched": true
+    },
+    {
+      "text": "dependency",
+      "start": 37.74,
+      "end": 38.06,
+      "matched": true
+    },
+    {
+      "text": "change,",
+      "start": 38.06,
+      "end": 38.66,
+      "matched": true
+    },
+    {
+      "text": "asks",
+      "start": 38.66,
+      "end": 39.14,
+      "matched": true
+    },
+    {
+      "text": "me",
+      "start": 39.14,
+      "end": 39.32,
+      "matched": true
+    },
+    {
+      "text": "first.",
+      "start": 39.32,
+      "end": 39.62,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 40.14,
+      "end": 40.34,
+      "matched": true
+    },
+    {
+      "text": "model",
+      "start": 40.34,
+      "end": 40.66,
+      "matched": true
+    },
+    {
+      "text": "routing",
+      "start": 40.66,
+      "end": 41.02,
+      "matched": true
+    },
+    {
+      "text": "follows",
+      "start": 41.02,
+      "end": 41.44,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 41.44,
+      "end": 41.76,
+      "matched": true
+    },
+    {
+      "text": "principle.",
+      "start": 41.76,
+      "end": 42.16,
+      "matched": true
+    },
+    {
+      "text": "Escalate",
+      "start": 42.76,
+      "end": 43.22,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 43.22,
+      "end": 43.36,
+      "matched": true
+    },
+    {
+      "text": "stakes,",
+      "start": 43.36,
+      "end": 43.72,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 43.96,
+      "end": 44.1,
+      "matched": true
+    },
+    {
+      "text": "cost.",
+      "start": 44.1,
+      "end": 44.46,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 45.14,
+      "end": 45.28,
+      "matched": true
+    },
+    {
+      "text": "ship.",
+      "start": 45.28,
+      "end": 45.56,
+      "matched": true
+    },
+    {
+      "text": "Push",
+      "start": 46.18,
+      "end": 46.32,
+      "matched": true
+    },
+    {
+      "text": "once",
+      "start": 46.32,
+      "end": 46.6,
+      "matched": true
+    },
+    {
+      "text": "per",
+      "start": 46.6,
+      "end": 46.84,
+      "matched": true
+    },
+    {
+      "text": "finished",
+      "start": 46.84,
+      "end": 47.12,
+      "matched": true
+    },
+    {
+      "text": "plan,",
+      "start": 47.12,
+      "end": 47.58,
+      "matched": true
+    },
+    {
+      "text": "never",
+      "start": 47.88,
+      "end": 48.12,
+      "matched": true
+    },
+    {
+      "text": "per",
+      "start": 48.12,
+      "end": 48.36,
+      "matched": true
+    },
+    {
+      "text": "commit,",
+      "start": 48.36,
+      "end": 48.74,
+      "matched": true
+    },
+    {
+      "text": "because",
+      "start": 49.06,
+      "end": 49.38,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 49.38,
+      "end": 49.68,
+      "matched": true
+    },
+    {
+      "text": "repo",
+      "start": 49.68,
+      "end": 49.98,
+      "matched": true
+    },
+    {
+      "text": "has",
+      "start": 49.98,
+      "end": 50.26,
+      "matched": true
+    },
+    {
+      "text": "used",
+      "start": 50.26,
+      "end": 50.52,
+      "matched": true
+    },
+    {
+      "text": "up",
+      "start": 50.52,
+      "end": 50.7,
+      "matched": true
+    },
+    {
+      "text": "its",
+      "start": 50.7,
+      "end": 50.86,
+      "matched": true
+    },
+    {
+      "text": "monthly",
+      "start": 50.86,
+      "end": 51.22,
+      "matched": true
+    },
+    {
+      "text": "C",
+      "start": 51.22,
+      "end": 51.6,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 51.6,
+      "end": 51.84,
+      "matched": true
+    },
+    {
+      "text": "quota",
+      "start": 51.84,
+      "end": 52.08,
+      "matched": true
+    },
+    {
+      "text": "twice.",
+      "start": 52.08,
+      "end": 52.52,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 53.06,
+      "end": 53.32,
+      "matched": true
+    },
+    {
+      "text": "merge",
+      "start": 53.32,
+      "end": 53.62,
+      "matched": true
+    },
+    {
+      "text": "isn't",
+      "start": 53.62,
+      "end": 53.98,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 53.98,
+      "end": 54.1,
+      "matched": true
+    },
+    {
+      "text": "finish",
+      "start": 54.1,
+      "end": 54.28,
+      "matched": true
+    },
+    {
+      "text": "line.",
+      "start": 54.28,
+      "end": 54.6,
+      "matched": true
+    },
+    {
+      "text": "Land",
+      "start": 55.24,
+      "end": 55.52,
+      "matched": true
+    },
+    {
+      "text": "verify",
+      "start": 55.52,
+      "end": 55.94,
+      "matched": true
+    },
+    {
+      "text": "waits",
+      "start": 55.94,
+      "end": 56.52,
+      "matched": false
+    },
+    {
+      "text": "for",
+      "start": 56.52,
+      "end": 56.76,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 56.76,
+      "end": 56.86,
+      "matched": true
+    },
+    {
+      "text": "real",
+      "start": 56.86,
+      "end": 57.14,
+      "matched": true
+    },
+    {
+      "text": "C",
+      "start": 57.14,
+      "end": 57.42,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 57.42,
+      "end": 57.7,
+      "matched": true
+    },
+    {
+      "text": "result",
+      "start": 57.7,
+      "end": 58.06,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 58.06,
+      "end": 58.42,
+      "matched": true
+    },
+    {
+      "text": "keeps",
+      "start": 58.42,
+      "end": 58.68,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 58.68,
+      "end": 58.82,
+      "matched": true
+    },
+    {
+      "text": "receipt.",
+      "start": 58.82,
+      "end": 59.18,
+      "matched": true
+    },
+    {
+      "text": "An",
+      "start": 59.68,
+      "end": 59.84,
+      "matched": true
+    },
+    {
+      "text": "AI",
+      "start": 59.84,
+      "end": 60.16,
+      "matched": true
+    },
+    {
+      "text": "reviewing",
+      "start": 60.16,
+      "end": 60.76,
+      "matched": true
+    },
+    {
+      "text": "my",
+      "start": 60.76,
+      "end": 61.02,
+      "matched": true
+    },
+    {
+      "text": "rendered",
+      "start": 61.02,
+      "end": 61.28,
+      "matched": true
+    },
+    {
+      "text": "frames",
+      "start": 61.28,
+      "end": 61.8,
+      "matched": true
+    },
+    {
+      "text": "caught",
+      "start": 61.8,
+      "end": 62.26,
+      "matched": true
+    },
+    {
+      "text": "two",
+      "start": 62.26,
+      "end": 62.58,
+      "matched": true
+    },
+    {
+      "text": "slides",
+      "start": 62.58,
+      "end": 63.08,
+      "matched": true
+    },
+    {
+      "text": "overlapping",
+      "start": 63.08,
+      "end": 63.64,
+      "matched": true
+    },
+    {
+      "text": "mid-transition.",
+      "start": 63.64,
+      "end": 64.58,
+      "matched": true
+    },
+    {
+      "text": "Fixed",
+      "start": 65.16,
+      "end": 65.42,
+      "matched": true
+    },
+    {
+      "text": "before",
+      "start": 65.42,
+      "end": 65.76,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 65.76,
+      "end": 65.94,
+      "matched": true
+    },
+    {
+      "text": "saw",
+      "start": 65.94,
+      "end": 66.18,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 66.18,
+      "end": 66.38,
+      "matched": true
+    },
+    {
+      "text": "That's",
+      "start": 66.84,
+      "end": 67.06,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 67.06,
+      "end": 67.16,
+      "matched": true
+    },
+    {
+      "text": "whole",
+      "start": 67.16,
+      "end": 67.32,
+      "matched": true
+    },
+    {
+      "text": "path,",
+      "start": 67.32,
+      "end": 67.66,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 67.86,
+      "end": 67.96,
+      "matched": true
+    },
+    {
+      "text": "you're",
+      "start": 67.96,
+      "end": 68.1,
+      "matched": true
+    },
+    {
+      "text": "watching",
+      "start": 68.1,
+      "end": 68.46,
+      "matched": true
+    },
+    {
+      "text": "what",
+      "start": 68.46,
+      "end": 68.7,
+      "matched": true
+    },
+    {
+      "text": "came",
+      "start": 68.7,
+      "end": 68.88,
+      "matched": true
+    },
+    {
+      "text": "out",
+      "start": 68.88,
+      "end": 69.06,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 69.06,
+      "end": 69.16,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 69.16,
+      "end": 69.28,
+      "matched": true
+    },
+    {
+      "text": "An",
+      "start": 69.92,
+      "end": 70.02,
+      "matched": true
+    },
+    {
+      "text": "idea,",
+      "start": 70.02,
+      "end": 70.38,
+      "matched": true
+    },
+    {
+      "text": "researched,",
+      "start": 70.38,
+      "end": 71.02,
+      "matched": true
+    },
+    {
+      "text": "grilled,",
+      "start": 71.52,
+      "end": 71.78,
+      "matched": true
+    },
+    {
+      "text": "designed,",
+      "start": 72.12,
+      "end": 72.4,
+      "matched": true
+    },
+    {
+      "text": "spiked,",
+      "start": 72.66,
+      "end": 73.08,
+      "matched": true
+    },
+    {
+      "text": "approved,",
+      "start": 73.3,
+      "end": 73.56,
+      "matched": true
+    },
+    {
+      "text": "built",
+      "start": 74.18,
+      "end": 74.34,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 74.34,
+      "end": 74.56,
+      "matched": true
+    },
+    {
+      "text": "subagents,",
+      "start": 74.56,
+      "end": 75.18,
+      "matched": true
+    },
+    {
+      "text": "tested,",
+      "start": 75.48,
+      "end": 75.76,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 75.76,
+      "end": 76.12,
+      "matched": true
+    },
+    {
+      "text": "rendered",
+      "start": 76.12,
+      "end": 76.42,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 76.42,
+      "end": 76.72,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 76.72,
+      "end": 76.84,
+      "matched": true
+    },
+    {
+      "text": "tool",
+      "start": 76.84,
+      "end": 77.08,
+      "matched": true
+    },
+    {
+      "text": "itself.",
+      "start": 77.08,
+      "end": 77.44,
+      "matched": true
+    }
+  ]
+}

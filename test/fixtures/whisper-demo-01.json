@@ -1,0 +1,199 @@
+{
+  "lang": "en",
+  "model": "small",
+  "duration": 13.278,
+  "words": [
+    {
+      "word": "In",
+      "start": 0,
+      "end": 0.12,
+      "prob": 0.957
+    },
+    {
+      "word": "2026,",
+      "start": 0.12,
+      "end": 1.22,
+      "prob": 0.923
+    },
+    {
+      "word": "most",
+      "start": 1.72,
+      "end": 1.96,
+      "prob": 0.998
+    },
+    {
+      "word": "teams",
+      "start": 1.96,
+      "end": 2.32,
+      "prob": 0.998
+    },
+    {
+      "word": "write",
+      "start": 2.32,
+      "end": 2.64,
+      "prob": 0.998
+    },
+    {
+      "word": "code",
+      "start": 2.64,
+      "end": 3,
+      "prob": 0.999
+    },
+    {
+      "word": "with",
+      "start": 3,
+      "end": 3.28,
+      "prob": 0.999
+    },
+    {
+      "word": "an",
+      "start": 3.28,
+      "end": 3.4,
+      "prob": 0.995
+    },
+    {
+      "word": "AI",
+      "start": 3.4,
+      "end": 3.74,
+      "prob": 0.919
+    },
+    {
+      "word": "assistant.",
+      "start": 3.74,
+      "end": 4.26,
+      "prob": 0.763
+    },
+    {
+      "word": "The",
+      "start": 5.06,
+      "end": 5.16,
+      "prob": 0.998
+    },
+    {
+      "word": "assistant",
+      "start": 5.16,
+      "end": 5.56,
+      "prob": 0.987
+    },
+    {
+      "word": "drafts",
+      "start": 5.56,
+      "end": 6.14,
+      "prob": 0.991
+    },
+    {
+      "word": "quickly,",
+      "start": 6.14,
+      "end": 6.42,
+      "prob": 0.999
+    },
+    {
+      "word": "but",
+      "start": 6.86,
+      "end": 7.02,
+      "prob": 0.999
+    },
+    {
+      "word": "an",
+      "start": 7.02,
+      "end": 7.14,
+      "prob": 0.999
+    },
+    {
+      "word": "engineer",
+      "start": 7.14,
+      "end": 7.52,
+      "prob": 0.998
+    },
+    {
+      "word": "still",
+      "start": 7.52,
+      "end": 7.86,
+      "prob": 0.999
+    },
+    {
+      "word": "decides",
+      "start": 7.86,
+      "end": 8.42,
+      "prob": 0.999
+    },
+    {
+      "word": "what",
+      "start": 8.42,
+      "end": 8.66,
+      "prob": 0.998
+    },
+    {
+      "word": "ships.",
+      "start": 8.66,
+      "end": 8.94,
+      "prob": 0.976
+    },
+    {
+      "word": "This",
+      "start": 9.58,
+      "end": 9.74,
+      "prob": 0.991
+    },
+    {
+      "word": "short",
+      "start": 9.74,
+      "end": 9.96,
+      "prob": 0.996
+    },
+    {
+      "word": "talk",
+      "start": 9.96,
+      "end": 10.22,
+      "prob": 0.984
+    },
+    {
+      "word": "shows",
+      "start": 10.22,
+      "end": 10.5,
+      "prob": 0.998
+    },
+    {
+      "word": "a",
+      "start": 10.5,
+      "end": 10.62,
+      "prob": 0.998
+    },
+    {
+      "word": "workflow",
+      "start": 10.62,
+      "end": 10.98,
+      "prob": 0.994
+    },
+    {
+      "word": "built",
+      "start": 10.98,
+      "end": 11.32,
+      "prob": 0.985
+    },
+    {
+      "word": "on",
+      "start": 11.32,
+      "end": 11.54,
+      "prob": 0.999
+    },
+    {
+      "word": "small,",
+      "start": 11.54,
+      "end": 11.98,
+      "prob": 0.997
+    },
+    {
+      "word": "verified",
+      "start": 12.2,
+      "end": 12.54,
+      "prob": 0.998
+    },
+    {
+      "word": "steps.",
+      "start": 12.54,
+      "end": 13,
+      "prob": 0.998
+    }
+  ]
+}

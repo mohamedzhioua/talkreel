@@ -1,0 +1,20 @@
+{
+  "name": "talkreel",
+  "version": "0.1.0",
+  "description": "Turn a topic, docs or a repo into a narrated explainer video with animated slides, diagrams, word-synced captions and cited sources. Runs locally with free, open-source tools.",
+  "author": {
+    "name": "Zhioua Mohamed"
+  },
+  "homepage": "https://github.com/mohamedzhioua/talkreel",
+  "repository": "https://github.com/mohamedzhioua/talkreel",
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "explainer",
+    "talk",
+    "narration",
+    "captions",
+    "hyperframes",
+    "tts"
+  ]
+}

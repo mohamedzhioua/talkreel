@@ -1,0 +1,887 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "First,",
+      "start": 0,
+      "end": 0.28,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 0.28,
+      "end": 0.52,
+      "matched": true
+    },
+    {
+      "text": "vocabulary.",
+      "start": 0.52,
+      "end": 1.02,
+      "matched": true
+    },
+    {
+      "text": "Each",
+      "start": 1.72,
+      "end": 1.98,
+      "matched": true
+    },
+    {
+      "text": "word,",
+      "start": 1.98,
+      "end": 2.26,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 2.26,
+      "end": 2.52,
+      "matched": true
+    },
+    {
+      "text": "an",
+      "start": 2.52,
+      "end": 2.66,
+      "matched": true
+    },
+    {
+      "text": "expert's",
+      "start": 2.66,
+      "end": 3.16,
+      "matched": true
+    },
+    {
+      "text": "own",
+      "start": 3.16,
+      "end": 3.32,
+      "matched": true
+    },
+    {
+      "text": "terms.",
+      "start": 3.32,
+      "end": 3.64,
+      "matched": true
+    },
+    {
+      "text": "Prompt",
+      "start": 4.3,
+      "end": 4.56,
+      "matched": true
+    },
+    {
+      "text": "engineering",
+      "start": 4.56,
+      "end": 4.9,
+      "matched": true
+    },
+    {
+      "text": "came",
+      "start": 4.9,
+      "end": 5.36,
+      "matched": true
+    },
+    {
+      "text": "first.",
+      "start": 5.36,
+      "end": 5.78,
+      "matched": true
+    },
+    {
+      "text": "Anthropic",
+      "start": 6.34,
+      "end": 6.76,
+      "matched": true
+    },
+    {
+      "text": "defines",
+      "start": 6.76,
+      "end": 7.24,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 7.24,
+      "end": 7.5,
+      "matched": true
+    },
+    {
+      "text": "as",
+      "start": 7.5,
+      "end": 7.7,
+      "matched": true
+    },
+    {
+      "text": "methods",
+      "start": 7.7,
+      "end": 8,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 8,
+      "end": 8.28,
+      "matched": true
+    },
+    {
+      "text": "writing",
+      "start": 8.28,
+      "end": 8.64,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 8.64,
+      "end": 8.9,
+      "matched": true
+    },
+    {
+      "text": "organizing",
+      "start": 8.9,
+      "end": 9.42,
+      "matched": true
+    },
+    {
+      "text": "instructions",
+      "start": 9.42,
+      "end": 10.04,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 10.04,
+      "end": 10.54,
+      "matched": true
+    },
+    {
+      "text": "optimal",
+      "start": 10.54,
+      "end": 11.02,
+      "matched": true
+    },
+    {
+      "text": "outcomes.",
+      "start": 11.02,
+      "end": 11.5,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 12.18,
+      "end": 12.46,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 12.46,
+      "end": 12.64,
+      "matched": true
+    },
+    {
+      "text": "word",
+      "start": 12.64,
+      "end": 12.86,
+      "matched": true
+    },
+    {
+      "text": "grew.",
+      "start": 12.86,
+      "end": 13.1,
+      "matched": true
+    },
+    {
+      "text": "Anthropic",
+      "start": 13.84,
+      "end": 14.24,
+      "matched": true
+    },
+    {
+      "text": "now",
+      "start": 14.24,
+      "end": 14.56,
+      "matched": true
+    },
+    {
+      "text": "calls",
+      "start": 14.56,
+      "end": 14.88,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 14.88,
+      "end": 15.4,
+      "matched": true
+    },
+    {
+      "text": "engineering",
+      "start": 15.4,
+      "end": 16.02,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 16.02,
+      "end": 16.32,
+      "matched": true
+    },
+    {
+      "text": "natural",
+      "start": 16.32,
+      "end": 16.66,
+      "matched": true
+    },
+    {
+      "text": "progression",
+      "start": 16.66,
+      "end": 17.12,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 17.12,
+      "end": 17.42,
+      "matched": true
+    },
+    {
+      "text": "prompt",
+      "start": 17.42,
+      "end": 17.7,
+      "matched": true
+    },
+    {
+      "text": "engineering.",
+      "start": 17.7,
+      "end": 18.18,
+      "matched": true
+    },
+    {
+      "text": "Shopify's",
+      "start": 18.98,
+      "end": 19.7,
+      "matched": true
+    },
+    {
+      "text": "Tobi",
+      "start": 19.7,
+      "end": 20.08,
+      "matched": true
+    },
+    {
+      "text": "Lütke",
+      "start": 20.08,
+      "end": 20.32,
+      "matched": true
+    },
+    {
+      "text": "described",
+      "start": 20.32,
+      "end": 20.76,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 20.76,
+      "end": 21.08,
+      "matched": true
+    },
+    {
+      "text": "as",
+      "start": 21.08,
+      "end": 21.46,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 21.46,
+      "end": 21.58,
+      "matched": true
+    },
+    {
+      "text": "art",
+      "start": 21.58,
+      "end": 21.84,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 21.84,
+      "end": 21.96,
+      "matched": true
+    },
+    {
+      "text": "providing",
+      "start": 21.96,
+      "end": 22.34,
+      "matched": true
+    },
+    {
+      "text": "all",
+      "start": 22.34,
+      "end": 22.72,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 22.72,
+      "end": 22.84,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 22.84,
+      "end": 23.32,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 23.32,
+      "end": 23.6,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 23.6,
+      "end": 23.72,
+      "matched": true
+    },
+    {
+      "text": "task",
+      "start": 23.72,
+      "end": 24.2,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 24.2,
+      "end": 24.56,
+      "matched": true
+    },
+    {
+      "text": "be",
+      "start": 24.56,
+      "end": 24.72,
+      "matched": true
+    },
+    {
+      "text": "plausibly",
+      "start": 24.72,
+      "end": 25.3,
+      "matched": true
+    },
+    {
+      "text": "solvable.",
+      "start": 25.3,
+      "end": 25.8,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 25.8,
+      "end": 26.54,
+      "matched": true
+    },
+    {
+      "text": "Karpathy",
+      "start": 26.54,
+      "end": 27.06,
+      "matched": false
+    },
+    {
+      "text": "called",
+      "start": 27.06,
+      "end": 27.34,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 27.34,
+      "end": 27.52,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 27.52,
+      "end": 27.66,
+      "matched": true
+    },
+    {
+      "text": "delicate",
+      "start": 27.66,
+      "end": 27.98,
+      "matched": true
+    },
+    {
+      "text": "art",
+      "start": 27.98,
+      "end": 28.42,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 28.42,
+      "end": 28.72,
+      "matched": true
+    },
+    {
+      "text": "science",
+      "start": 28.72,
+      "end": 29.08,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 29.08,
+      "end": 29.3,
+      "matched": true
+    },
+    {
+      "text": "filling",
+      "start": 29.3,
+      "end": 29.56,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 29.56,
+      "end": 29.76,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 29.76,
+      "end": 30.16,
+      "matched": true
+    },
+    {
+      "text": "window.",
+      "start": 30.16,
+      "end": 30.6,
+      "matched": true
+    },
+    {
+      "text": "Why",
+      "start": 31.14,
+      "end": 31.32,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 31.32,
+      "end": 31.48,
+      "matched": true
+    },
+    {
+      "text": "shift?",
+      "start": 31.48,
+      "end": 31.76,
+      "matched": true
+    },
+    {
+      "text": "Because",
+      "start": 32.16,
+      "end": 32.36,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 32.36,
+      "end": 32.56,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 32.56,
+      "end": 32.96,
+      "matched": true
+    },
+    {
+      "text": "window",
+      "start": 32.96,
+      "end": 33.42,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 33.42,
+      "end": 33.72,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 33.72,
+      "end": 33.84,
+      "matched": true
+    },
+    {
+      "text": "budget.",
+      "start": 33.84,
+      "end": 34.04,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 34.76,
+      "end": 34.88,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 34.88,
+      "end": 35.16,
+      "matched": true
+    },
+    {
+      "text": "Code",
+      "start": 35.16,
+      "end": 35.38,
+      "matched": true
+    },
+    {
+      "text": "docs",
+      "start": 35.38,
+      "end": 35.72,
+      "matched": true
+    },
+    {
+      "text": "put",
+      "start": 35.72,
+      "end": 36,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 36,
+      "end": 36.08,
+      "matched": true
+    },
+    {
+      "text": "bluntly.",
+      "start": 36.08,
+      "end": 36.52,
+      "matched": true
+    },
+    {
+      "text": "Claude's",
+      "start": 37.12,
+      "end": 37.56,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 37.56,
+      "end": 37.92,
+      "matched": true
+    },
+    {
+      "text": "window",
+      "start": 37.92,
+      "end": 38.4,
+      "matched": true
+    },
+    {
+      "text": "fills",
+      "start": 38.4,
+      "end": 38.72,
+      "matched": true
+    },
+    {
+      "text": "up",
+      "start": 38.72,
+      "end": 38.94,
+      "matched": true
+    },
+    {
+      "text": "fast,",
+      "start": 38.94,
+      "end": 39.34,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 39.34,
+      "end": 39.82,
+      "matched": true
+    },
+    {
+      "text": "performance",
+      "start": 39.82,
+      "end": 40.26,
+      "matched": true
+    },
+    {
+      "text": "degrades",
+      "start": 40.26,
+      "end": 40.82,
+      "matched": true
+    },
+    {
+      "text": "as",
+      "start": 40.82,
+      "end": 41.12,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 41.12,
+      "end": 41.24,
+      "matched": true
+    },
+    {
+      "text": "fills.",
+      "start": 41.24,
+      "end": 41.52,
+      "matched": true
+    },
+    {
+      "text": "So",
+      "start": 42.3,
+      "end": 42.46,
+      "matched": true
+    },
+    {
+      "text": "Anthropic's",
+      "start": 42.46,
+      "end": 43.1,
+      "matched": true
+    },
+    {
+      "text": "Applied",
+      "start": 43.1,
+      "end": 43.44,
+      "matched": true
+    },
+    {
+      "text": "AI",
+      "start": 43.44,
+      "end": 43.86,
+      "matched": true
+    },
+    {
+      "text": "team",
+      "start": 43.86,
+      "end": 44.34,
+      "matched": true
+    },
+    {
+      "text": "defines",
+      "start": 44.34,
+      "end": 44.68,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 44.68,
+      "end": 45.02,
+      "matched": true
+    },
+    {
+      "text": "goal",
+      "start": 45.02,
+      "end": 45.24,
+      "matched": true
+    },
+    {
+      "text": "as",
+      "start": 45.24,
+      "end": 45.52,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 45.52,
+      "end": 45.66,
+      "matched": true
+    },
+    {
+      "text": "smallest",
+      "start": 45.66,
+      "end": 46.04,
+      "matched": true
+    },
+    {
+      "text": "possible",
+      "start": 46.04,
+      "end": 46.54,
+      "matched": true
+    },
+    {
+      "text": "set",
+      "start": 46.54,
+      "end": 46.96,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 46.96,
+      "end": 47.1,
+      "matched": true
+    },
+    {
+      "text": "high",
+      "start": 47.1,
+      "end": 47.4,
+      "matched": true
+    },
+    {
+      "text": "signal",
+      "start": 47.4,
+      "end": 47.74,
+      "matched": true
+    },
+    {
+      "text": "tokens",
+      "start": 47.74,
+      "end": 48.2,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 48.2,
+      "end": 48.86,
+      "matched": true
+    },
+    {
+      "text": "make",
+      "start": 48.86,
+      "end": 49.04,
+      "matched": true
+    },
+    {
+      "text": "your",
+      "start": 49.04,
+      "end": 49.2,
+      "matched": true
+    },
+    {
+      "text": "desired",
+      "start": 49.2,
+      "end": 49.58,
+      "matched": true
+    },
+    {
+      "text": "outcome",
+      "start": 49.58,
+      "end": 50.16,
+      "matched": true
+    },
+    {
+      "text": "most",
+      "start": 50.16,
+      "end": 50.42,
+      "matched": true
+    },
+    {
+      "text": "likely.",
+      "start": 50.42,
+      "end": 50.78,
+      "matched": true
+    },
+    {
+      "text": "Here's",
+      "start": 50.78,
+      "end": 51.68,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 51.68,
+      "end": 51.8,
+      "matched": true
+    },
+    {
+      "text": "version",
+      "start": 51.8,
+      "end": 52.08,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 52.08,
+      "end": 52.32,
+      "matched": true
+    },
+    {
+      "text": "remember.",
+      "start": 52.32,
+      "end": 52.6,
+      "matched": true
+    },
+    {
+      "text": "Prompt",
+      "start": 53.24,
+      "end": 53.5,
+      "matched": true
+    },
+    {
+      "text": "engineering",
+      "start": 53.5,
+      "end": 53.82,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 53.82,
+      "end": 54.34,
+      "matched": true
+    },
+    {
+      "text": "what",
+      "start": 54.34,
+      "end": 54.5,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 54.5,
+      "end": 54.66,
+      "matched": true
+    },
+    {
+      "text": "say.",
+      "start": 54.66,
+      "end": 54.92,
+      "matched": true
+    },
+    {
+      "text": "Context",
+      "start": 55.38,
+      "end": 55.92,
+      "matched": true
+    },
+    {
+      "text": "engineering",
+      "start": 55.92,
+      "end": 56.26,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 56.26,
+      "end": 56.76,
+      "matched": true
+    },
+    {
+      "text": "everything",
+      "start": 56.76,
+      "end": 57.18,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 57.18,
+      "end": 57.38,
+      "matched": true
+    },
+    {
+      "text": "model",
+      "start": 57.38,
+      "end": 57.62,
+      "matched": true
+    },
+    {
+      "text": "sees.",
+      "start": 57.62,
+      "end": 57.94,
+      "matched": true
+    }
+  ]
+}

@@ -1,0 +1,468 @@
+{
+  "sources": [
+    {
+      "id": "s1",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "As of May 2026, more than 80% of the code we merge into Anthropic’s codebase was authored by Claude.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s2",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "A caveat: Lines of code is an imperfect measure, as it measures quantity over quality.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s4",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Most best practices are based on one constraint: Claude’s context window fills up fast, and performance degrades as it fills.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s5",
+      "title": "Building effective AI agents",
+      "publisher": "Anthropic (Erik S. and Barry Zhang)",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "Workflows are systems where LLMs and tools are orchestrated through predefined code paths.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s6",
+      "title": "Building effective AI agents",
+      "publisher": "Anthropic (Erik S. and Barry Zhang)",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "Agents, on the other hand, are systems where LLMs dynamically direct their own processes and tool usage, maintaining control over how they accomplish tasks.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s7",
+      "title": "Building effective AI agents",
+      "publisher": "Anthropic (Erik S. and Barry Zhang)",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "We'll start with our foundational building block—the augmented LLM—and progressively increase complexity, from simple compositional workflows to autonomous agents.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s8",
+      "title": "Building agents with the Claude Agent SDK",
+      "publisher": "Anthropic (Claude blog)",
+      "url": "https://claude.com/blog/building-agents-with-the-claude-agent-sdk",
+      "quote": "Agents often operate in a specific feedback loop: gather context -> take action -> verify work -> repeat.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s9",
+      "title": "Equipping agents with Agent Skills",
+      "publisher": "Anthropic (Barry Zhang, Keith Lazuka and Mahesh Murag)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "quote": "A skill is a directory containing a SKILL.md file that contains organized folders of instructions, scripts, and resources that give agents additional capabilities.",
+      "date": "2025-10-16"
+    },
+    {
+      "id": "s10",
+      "title": "Equipping agents with Agent Skills",
+      "publisher": "Anthropic (Barry Zhang, Keith Lazuka and Mahesh Murag)",
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "quote": "Like a well-organized manual that starts with a table of contents, then specific chapters, and finally a detailed appendix, skills let Claude load information only as needed",
+      "date": "2025-10-16"
+    },
+    {
+      "id": "s11",
+      "title": "Create custom subagents",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/sub-agents",
+      "quote": "Each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s12",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "An instruction like “never edit .env” in CLAUDE.md or a skill is a request, not a guarantee. A PreToolUse hook that blocks the edit is enforcement.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s13",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "A plugin bundles skills, hooks, subagents, and MCP servers into a single installable unit.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s14",
+      "title": "Extend Claude Code (features overview)",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/features-overview",
+      "quote": "MCP connects Claude to external services and tools",
+      "date": "2026-10"
+    },
+    {
+      "id": "s15",
+      "title": "Building effective AI agents",
+      "publisher": "Anthropic (Erik S. and Barry Zhang)",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "quote": "When building applications with LLMs, we recommend finding the simplest solution possible, and only increasing complexity when needed.",
+      "date": "2024-12-19"
+    },
+    {
+      "id": "s18",
+      "title": "Best practices for Claude Code",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "quote": "Always provide verification (tests, scripts, screenshots). If you can’t verify it, don’t ship it.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s20",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic Applied AI team (Prithvi Rajasekaran, Ethan Dixon, Carly Ryan and Jeremy Hadfield)",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "Given that LLMs are constrained by a finite attention budget, good context engineering means finding the smallest possible set of high-signal tokens that maximize the likelihood of some desired outcome.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s21",
+      "title": "AI Engineering OS: README",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L43-L45",
+      "quote": "A rule the model can reason its way around is not a rule. Doctrine states intent; hooks enforce it; evals measure whether it actually happened. All three, or the claim is decoration.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s26",
+      "title": "AI Engineering OS: AGENTS.md, routing a task",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L10",
+      "quote": "Vague or underspecified request → intake-grill → design-doc → to-slices → execute-slices.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s27",
+      "title": "talkreel M1: design",
+      "publisher": "mohamedzhioua/talkreel (GitHub)",
+      "url": "https://github.com/mohamedzhioua/talkreel/blob/main/docs/design/m1-pipeline.md?plain=1#L3",
+      "quote": "Status: approved at gate 1 (2026-10-21). The Windows feasibility spike (2026-10-21, CPU-only i7-1165G7) passed every component:",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s28",
+      "title": "AI Engineering OS: AGENTS.md, operating modes",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L47",
+      "quote": "Claude + Codex partnership — the initiating session stays the single root; one side implements and a fresh context on the other reviews the real candidate diff, every finding evidence-verified; decisions are formed jointly and presented for confirmation.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s29",
+      "title": "AI Engineering OS: AGENTS.md, confirm gates",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L50",
+      "quote": "Confirm gates (the only pauses): (1) the spec before any code; (2) User-Challenge decisions — decide, then present the call for a quick confirm, do not bounce open questions; (3) human-owned boundaries — PR merge, tag, publish, destructive actions.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s30",
+      "title": "AI Engineering OS: AGENTS.md, decision classes",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L52",
+      "quote": "Mechanical (code/spec/convention determines it → just do it), Taste (reasonable options, cheap to reverse → decide, state the call, proceed), User-Challenge (irreversible, boundary-crossing, or preference not inferable → pause at gate 2 with a recommended call).",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s31",
+      "title": "AI Engineering OS: AGENTS.md, working agreements",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L29",
+      "quote": "Push once per finished plan, never per commit: commit and verify locally as often as useful, then push once. Every push bills metered CI twice (push + pull_request), and this repo has exhausted its monthly quota twice.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s33",
+      "title": "AI Engineering OS: hooks, verify-gate",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/hooks.md?plain=1#L623-L625",
+      "quote": "This is a forcing function, not a verifier: it only checks that the ledger is non-empty; it does not inspect what was checked or whether it passed.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s35",
+      "title": "AI Engineering OS: README, strict scope",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L123-L124",
+      "quote": "The most common failure with a capable agent is not a wrong line of code. It is work you never asked for, discovered later",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s36",
+      "title": "AI Engineering OS: README, strict scope",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/README.md?plain=1#L138-L140",
+      "quote": "scope-addition-guard (default-on PreToolUse) surfaces it at the moment it happens: a new non-ignored path, or a dependency/lockfile change, prompts you in an interactive session.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s39",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "In the second quarter of 2026, the typical engineer was merging 8× as much code per day as they were in 2024.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s40",
+      "title": "When AI builds itself",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "quote": "So 8× lines of code/engineer/day in the second quarter of 2026 is almost certainly an overstatement of the true productivity gain.",
+      "date": "2026-09"
+    },
+    {
+      "id": "s43",
+      "title": "Andrej Karpathy on X",
+      "publisher": "Andrej Karpathy (X)",
+      "url": "https://x.com/karpathy/status/1617979122625712128",
+      "quote": "The hottest new programming language is English",
+      "date": "2023-01-24"
+    },
+    {
+      "id": "s44",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic Applied AI team (Prithvi Rajasekaran, Ethan Dixon, Carly Ryan and Jeremy Hadfield)",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "Prompt engineering refers to methods for writing and organizing LLM instructions for optimal outcomes",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s45",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic Applied AI team (Prithvi Rajasekaran, Ethan Dixon, Carly Ryan and Jeremy Hadfield)",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "At Anthropic, we view context engineering as the natural progression of prompt engineering.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s46",
+      "title": "Context engineering over prompt engineering",
+      "publisher": "Tobi Lütke (X)",
+      "url": "https://x.com/tobi/status/1935533422589399127",
+      "quote": "It describes the core skill better: the art of providing all the context for the task to be plausibly solvable by the LLM.",
+      "date": "2025-06-19"
+    },
+    {
+      "id": "s47",
+      "title": "Context engineering over prompt engineering",
+      "publisher": "Andrej Karpathy (X)",
+      "url": "https://x.com/karpathy/status/1937902205765607626",
+      "quote": "context engineering is the delicate art and science of filling the context window",
+      "date": "2025-06-25"
+    },
+    {
+      "id": "s48",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic Applied AI team (Prithvi Rajasekaran, Ethan Dixon, Carly Ryan and Jeremy Hadfield)",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "Since we wrote that post, we’ve gravitated towards a simple definition for agents: LLMs autonomously using tools in a loop.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "s49",
+      "title": "“Agent” may finally have a useful definition",
+      "publisher": "Simon Willison’s Weblog",
+      "url": "https://simonwillison.net/2025/Sep/18/agents/",
+      "quote": "An LLM agent runs tools in a loop to achieve a goal.",
+      "date": "2025-09-18"
+    },
+    {
+      "id": "s50",
+      "title": "Run prompts on a schedule",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/scheduled-tasks",
+      "quote": "Session-scoped scheduled tasks let Claude re-run a prompt automatically on an interval within a Claude Code session.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s51",
+      "title": "Keep Claude working toward a goal",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/goal",
+      "quote": "The /goal command sets a completion condition and Claude keeps working toward it without you prompting each step.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s52",
+      "title": "Keep Claude working toward a goal",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/goal",
+      "quote": "/goal adds a separate evaluator that checks your condition after every turn, so completion is decided by a fresh model rather than the one doing the work.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s53",
+      "title": "AI Engineering OS: AGENTS.md, loop discipline",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L70",
+      "quote": "Loop discipline: any /goal, /loop, recurring or run-until-done work carries a validated run contract with a mandatory wall-clock cap, per-tick receipts, and an explicit stop_reason",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s54",
+      "title": "Orchestrate subagents with dynamic workflows",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/workflows",
+      "quote": "Dynamic workflows orchestrate many subagents from a script Claude writes and you can rerun.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s55",
+      "title": "How we built our multi-agent research system",
+      "publisher": "Anthropic (Jeremy Hadfield, Barry Zhang, Kenneth Lien, Florian Scholz, Jeremy Fox and Daniel Ford)",
+      "url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "quote": "Our Research system uses a multi-agent architecture with an orchestrator-worker pattern, where a lead agent coordinates the process while delegating to specialized subagents that operate in parallel.",
+      "date": "2025-06-13"
+    },
+    {
+      "id": "s56",
+      "title": "How we built our multi-agent research system",
+      "publisher": "Anthropic (Jeremy Hadfield, Barry Zhang, Kenneth Lien, Florian Scholz, Jeremy Fox and Daniel Ford)",
+      "url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "quote": "In our data, agents typically use about 4× more tokens than chat interactions, and multi-agent systems use about 15× more tokens than chats.",
+      "date": "2025-06-13"
+    },
+    {
+      "id": "s57",
+      "title": "Automate actions with hooks",
+      "publisher": "Anthropic (Claude Code docs)",
+      "url": "https://code.claude.com/docs/en/hooks-guide",
+      "quote": "Hooks are user-defined shell commands. Claude Code runs them at specific points in its lifecycle, which gives you deterministic control: certain actions always happen rather than relying on the LLM to choose to run them.",
+      "date": "2026-10"
+    },
+    {
+      "id": "s58",
+      "title": "Effective harnesses for long-running agents",
+      "publisher": "Anthropic (Justin Young)",
+      "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "quote": "First, the agent tended to try to do too much at once—essentially to attempt to one-shot the app.",
+      "date": "2025-11-26"
+    },
+    {
+      "id": "s59",
+      "title": "Effective harnesses for long-running agents",
+      "publisher": "Anthropic (Justin Young)",
+      "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "quote": "a coding agent that is tasked with making incremental progress in every session, while leaving clear artifacts for the next session.",
+      "date": "2025-11-26"
+    },
+    {
+      "id": "s60",
+      "title": "AI Engineering OS: execute workflow",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/workflows/execute.js?plain=1#L3",
+      "quote": "Run one approved slice, or one batch of up to 3 independent slices, through implement, spec review, quality review, a capped fix loop and verify",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s61",
+      "title": "AI Engineering OS: review workflow",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/workflows/review.js?plain=1#L8",
+      "quote": "three skeptic voters per finding, prompted to refute; uncertain counts as refuted; survives on 2 of 3",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s62",
+      "title": "How I use Claude Code (thread, tip 13)",
+      "publisher": "Boris Cherny, creator of Claude Code (X)",
+      "url": "https://x.com/bcherny/status/2007179861115511237",
+      "quote": "probably the most important thing to get great results out of Claude Code -- give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result.",
+      "date": "2026-01-02"
+    },
+    {
+      "id": "s63",
+      "title": "AI Engineering OS: hooks, verify-gate",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/hooks.md?plain=1#L621-L623",
+      "quote": "When enabled it blocks the Stop event unless the agent captured at least one evidence entry (via scripts/evidence.sh capture ...) in the latest evidence run.",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s64",
+      "title": "AI Engineering OS: hooks, loop-guard",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/docs/hooks.md?plain=1#L1174",
+      "quote": "Its N=3 cap refuses blind command attempt N+1",
+      "date": "2026-10-21"
+    },
+    {
+      "id": "s65",
+      "title": "AI Engineering OS: AGENTS.md, model routing",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L60",
+      "quote": "Escalate on stakes, not cost.",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s66",
+      "title": "AI Engineering OS: AGENTS.md, working agreements",
+      "publisher": "mohamedzhioua/your-ai-engineering-os (GitHub)",
+      "url": "https://github.com/mohamedzhioua/your-ai-engineering-os/blob/main/AGENTS.md?plain=1#L29",
+      "quote": "Mechanized by scripts/land-verify.sh (waits on the pushed commit's CI, records a receipt, exits non-zero on red).",
+      "date": "2026-10-18"
+    },
+    {
+      "id": "s67",
+      "title": "How AI is transforming work at Anthropic",
+      "publisher": "Anthropic (survey led by Saffron Huang)",
+      "url": "https://www.anthropic.com/research/how-ai-is-transforming-work-at-anthropic",
+      "quote": "Although engineers use Claude frequently, more than half said they can “fully delegate” only between 0-20% of their work to Claude.",
+      "date": "2025-12-02"
+    },
+    {
+      "id": "s68",
+      "title": "Reply on code review and steering",
+      "publisher": "Boris Cherny, creator of Claude Code (X)",
+      "url": "https://x.com/bcherny/status/2007290414961963524",
+      "quote": "Yeah, a lot of the work now is code review and steering.",
+      "date": "2026-01-03"
+    },
+    {
+      "id": "s69",
+      "title": "Vibe engineering",
+      "publisher": "Simon Willison’s Weblog",
+      "url": "https://simonwillison.net/2025/Oct/7/vibe-engineering/",
+      "quote": "AI tools amplify existing expertise.",
+      "date": "2025-10-07"
+    },
+    {
+      "id": "s70",
+      "title": "Vibe engineering",
+      "publisher": "Simon Willison’s Weblog",
+      "url": "https://simonwillison.net/2025/Oct/7/vibe-engineering/",
+      "quote": "It’s also become clear to me that LLMs actively reward existing top tier software engineering practices",
+      "date": "2025-10-07"
+    },
+    {
+      "id": "s71",
+      "title": "How AI is transforming work at Anthropic",
+      "publisher": "Anthropic (survey led by Saffron Huang)",
+      "url": "https://www.anthropic.com/research/how-ai-is-transforming-work-at-anthropic",
+      "quote": "When producing output is so easy and fast, it gets harder and harder to actually take the time to learn something.",
+      "date": "2025-12-02"
+    },
+    {
+      "id": "s72",
+      "title": "talkreel M1: design, problem",
+      "publisher": "mohamedzhioua/talkreel (GitHub)",
+      "url": "https://github.com/mohamedzhioua/talkreel/blob/main/docs/design/m1-pipeline.md?plain=1#L17",
+      "quote": "Everything runs on the user's machine with free, open-source tools.",
+      "date": "2026-10-21"
+    }
+  ]
+}

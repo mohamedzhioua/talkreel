@@ -1,0 +1,1085 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "Back",
+      "start": 0,
+      "end": 0.2,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 0.2,
+      "end": 0.38,
+      "matched": true
+    },
+    {
+      "text": "workflows,",
+      "start": 0.38,
+      "end": 0.76,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 1.06,
+      "end": 1.18,
+      "matched": true
+    },
+    {
+      "text": "predefined",
+      "start": 1.18,
+      "end": 1.66,
+      "matched": true
+    },
+    {
+      "text": "code",
+      "start": 1.66,
+      "end": 2.06,
+      "matched": true
+    },
+    {
+      "text": "paths.",
+      "start": 2.06,
+      "end": 2.52,
+      "matched": true
+    },
+    {
+      "text": "Anthropic's",
+      "start": 3.1,
+      "end": 3.64,
+      "matched": true
+    },
+    {
+      "text": "article",
+      "start": 3.64,
+      "end": 3.92,
+      "matched": true
+    },
+    {
+      "text": "climbs",
+      "start": 3.92,
+      "end": 4.38,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 4.38,
+      "end": 4.62,
+      "matched": true
+    },
+    {
+      "text": "ladder",
+      "start": 4.62,
+      "end": 4.86,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 4.86,
+      "end": 5.04,
+      "matched": true
+    },
+    {
+      "text": "patterns,",
+      "start": 5.04,
+      "end": 5.48,
+      "matched": true
+    },
+    {
+      "text": "from",
+      "start": 5.48,
+      "end": 6,
+      "matched": true
+    },
+    {
+      "text": "simple",
+      "start": 6,
+      "end": 6.38,
+      "matched": true
+    },
+    {
+      "text": "workflows",
+      "start": 6.38,
+      "end": 6.86,
+      "matched": true
+    },
+    {
+      "text": "up",
+      "start": 6.86,
+      "end": 7.18,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 7.18,
+      "end": 7.34,
+      "matched": true
+    },
+    {
+      "text": "autonomous",
+      "start": 7.34,
+      "end": 7.84,
+      "matched": true
+    },
+    {
+      "text": "agents.",
+      "start": 7.84,
+      "end": 8.38,
+      "matched": true
+    },
+    {
+      "text": "Prompt",
+      "start": 9.04,
+      "end": 9.38,
+      "matched": true
+    },
+    {
+      "text": "chaining,",
+      "start": 9.38,
+      "end": 9.72,
+      "matched": true
+    },
+    {
+      "text": "routing",
+      "start": 10.2,
+      "end": 10.44,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 10.7,
+      "end": 10.76,
+      "matched": true
+    },
+    {
+      "text": "parallelization.",
+      "start": 10.76,
+      "end": 11.6,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 12.28,
+      "end": 12.46,
+      "matched": true
+    },
+    {
+      "text": "orchestrator",
+      "start": 12.46,
+      "end": 13.08,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 13.08,
+      "end": 13.34,
+      "matched": true
+    },
+    {
+      "text": "workers,",
+      "start": 13.34,
+      "end": 13.66,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 13.66,
+      "end": 14.16,
+      "matched": true
+    },
+    {
+      "text": "evaluator",
+      "start": 14.16,
+      "end": 14.7,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 14.7,
+      "end": 14.9,
+      "matched": true
+    },
+    {
+      "text": "optimizer.",
+      "start": 14.9,
+      "end": 15.54,
+      "matched": true
+    },
+    {
+      "text": "With",
+      "start": 15.54,
+      "end": 16.1,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 16.1,
+      "end": 16.36,
+      "matched": true
+    },
+    {
+      "text": "piece",
+      "start": 16.36,
+      "end": 16.58,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 16.58,
+      "end": 16.74,
+      "matched": true
+    },
+    {
+      "text": "advice.",
+      "start": 16.74,
+      "end": 17.06,
+      "matched": true
+    },
+    {
+      "text": "Find",
+      "start": 17.68,
+      "end": 17.94,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 17.94,
+      "end": 18.14,
+      "matched": true
+    },
+    {
+      "text": "simplest",
+      "start": 18.14,
+      "end": 18.38,
+      "matched": true
+    },
+    {
+      "text": "solution",
+      "start": 18.38,
+      "end": 18.98,
+      "matched": true
+    },
+    {
+      "text": "possible,",
+      "start": 18.98,
+      "end": 19.58,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 19.58,
+      "end": 20.1,
+      "matched": true
+    },
+    {
+      "text": "only",
+      "start": 20.1,
+      "end": 20.48,
+      "matched": true
+    },
+    {
+      "text": "increase",
+      "start": 20.48,
+      "end": 20.9,
+      "matched": true
+    },
+    {
+      "text": "complexity",
+      "start": 20.9,
+      "end": 21.5,
+      "matched": true
+    },
+    {
+      "text": "when",
+      "start": 21.5,
+      "end": 21.74,
+      "matched": true
+    },
+    {
+      "text": "needed.",
+      "start": 21.74,
+      "end": 22.04,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 22.48,
+      "end": 22.7,
+      "matched": true
+    },
+    {
+      "text": "there's",
+      "start": 22.7,
+      "end": 22.9,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 22.9,
+      "end": 22.96,
+      "matched": true
+    },
+    {
+      "text": "newer",
+      "start": 22.96,
+      "end": 23.18,
+      "matched": true
+    },
+    {
+      "text": "shape,",
+      "start": 23.18,
+      "end": 23.56,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 23.96,
+      "end": 24.04,
+      "matched": true
+    },
+    {
+      "text": "multi-agent",
+      "start": 24.04,
+      "end": 24.82,
+      "matched": true
+    },
+    {
+      "text": "workflow.",
+      "start": 24.82,
+      "end": 25.24,
+      "matched": true
+    },
+    {
+      "text": "In",
+      "start": 25.92,
+      "end": 26.06,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 26.06,
+      "end": 26.42,
+      "matched": true
+    },
+    {
+      "text": "Code,",
+      "start": 26.42,
+      "end": 26.7,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 27.02,
+      "end": 27.14,
+      "matched": true
+    },
+    {
+      "text": "script",
+      "start": 27.14,
+      "end": 27.36,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 27.36,
+      "end": 27.86,
+      "matched": true
+    },
+    {
+      "text": "writes",
+      "start": 27.86,
+      "end": 28.12,
+      "matched": true
+    },
+    {
+      "text": "orchestrates",
+      "start": 28.12,
+      "end": 28.74,
+      "matched": true
+    },
+    {
+      "text": "many",
+      "start": 28.74,
+      "end": 29.04,
+      "matched": true
+    },
+    {
+      "text": "subagents,",
+      "start": 29.04,
+      "end": 29.64,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 29.64,
+      "end": 30.14,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 30.14,
+      "end": 30.26,
+      "matched": true
+    },
+    {
+      "text": "can",
+      "start": 30.26,
+      "end": 30.44,
+      "matched": true
+    },
+    {
+      "text": "rerun",
+      "start": 30.44,
+      "end": 30.78,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 30.78,
+      "end": 31,
+      "matched": true
+    },
+    {
+      "text": "Anthropic's",
+      "start": 31.64,
+      "end": 32.2,
+      "matched": true
+    },
+    {
+      "text": "research",
+      "start": 32.2,
+      "end": 32.48,
+      "matched": true
+    },
+    {
+      "text": "system",
+      "start": 32.48,
+      "end": 32.98,
+      "matched": true
+    },
+    {
+      "text": "works",
+      "start": 32.98,
+      "end": 33.26,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 33.26,
+      "end": 33.52,
+      "matched": true
+    },
+    {
+      "text": "way,",
+      "start": 33.52,
+      "end": 33.78,
+      "matched": true
+    },
+    {
+      "text": "with",
+      "start": 33.78,
+      "end": 34.18,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 34.18,
+      "end": 34.34,
+      "matched": true
+    },
+    {
+      "text": "lead",
+      "start": 34.34,
+      "end": 34.5,
+      "matched": true
+    },
+    {
+      "text": "agent",
+      "start": 34.5,
+      "end": 34.9,
+      "matched": true
+    },
+    {
+      "text": "delegating",
+      "start": 34.9,
+      "end": 35.56,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 35.56,
+      "end": 35.78,
+      "matched": true
+    },
+    {
+      "text": "subagents",
+      "start": 35.78,
+      "end": 36.38,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 36.38,
+      "end": 36.6,
+      "matched": true
+    },
+    {
+      "text": "parallel.",
+      "start": 36.6,
+      "end": 36.9,
+      "matched": true
+    },
+    {
+      "text": "It",
+      "start": 37.66,
+      "end": 37.74,
+      "matched": true
+    },
+    {
+      "text": "isn't",
+      "start": 37.74,
+      "end": 38.02,
+      "matched": true
+    },
+    {
+      "text": "free.",
+      "start": 38.02,
+      "end": 38.26,
+      "matched": true
+    },
+    {
+      "text": "Multi-agent",
+      "start": 38.98,
+      "end": 39.7,
+      "matched": true
+    },
+    {
+      "text": "systems",
+      "start": 39.7,
+      "end": 40.04,
+      "matched": true
+    },
+    {
+      "text": "use",
+      "start": 40.04,
+      "end": 40.56,
+      "matched": true
+    },
+    {
+      "text": "about",
+      "start": 40.56,
+      "end": 40.78,
+      "matched": true
+    },
+    {
+      "text": "fifteen",
+      "start": 40.78,
+      "end": 41.2,
+      "matched": true
+    },
+    {
+      "text": "times",
+      "start": 41.2,
+      "end": 41.62,
+      "matched": true
+    },
+    {
+      "text": "more",
+      "start": 41.62,
+      "end": 41.86,
+      "matched": true
+    },
+    {
+      "text": "tokens",
+      "start": 41.86,
+      "end": 42.26,
+      "matched": true
+    },
+    {
+      "text": "than",
+      "start": 42.26,
+      "end": 42.6,
+      "matched": true
+    },
+    {
+      "text": "chats.",
+      "start": 42.6,
+      "end": 42.9,
+      "matched": true
+    },
+    {
+      "text": "Three",
+      "start": 43.48,
+      "end": 43.78,
+      "matched": true
+    },
+    {
+      "text": "more",
+      "start": 43.78,
+      "end": 44.02,
+      "matched": true
+    },
+    {
+      "text": "words,",
+      "start": 44.02,
+      "end": 44.4,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 44.64,
+      "end": 44.78,
+      "matched": true
+    },
+    {
+      "text": "line",
+      "start": 44.78,
+      "end": 45,
+      "matched": true
+    },
+    {
+      "text": "each.",
+      "start": 45,
+      "end": 45.32,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 45.9,
+      "end": 46.02,
+      "matched": true
+    },
+    {
+      "text": "subagent",
+      "start": 46.02,
+      "end": 46.52,
+      "matched": true
+    },
+    {
+      "text": "runs",
+      "start": 46.52,
+      "end": 46.8,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 46.8,
+      "end": 47,
+      "matched": true
+    },
+    {
+      "text": "its",
+      "start": 47,
+      "end": 47.1,
+      "matched": true
+    },
+    {
+      "text": "own",
+      "start": 47.1,
+      "end": 47.3,
+      "matched": true
+    },
+    {
+      "text": "context",
+      "start": 47.3,
+      "end": 47.7,
+      "matched": true
+    },
+    {
+      "text": "window,",
+      "start": 47.7,
+      "end": 48.14,
+      "matched": true
+    },
+    {
+      "text": "with",
+      "start": 48.14,
+      "end": 48.46,
+      "matched": true
+    },
+    {
+      "text": "its",
+      "start": 48.46,
+      "end": 48.58,
+      "matched": true
+    },
+    {
+      "text": "own",
+      "start": 48.58,
+      "end": 48.78,
+      "matched": true
+    },
+    {
+      "text": "prompt,",
+      "start": 48.78,
+      "end": 49.1,
+      "matched": true
+    },
+    {
+      "text": "tools",
+      "start": 49.42,
+      "end": 49.76,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 49.96,
+      "end": 50.02,
+      "matched": true
+    },
+    {
+      "text": "permissions.",
+      "start": 50.02,
+      "end": 50.36,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 51.16,
+      "end": 51.28,
+      "matched": true
+    },
+    {
+      "text": "hook",
+      "start": 51.28,
+      "end": 51.44,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 51.44,
+      "end": 51.58,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 51.58,
+      "end": 51.66,
+      "matched": true
+    },
+    {
+      "text": "command",
+      "start": 51.66,
+      "end": 51.9,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 51.9,
+      "end": 52.12,
+      "matched": true
+    },
+    {
+      "text": "runs",
+      "start": 52.12,
+      "end": 52.42,
+      "matched": true
+    },
+    {
+      "text": "at",
+      "start": 52.42,
+      "end": 52.62,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 52.62,
+      "end": 52.74,
+      "matched": true
+    },
+    {
+      "text": "fixed",
+      "start": 52.74,
+      "end": 52.94,
+      "matched": true
+    },
+    {
+      "text": "point,",
+      "start": 52.94,
+      "end": 53.3,
+      "matched": true
+    },
+    {
+      "text": "so",
+      "start": 53.3,
+      "end": 53.68,
+      "matched": true
+    },
+    {
+      "text": "an",
+      "start": 53.68,
+      "end": 53.8,
+      "matched": true
+    },
+    {
+      "text": "action",
+      "start": 53.8,
+      "end": 54.06,
+      "matched": true
+    },
+    {
+      "text": "always",
+      "start": 54.06,
+      "end": 54.44,
+      "matched": true
+    },
+    {
+      "text": "happens",
+      "start": 54.44,
+      "end": 54.94,
+      "matched": true
+    },
+    {
+      "text": "instead",
+      "start": 54.94,
+      "end": 55.32,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 55.32,
+      "end": 55.48,
+      "matched": true
+    },
+    {
+      "text": "relying",
+      "start": 55.48,
+      "end": 55.76,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 55.76,
+      "end": 56,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 56,
+      "end": 56.08,
+      "matched": true
+    },
+    {
+      "text": "model.",
+      "start": 56.08,
+      "end": 56.38,
+      "matched": true
+    },
+    {
+      "text": "An",
+      "start": 56.8,
+      "end": 57.08,
+      "matched": true
+    },
+    {
+      "text": "instruction",
+      "start": 57.08,
+      "end": 57.48,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 57.48,
+      "end": 57.74,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 57.74,
+      "end": 58.1,
+      "matched": true
+    },
+    {
+      "text": "dot",
+      "start": 58.1,
+      "end": 58.1,
+      "matched": false
+    },
+    {
+      "text": "M",
+      "start": 58.1,
+      "end": 58.43,
+      "matched": true
+    },
+    {
+      "text": "D",
+      "start": 58.43,
+      "end": 58.76,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 58.76,
+      "end": 59.08,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 59.08,
+      "end": 59.18,
+      "matched": true
+    },
+    {
+      "text": "request,",
+      "start": 59.18,
+      "end": 59.64,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 59.92,
+      "end": 60.06,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 60.06,
+      "end": 60.18,
+      "matched": true
+    },
+    {
+      "text": "guarantee.",
+      "start": 60.18,
+      "end": 60.54,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 61.3,
+      "end": 61.42,
+      "matched": true
+    },
+    {
+      "text": "hook",
+      "start": 61.42,
+      "end": 61.6,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 61.6,
+      "end": 61.76,
+      "matched": true
+    },
+    {
+      "text": "blocks",
+      "start": 61.76,
+      "end": 62.02,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 62.02,
+      "end": 62.26,
+      "matched": true
+    },
+    {
+      "text": "edit",
+      "start": 62.26,
+      "end": 62.52,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 62.52,
+      "end": 62.74,
+      "matched": true
+    },
+    {
+      "text": "enforcement.",
+      "start": 62.74,
+      "end": 63.24,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 63.82,
+      "end": 64.1,
+      "matched": true
+    },
+    {
+      "text": "M",
+      "start": 64.1,
+      "end": 64.4,
+      "matched": true
+    },
+    {
+      "text": "C",
+      "start": 64.4,
+      "end": 64.7,
+      "matched": true
+    },
+    {
+      "text": "P,",
+      "start": 64.7,
+      "end": 65,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 65.26,
+      "end": 65.36,
+      "matched": true
+    },
+    {
+      "text": "Model",
+      "start": 65.36,
+      "end": 65.62,
+      "matched": true
+    },
+    {
+      "text": "Context",
+      "start": 65.62,
+      "end": 66.04,
+      "matched": true
+    },
+    {
+      "text": "Protocol,",
+      "start": 66.04,
+      "end": 66.7,
+      "matched": true
+    },
+    {
+      "text": "connects",
+      "start": 67.08,
+      "end": 67.36,
+      "matched": true
+    },
+    {
+      "text": "Claude",
+      "start": 67.36,
+      "end": 67.86,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 67.86,
+      "end": 68,
+      "matched": true
+    },
+    {
+      "text": "external",
+      "start": 68,
+      "end": 68.42,
+      "matched": true
+    },
+    {
+      "text": "services",
+      "start": 68.42,
+      "end": 68.94,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 68.94,
+      "end": 69.24,
+      "matched": true
+    },
+    {
+      "text": "tools.",
+      "start": 69.24,
+      "end": 69.5,
+      "matched": true
+    }
+  ]
+}

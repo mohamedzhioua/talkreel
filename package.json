@@ -1,0 +1,40 @@
+{
+  "name": "talkreel",
+  "version": "0.1.0",
+  "description": "Turn a topic into a narrated explainer video with local, free tools.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "talkreel": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "py",
+    "themes",
+    "skills",
+    ".claude-plugin"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "npm run build && node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "gsap": "^3.15.0",
+    "hyperframes": "0.8.185",
+    "mermaid": "12.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

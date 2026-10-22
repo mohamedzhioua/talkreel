@@ -1,0 +1,509 @@
+{
+  "lang": "fr",
+  "words": [
+    {
+      "text": "En",
+      "start": 0,
+      "end": 0.28,
+      "matched": true
+    },
+    {
+      "text": "janvier",
+      "start": 0.28,
+      "end": 0.68,
+      "matched": true
+    },
+    {
+      "text": "deux",
+      "start": 0.68,
+      "end": 1.56,
+      "matched": false
+    },
+    {
+      "text": "mille",
+      "start": 2,
+      "end": 2.46,
+      "matched": false
+    },
+    {
+      "text": "vingt-trois,",
+      "start": 2.46,
+      "end": 2.62,
+      "matched": false
+    },
+    {
+      "text": "Andrej",
+      "start": 2.62,
+      "end": 2.96,
+      "matched": false
+    },
+    {
+      "text": "Karpathy",
+      "start": 2.96,
+      "end": 3.46,
+      "matched": false
+    },
+    {
+      "text": "a",
+      "start": 3.46,
+      "end": 3.92,
+      "matched": false
+    },
+    {
+      "text": "publié",
+      "start": 3.92,
+      "end": 3.92,
+      "matched": false
+    },
+    {
+      "text": "une",
+      "start": 3.92,
+      "end": 4.08,
+      "matched": true
+    },
+    {
+      "text": "seule",
+      "start": 4.08,
+      "end": 4.28,
+      "matched": true
+    },
+    {
+      "text": "ligne.",
+      "start": 4.28,
+      "end": 4.6,
+      "matched": true
+    },
+    {
+      "text": "En",
+      "start": 4.92,
+      "end": 5.08,
+      "matched": true
+    },
+    {
+      "text": "substance:",
+      "start": 5.08,
+      "end": 5.46,
+      "matched": true
+    },
+    {
+      "text": "le",
+      "start": 6.1,
+      "end": 6.2,
+      "matched": true
+    },
+    {
+      "text": "nouveau",
+      "start": 6.2,
+      "end": 6.42,
+      "matched": true
+    },
+    {
+      "text": "langage",
+      "start": 6.42,
+      "end": 7,
+      "matched": true
+    },
+    {
+      "text": "de",
+      "start": 7,
+      "end": 7.16,
+      "matched": true
+    },
+    {
+      "text": "programmation",
+      "start": 7.16,
+      "end": 7.8,
+      "matched": true
+    },
+    {
+      "text": "à",
+      "start": 7.8,
+      "end": 7.94,
+      "matched": true
+    },
+    {
+      "text": "la",
+      "start": 7.94,
+      "end": 8.02,
+      "matched": true
+    },
+    {
+      "text": "mode,",
+      "start": 8.02,
+      "end": 8.28,
+      "matched": true
+    },
+    {
+      "text": "c'est",
+      "start": 8.48,
+      "end": 8.56,
+      "matched": true
+    },
+    {
+      "text": "l'anglais.",
+      "start": 8.56,
+      "end": 8.94,
+      "matched": true
+    },
+    {
+      "text": "Depuis",
+      "start": 9.58,
+      "end": 9.96,
+      "matched": true
+    },
+    {
+      "text": "mai,",
+      "start": 9.96,
+      "end": 10.14,
+      "matched": true
+    },
+    {
+      "text": "Anthropic",
+      "start": 10.42,
+      "end": 10.72,
+      "matched": false
+    },
+    {
+      "text": "affirme",
+      "start": 11.46,
+      "end": 12.1,
+      "matched": true
+    },
+    {
+      "text": "que",
+      "start": 12.1,
+      "end": 12.22,
+      "matched": true
+    },
+    {
+      "text": "plus",
+      "start": 12.22,
+      "end": 12.38,
+      "matched": true
+    },
+    {
+      "text": "de",
+      "start": 12.38,
+      "end": 12.54,
+      "matched": true
+    },
+    {
+      "text": "quatre-vingts",
+      "start": 12.54,
+      "end": 12.96,
+      "matched": false
+    },
+    {
+      "text": "pour",
+      "start": 12.96,
+      "end": 13.26,
+      "matched": false
+    },
+    {
+      "text": "cent",
+      "start": 13.26,
+      "end": 13.26,
+      "matched": false
+    },
+    {
+      "text": "du",
+      "start": 13.26,
+      "end": 13.5,
+      "matched": true
+    },
+    {
+      "text": "code",
+      "start": 13.5,
+      "end": 13.78,
+      "matched": true
+    },
+    {
+      "text": "qu'elle",
+      "start": 13.78,
+      "end": 13.98,
+      "matched": true
+    },
+    {
+      "text": "fusionne",
+      "start": 13.98,
+      "end": 14.6,
+      "matched": true
+    },
+    {
+      "text": "est",
+      "start": 14.6,
+      "end": 14.76,
+      "matched": true
+    },
+    {
+      "text": "écrit",
+      "start": 14.76,
+      "end": 14.96,
+      "matched": true
+    },
+    {
+      "text": "par",
+      "start": 14.96,
+      "end": 15.18,
+      "matched": true
+    },
+    {
+      "text": "Claude.",
+      "start": 15.18,
+      "end": 15.62,
+      "matched": true
+    },
+    {
+      "text": "Ce",
+      "start": 16,
+      "end": 16.22,
+      "matched": true
+    },
+    {
+      "text": "chiffre",
+      "start": 16.22,
+      "end": 16.56,
+      "matched": true
+    },
+    {
+      "text": "demande",
+      "start": 16.56,
+      "end": 16.92,
+      "matched": true
+    },
+    {
+      "text": "du",
+      "start": 16.92,
+      "end": 17.1,
+      "matched": true
+    },
+    {
+      "text": "contexte.",
+      "start": 17.1,
+      "end": 17.8,
+      "matched": true
+    },
+    {
+      "text": "On",
+      "start": 17.92,
+      "end": 18.08,
+      "matched": true
+    },
+    {
+      "text": "y",
+      "start": 18.08,
+      "end": 18.2,
+      "matched": true
+    },
+    {
+      "text": "reviendra.",
+      "start": 18.2,
+      "end": 18.76,
+      "matched": true
+    },
+    {
+      "text": "Et",
+      "start": 19.38,
+      "end": 19.56,
+      "matched": true
+    },
+    {
+      "text": "cette",
+      "start": 19.56,
+      "end": 19.78,
+      "matched": true
+    },
+    {
+      "text": "vidéo",
+      "start": 19.78,
+      "end": 20.24,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 20.24,
+      "end": 20.56,
+      "matched": true
+    },
+    {
+      "text": "été",
+      "start": 20.56,
+      "end": 20.74,
+      "matched": true
+    },
+    {
+      "text": "faite",
+      "start": 20.74,
+      "end": 21.06,
+      "matched": true
+    },
+    {
+      "text": "par",
+      "start": 21.06,
+      "end": 21.22,
+      "matched": true
+    },
+    {
+      "text": "un",
+      "start": 21.22,
+      "end": 21.38,
+      "matched": true
+    },
+    {
+      "text": "outil",
+      "start": 21.38,
+      "end": 21.68,
+      "matched": true
+    },
+    {
+      "text": "que",
+      "start": 21.68,
+      "end": 21.84,
+      "matched": true
+    },
+    {
+      "text": "des",
+      "start": 21.84,
+      "end": 22.02,
+      "matched": true
+    },
+    {
+      "text": "agents",
+      "start": 22.02,
+      "end": 22.54,
+      "matched": false
+    },
+    {
+      "text": "d'IA",
+      "start": 22.54,
+      "end": 22.54,
+      "matched": false
+    },
+    {
+      "text": "ont",
+      "start": 22.54,
+      "end": 22.72,
+      "matched": true
+    },
+    {
+      "text": "construit,",
+      "start": 22.72,
+      "end": 23.32,
+      "matched": true
+    },
+    {
+      "text": "selon",
+      "start": 23.48,
+      "end": 23.64,
+      "matched": true
+    },
+    {
+      "text": "mes",
+      "start": 23.64,
+      "end": 23.84,
+      "matched": true
+    },
+    {
+      "text": "règles.",
+      "start": 23.84,
+      "end": 24.26,
+      "matched": true
+    },
+    {
+      "text": "En",
+      "start": 24.54,
+      "end": 24.68,
+      "matched": true
+    },
+    {
+      "text": "dix",
+      "start": 24.68,
+      "end": 24.86,
+      "matched": false
+    },
+    {
+      "text": "minutes:",
+      "start": 24.86,
+      "end": 25.14,
+      "matched": true
+    },
+    {
+      "text": "les",
+      "start": 25.6,
+      "end": 25.72,
+      "matched": true
+    },
+    {
+      "text": "mots,",
+      "start": 25.72,
+      "end": 25.9,
+      "matched": true
+    },
+    {
+      "text": "ma",
+      "start": 25.9,
+      "end": 26.08,
+      "matched": true
+    },
+    {
+      "text": "façon",
+      "start": 26.08,
+      "end": 26.34,
+      "matched": true
+    },
+    {
+      "text": "de",
+      "start": 26.34,
+      "end": 26.5,
+      "matched": true
+    },
+    {
+      "text": "travailler,",
+      "start": 26.5,
+      "end": 26.88,
+      "matched": true
+    },
+    {
+      "text": "et",
+      "start": 26.88,
+      "end": 27.3,
+      "matched": true
+    },
+    {
+      "text": "ce",
+      "start": 27.3,
+      "end": 27.44,
+      "matched": true
+    },
+    {
+      "text": "que",
+      "start": 27.44,
+      "end": 27.58,
+      "matched": true
+    },
+    {
+      "text": "ça",
+      "start": 27.58,
+      "end": 27.76,
+      "matched": true
+    },
+    {
+      "text": "change",
+      "start": 27.76,
+      "end": 28.04,
+      "matched": true
+    },
+    {
+      "text": "pour",
+      "start": 28.04,
+      "end": 28.26,
+      "matched": true
+    },
+    {
+      "text": "nous.",
+      "start": 28.26,
+      "end": 28.44,
+      "matched": true
+    }
+  ]
+}

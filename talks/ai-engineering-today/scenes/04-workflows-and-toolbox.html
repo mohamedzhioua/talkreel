@@ -1,0 +1,84 @@
+<!-- 04 workflows and the toolbox. Brief and beat grid: ../STORYBOARD.md -->
+
+<section data-beat="chapter">
+  <div data-block="chapter-card" data-anim="pop" data-cue="workflow-again">
+    <p class="number">04</p>
+    <h2 class="title">Workflows and the toolbox</h2>
+  </div>
+</section>
+
+<section data-beat="ladder" data-cue="ladder">
+  <h2>A ladder of patterns</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  L[Augmented LLM] --> C[Prompt chaining]
+  C --> R[Routing]
+  R --> P[Parallelization]
+  P --> O[Orchestrator-workers]
+  O --> E[Evaluator-optimizer]
+  E --> A[Autonomous agent]
+  classDef box height:114px,y:-57px
+  class L,C,R,P,O,E,A box</pre>
+    <i data-step data-nodes="C,R,P" data-edges="L-C,C-R,R-P" data-cue="patterns-simple"></i>
+    <i data-step data-nodes="O,E" data-edges="P-O,O-E,E-A" data-cue="patterns-complex"></i>
+  </figure>
+</section>
+
+<section data-beat="simplest" data-cue="simplest">
+  <figure data-block="quote" data-source="s:s15">
+    <blockquote>the simplest solution possible, and only increasing complexity when needed</blockquote>
+    <figcaption>Erik S. and Barry Zhang, Anthropic</figcaption>
+  </figure>
+</section>
+
+<section data-beat="multi-agent" data-cue="multi-agent">
+  <div data-block="definition" data-source="s:s54">
+    <p class="term">Multi-agent workflow</p>
+    <p class="text">A script Claude writes orchestrates many subagents, and you can rerun it.</p>
+  </div>
+</section>
+
+<section data-beat="lead-agent" data-cue="lead-agent">
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  L[Lead agent] --> S1[Subagent]
+  L --> S2[Subagent]
+  L --> S3[Subagent]</pre>
+    <figcaption>Anthropic’s research system: subagents in parallel</figcaption>
+  </figure>
+</section>
+
+<section data-beat="tokens" data-cue="tokens">
+  <div data-block="stat" data-source="s:s56" data-anim="pop">
+    <p class="value">15×</p>
+    <p class="label">more tokens than chats, for multi-agent systems</p>
+  </div>
+</section>
+
+<section data-beat="toolbox" data-cue="toolbox">
+  <div data-block="definition" data-source="s:s11">
+    <p class="term">Subagent</p>
+    <p class="text">Its own context window, prompt, tools and permissions.</p>
+  </div>
+</section>
+
+<section data-beat="hook" data-cue="hook">
+  <div data-block="definition" data-source="s:s57">
+    <p class="term">Hook</p>
+    <p class="text">A command that runs at a fixed point, so an action always happens instead of relying on the model.</p>
+  </div>
+</section>
+
+<section data-beat="request" data-cue="request-not-guarantee">
+  <figure data-block="quote" data-source="s:s12">
+    <blockquote>CLAUDE.md or a skill is a request, not a guarantee.</blockquote>
+    <figcaption>Claude Code docs, Anthropic</figcaption>
+  </figure>
+</section>
+
+<section data-beat="mcp" data-cue="mcp">
+  <div data-block="definition" data-source="s:s14">
+    <p class="term">MCP</p>
+    <p class="text">The Model Context Protocol connects Claude to external services and tools.</p>
+  </div>
+</section>
