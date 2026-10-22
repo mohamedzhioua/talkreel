@@ -1,0 +1,10 @@
+{
+  "slug": "how-i-ship-with-ai",
+  "title": "How I ship with AI",
+  "languages": ["en"],
+  "voice": { "mode": "ai", "en": "af_heart", "speed": 1.08 },
+  "theme": "default",
+  "fps": 30,
+  "resolution": "landscape",
+  "ambient": true
+}

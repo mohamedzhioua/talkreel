@@ -114,6 +114,14 @@ describe("stale-chapter selection", () => {
     expect((await staleRenders(third.talk, third.state, third.chapters, "draft")).map((s) => s.ch.chapter)).toEqual(["02"]);
   });
 
+  it("toggling talk.json ambient makes every chapter stale", async () => {
+    const { talk, state, chapters } = await renderedTalk();
+    const before = await currentRenderHash(talk, chapters[0]!, "draft");
+    talk.config.ambient = true;
+    expect(await currentRenderHash(talk, chapters[0]!, "draft")).not.toBe(before);
+    expect((await staleRenders(talk, state, chapters, "draft")).map((s) => s.ch.chapter)).toEqual(["01", "02"]);
+  });
+
   it("a missing MP4 is stale; missing inputs give a null hash", async () => {
     const { dir, talk, state, chapters } = await renderedTalk();
     const { rmSync } = await import("node:fs");

@@ -1,0 +1,17 @@
+<!-- Block: terminal. One <p> per row, each with one role: data-prompt (Claude ">"),
+     data-prompt="sh" ("$"), data-out, data-tool, data-result, data-diff="add|del".
+     Optional data-tone: ok, err, warn, dim, accent. Rows never wrap: at most 72 characters.
+     Uncued rows chain; a row with data-cue starts at its cue. Cues assume {#tests} and {#ship}. -->
+
+<section data-beat="terminal">
+  <div data-block="terminal" data-title="claude · talkreel">
+    <p data-prompt>run the tests, then open the PR</p>
+    <p data-tool>Bash(npm test)</p>
+    <p data-result data-cue="tests">Test Files  9 passed (9)</p>
+    <p data-result data-tone="ok">     Tests  122 passed (122)</p>
+    <p data-diff="del">  return step();</p>
+    <p data-diff="add">  return retryOnCrash(step, onRetry);</p>
+    <p data-prompt="sh" data-cue="ship">gh pr checks 1</p>
+    <p data-out data-tone="ok">test	pass	18s</p>
+  </div>
+</section>

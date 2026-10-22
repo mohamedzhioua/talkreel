@@ -1,0 +1,1103 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "Next,",
+      "start": 0,
+      "end": 0.24,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 0.46,
+      "end": 0.48,
+      "matched": true
+    },
+    {
+      "text": "plan,",
+      "start": 0.48,
+      "end": 0.76,
+      "matched": true
+    },
+    {
+      "text": "cut",
+      "start": 0.76,
+      "end": 1.02,
+      "matched": true
+    },
+    {
+      "text": "into",
+      "start": 1.02,
+      "end": 1.2,
+      "matched": true
+    },
+    {
+      "text": "slices.",
+      "start": 1.2,
+      "end": 1.54,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 2.12,
+      "end": 2.26,
+      "matched": true
+    },
+    {
+      "text": "AI",
+      "start": 2.26,
+      "end": 2.52,
+      "matched": true
+    },
+    {
+      "text": "tried",
+      "start": 2.52,
+      "end": 2.9,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 2.9,
+      "end": 3.12,
+      "matched": true
+    },
+    {
+      "text": "run",
+      "start": 3.12,
+      "end": 3.24,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 3.24,
+      "end": 3.4,
+      "matched": true
+    },
+    {
+      "text": "slices",
+      "start": 3.4,
+      "end": 3.76,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 3.76,
+      "end": 4.1,
+      "matched": true
+    },
+    {
+      "text": "itself.",
+      "start": 4.1,
+      "end": 4.52,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 5.04,
+      "end": 5.16,
+      "matched": true
+    },
+    {
+      "text": "OS",
+      "start": 5.16,
+      "end": 5.5,
+      "matched": true
+    },
+    {
+      "text": "refused,",
+      "start": 5.5,
+      "end": 5.98,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 5.98,
+      "end": 6.38,
+      "matched": true
+    },
+    {
+      "text": "told",
+      "start": 6.38,
+      "end": 6.58,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 6.58,
+      "end": 6.72,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 6.72,
+      "end": 6.86,
+      "matched": true
+    },
+    {
+      "text": "ask",
+      "start": 6.86,
+      "end": 7.06,
+      "matched": true
+    },
+    {
+      "text": "me.",
+      "start": 7.06,
+      "end": 7.26,
+      "matched": true
+    },
+    {
+      "text": "Slicing",
+      "start": 7.74,
+      "end": 8.16,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 8.16,
+      "end": 8.32,
+      "matched": true
+    },
+    {
+      "text": "mine",
+      "start": 8.32,
+      "end": 8.56,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 8.56,
+      "end": 8.78,
+      "matched": true
+    },
+    {
+      "text": "start.",
+      "start": 8.78,
+      "end": 9.02,
+      "matched": true
+    },
+    {
+      "text": "My",
+      "start": 9.56,
+      "end": 9.72,
+      "matched": true
+    },
+    {
+      "text": "answer:",
+      "start": 9.72,
+      "end": 10.04,
+      "matched": true
+    },
+    {
+      "text": "go",
+      "start": 10.42,
+      "end": 10.58,
+      "matched": true
+    },
+    {
+      "text": "ahead,",
+      "start": 10.58,
+      "end": 10.84,
+      "matched": true
+    },
+    {
+      "text": "build.",
+      "start": 11.02,
+      "end": 11.24,
+      "matched": true
+    },
+    {
+      "text": "From",
+      "start": 11.84,
+      "end": 12,
+      "matched": true
+    },
+    {
+      "text": "there,",
+      "start": 12,
+      "end": 12.2,
+      "matched": true
+    },
+    {
+      "text": "two",
+      "start": 12.38,
+      "end": 12.52,
+      "matched": true
+    },
+    {
+      "text": "workflows",
+      "start": 12.52,
+      "end": 12.96,
+      "matched": true
+    },
+    {
+      "text": "do",
+      "start": 12.96,
+      "end": 13.28,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 13.28,
+      "end": 13.4,
+      "matched": true
+    },
+    {
+      "text": "heavy",
+      "start": 13.4,
+      "end": 13.6,
+      "matched": true
+    },
+    {
+      "text": "lifting:",
+      "start": 13.6,
+      "end": 13.94,
+      "matched": true
+    },
+    {
+      "text": "review",
+      "start": 14.42,
+      "end": 14.72,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 14.72,
+      "end": 15.06,
+      "matched": true
+    },
+    {
+      "text": "execute.",
+      "start": 15.06,
+      "end": 15.46,
+      "matched": true
+    },
+    {
+      "text": "Here",
+      "start": 16.14,
+      "end": 16.32,
+      "matched": true
+    },
+    {
+      "text": "they",
+      "start": 16.32,
+      "end": 16.5,
+      "matched": true
+    },
+    {
+      "text": "are,",
+      "start": 16.5,
+      "end": 16.74,
+      "matched": true
+    },
+    {
+      "text": "run",
+      "start": 17,
+      "end": 17.18,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 17.18,
+      "end": 17.4,
+      "matched": true
+    },
+    {
+      "text": "real",
+      "start": 17.4,
+      "end": 17.74,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 17.74,
+      "end": 17.98,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 17.98,
+      "end": 18.12,
+      "matched": true
+    },
+    {
+      "text": "video's",
+      "start": 18.12,
+      "end": 18.58,
+      "matched": true
+    },
+    {
+      "text": "own",
+      "start": 18.58,
+      "end": 18.78,
+      "matched": true
+    },
+    {
+      "text": "engine",
+      "start": 18.78,
+      "end": 19.04,
+      "matched": true
+    },
+    {
+      "text": "code.",
+      "start": 19.04,
+      "end": 19.38,
+      "matched": true
+    },
+    {
+      "text": "My",
+      "start": 19.92,
+      "end": 20.1,
+      "matched": true
+    },
+    {
+      "text": "first",
+      "start": 20.1,
+      "end": 20.42,
+      "matched": true
+    },
+    {
+      "text": "review",
+      "start": 20.42,
+      "end": 20.7,
+      "matched": true
+    },
+    {
+      "text": "call",
+      "start": 20.7,
+      "end": 21,
+      "matched": true
+    },
+    {
+      "text": "passed",
+      "start": 21,
+      "end": 21.4,
+      "matched": true
+    },
+    {
+      "text": "an",
+      "start": 21.4,
+      "end": 21.54,
+      "matched": true
+    },
+    {
+      "text": "argument",
+      "start": 21.54,
+      "end": 21.86,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 21.86,
+      "end": 22.08,
+      "matched": true
+    },
+    {
+      "text": "doesn't",
+      "start": 22.08,
+      "end": 22.32,
+      "matched": true
+    },
+    {
+      "text": "know.",
+      "start": 22.32,
+      "end": 22.54,
+      "matched": true
+    },
+    {
+      "text": "It",
+      "start": 22.98,
+      "end": 23.12,
+      "matched": true
+    },
+    {
+      "text": "refused,",
+      "start": 23.12,
+      "end": 23.54,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 23.54,
+      "end": 24,
+      "matched": true
+    },
+    {
+      "text": "spawned",
+      "start": 24,
+      "end": 24.4,
+      "matched": true
+    },
+    {
+      "text": "nothing.",
+      "start": 24.4,
+      "end": 24.64,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 25.22,
+      "end": 25.36,
+      "matched": true
+    },
+    {
+      "text": "second",
+      "start": 25.36,
+      "end": 25.64,
+      "matched": true
+    },
+    {
+      "text": "call",
+      "start": 25.64,
+      "end": 25.9,
+      "matched": true
+    },
+    {
+      "text": "worked.",
+      "start": 25.9,
+      "end": 26.22,
+      "matched": true
+    },
+    {
+      "text": "Three",
+      "start": 26.7,
+      "end": 26.92,
+      "matched": true
+    },
+    {
+      "text": "lenses",
+      "start": 26.92,
+      "end": 27.26,
+      "matched": true
+    },
+    {
+      "text": "read",
+      "start": 27.26,
+      "end": 27.66,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 27.66,
+      "end": 27.82,
+      "matched": true
+    },
+    {
+      "text": "diff:",
+      "start": 27.82,
+      "end": 28,
+      "matched": true
+    },
+    {
+      "text": "reviewer,",
+      "start": 28,
+      "end": 28.92,
+      "matched": true
+    },
+    {
+      "text": "security",
+      "start": 29.04,
+      "end": 29.3,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 29.3,
+      "end": 29.74,
+      "matched": true
+    },
+    {
+      "text": "performance.",
+      "start": 29.74,
+      "end": 30.18,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 30.8,
+      "end": 31.02,
+      "matched": true
+    },
+    {
+      "text": "every",
+      "start": 31.02,
+      "end": 31.34,
+      "matched": true
+    },
+    {
+      "text": "finding",
+      "start": 31.34,
+      "end": 31.76,
+      "matched": true
+    },
+    {
+      "text": "faces",
+      "start": 31.76,
+      "end": 32.22,
+      "matched": true
+    },
+    {
+      "text": "three",
+      "start": 32.22,
+      "end": 32.58,
+      "matched": true
+    },
+    {
+      "text": "skeptics,",
+      "start": 32.58,
+      "end": 33.26,
+      "matched": true
+    },
+    {
+      "text": "told",
+      "start": 33.26,
+      "end": 33.5,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 33.5,
+      "end": 33.7,
+      "matched": true
+    },
+    {
+      "text": "refute",
+      "start": 33.7,
+      "end": 34.02,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 34.02,
+      "end": 34.2,
+      "matched": true
+    },
+    {
+      "text": "It",
+      "start": 34.58,
+      "end": 34.72,
+      "matched": true
+    },
+    {
+      "text": "survives",
+      "start": 34.72,
+      "end": 35.02,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 35.02,
+      "end": 35.42,
+      "matched": true
+    },
+    {
+      "text": "two",
+      "start": 35.42,
+      "end": 35.68,
+      "matched": true
+    },
+    {
+      "text": "votes",
+      "start": 35.68,
+      "end": 35.98,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 35.98,
+      "end": 36.12,
+      "matched": true
+    },
+    {
+      "text": "three.",
+      "start": 36.12,
+      "end": 36.36,
+      "matched": true
+    },
+    {
+      "text": "Two",
+      "start": 36.94,
+      "end": 37.1,
+      "matched": true
+    },
+    {
+      "text": "findings",
+      "start": 37.1,
+      "end": 37.48,
+      "matched": true
+    },
+    {
+      "text": "survived,",
+      "start": 37.48,
+      "end": 38.02,
+      "matched": true
+    },
+    {
+      "text": "three",
+      "start": 38.32,
+      "end": 38.52,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 38.52,
+      "end": 38.66,
+      "matched": true
+    },
+    {
+      "text": "zero.",
+      "start": 38.66,
+      "end": 38.94,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 39.56,
+      "end": 39.68,
+      "matched": true
+    },
+    {
+      "text": "worst:",
+      "start": 39.68,
+      "end": 40,
+      "matched": true
+    },
+    {
+      "text": "switching",
+      "start": 40.36,
+      "end": 40.68,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 40.68,
+      "end": 40.9,
+      "matched": true
+    },
+    {
+      "text": "background",
+      "start": 40.9,
+      "end": 41.24,
+      "matched": true
+    },
+    {
+      "text": "layer",
+      "start": 41.24,
+      "end": 41.64,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 41.64,
+      "end": 41.94,
+      "matched": true
+    },
+    {
+      "text": "never",
+      "start": 41.94,
+      "end": 42.16,
+      "matched": true
+    },
+    {
+      "text": "re-rendered",
+      "start": 42.16,
+      "end": 42.66,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 42.66,
+      "end": 42.76,
+      "matched": true
+    },
+    {
+      "text": "chapter.",
+      "start": 42.76,
+      "end": 43.08,
+      "matched": true
+    },
+    {
+      "text": "So",
+      "start": 43.74,
+      "end": 43.82,
+      "matched": true
+    },
+    {
+      "text": "execute",
+      "start": 43.82,
+      "end": 44.2,
+      "matched": true
+    },
+    {
+      "text": "fixed",
+      "start": 44.2,
+      "end": 44.5,
+      "matched": false
+    },
+    {
+      "text": "them,",
+      "start": 44.5,
+      "end": 44.76,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 44.76,
+      "end": 44.94,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 44.94,
+      "end": 45.04,
+      "matched": true
+    },
+    {
+      "text": "separate",
+      "start": 45.04,
+      "end": 45.28,
+      "matched": true
+    },
+    {
+      "text": "worktree.",
+      "start": 45.28,
+      "end": 45.72,
+      "matched": true
+    },
+    {
+      "text": "Implement,",
+      "start": 46.28,
+      "end": 46.62,
+      "matched": true
+    },
+    {
+      "text": "then",
+      "start": 46.62,
+      "end": 46.92,
+      "matched": true
+    },
+    {
+      "text": "spec",
+      "start": 46.92,
+      "end": 47.16,
+      "matched": true
+    },
+    {
+      "text": "review,",
+      "start": 47.16,
+      "end": 47.58,
+      "matched": true
+    },
+    {
+      "text": "then",
+      "start": 47.58,
+      "end": 47.82,
+      "matched": true
+    },
+    {
+      "text": "quality",
+      "start": 47.82,
+      "end": 48.16,
+      "matched": true
+    },
+    {
+      "text": "review,",
+      "start": 48.16,
+      "end": 48.56,
+      "matched": true
+    },
+    {
+      "text": "each",
+      "start": 48.56,
+      "end": 48.96,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 48.96,
+      "end": 49.18,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 49.18,
+      "end": 49.26,
+      "matched": true
+    },
+    {
+      "text": "fresh",
+      "start": 49.26,
+      "end": 49.46,
+      "matched": true
+    },
+    {
+      "text": "context,",
+      "start": 49.46,
+      "end": 49.98,
+      "matched": true
+    },
+    {
+      "text": "then",
+      "start": 49.98,
+      "end": 50.32,
+      "matched": true
+    },
+    {
+      "text": "verify.",
+      "start": 50.32,
+      "end": 50.68,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 51.4,
+      "end": 51.56,
+      "matched": true
+    },
+    {
+      "text": "failed",
+      "start": 51.56,
+      "end": 51.8,
+      "matched": true
+    },
+    {
+      "text": "round",
+      "start": 51.8,
+      "end": 52.14,
+      "matched": true
+    },
+    {
+      "text": "counts",
+      "start": 52.14,
+      "end": 52.38,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 52.38,
+      "end": 52.58,
+      "matched": true
+    },
+    {
+      "text": "attempt;",
+      "start": 52.58,
+      "end": 52.86,
+      "matched": true
+    },
+    {
+      "text": "at",
+      "start": 53.12,
+      "end": 53.26,
+      "matched": true
+    },
+    {
+      "text": "three,",
+      "start": 53.26,
+      "end": 53.5,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 53.64,
+      "end": 53.76,
+      "matched": true
+    },
+    {
+      "text": "stops",
+      "start": 53.76,
+      "end": 54.04,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 54.04,
+      "end": 54.32,
+      "matched": true
+    },
+    {
+      "text": "asks",
+      "start": 54.32,
+      "end": 54.62,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 54.62,
+      "end": 54.84,
+      "matched": true
+    },
+    {
+      "text": "an",
+      "start": 54.84,
+      "end": 54.92,
+      "matched": true
+    },
+    {
+      "text": "advisor.",
+      "start": 54.92,
+      "end": 55.22,
+      "matched": true
+    },
+    {
+      "text": "This",
+      "start": 55.88,
+      "end": 56.1,
+      "matched": true
+    },
+    {
+      "text": "run",
+      "start": 56.1,
+      "end": 56.3,
+      "matched": true
+    },
+    {
+      "text": "passed",
+      "start": 56.3,
+      "end": 56.54,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 56.54,
+      "end": 56.74,
+      "matched": true
+    },
+    {
+      "text": "first",
+      "start": 56.74,
+      "end": 56.94,
+      "matched": true
+    },
+    {
+      "text": "round.",
+      "start": 56.94,
+      "end": 57.28,
+      "matched": true
+    },
+    {
+      "text": "Four",
+      "start": 57.28,
+      "end": 57.84,
+      "matched": true
+    },
+    {
+      "text": "agents,",
+      "start": 57.84,
+      "end": 58.22,
+      "matched": true
+    },
+    {
+      "text": "every",
+      "start": 58.44,
+      "end": 58.62,
+      "matched": true
+    },
+    {
+      "text": "check",
+      "start": 58.62,
+      "end": 58.88,
+      "matched": true
+    },
+    {
+      "text": "confirmed.",
+      "start": 58.88,
+      "end": 59.36,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 59.8,
+      "end": 60.04,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 60.04,
+      "end": 60.16,
+      "matched": true
+    },
+    {
+      "text": "re-ran",
+      "start": 60.16,
+      "end": 60.54,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 60.54,
+      "end": 60.66,
+      "matched": true
+    },
+    {
+      "text": "checks",
+      "start": 60.66,
+      "end": 60.9,
+      "matched": true
+    },
+    {
+      "text": "myself,",
+      "start": 60.9,
+      "end": 61.4,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 61.4,
+      "end": 61.66,
+      "matched": true
+    },
+    {
+      "text": "merged.",
+      "start": 61.66,
+      "end": 61.98,
+      "matched": true
+    },
+    {
+      "text": "One",
+      "start": 62.96,
+      "end": 63.042,
+      "matched": true
+    },
+    {
+      "text": "hundred",
+      "start": 63.042,
+      "end": 63.234,
+      "matched": true
+    },
+    {
+      "text": "fifty-four",
+      "start": 63.234,
+      "end": 63.48,
+      "matched": true
+    },
+    {
+      "text": "tests,",
+      "start": 63.48,
+      "end": 63.76,
+      "matched": true
+    },
+    {
+      "text": "green.",
+      "start": 64.1,
+      "end": 64.32,
+      "matched": true
+    },
+    {
+      "text": "Evidence,",
+      "start": 64.64,
+      "end": 65.1,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 65.4,
+      "end": 65.54,
+      "matched": true
+    },
+    {
+      "text": "trust.",
+      "start": 65.54,
+      "end": 65.8,
+      "matched": true
+    }
+  ]
+}

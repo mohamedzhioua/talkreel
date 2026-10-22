@@ -1,0 +1,431 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "That's",
+      "start": 0,
+      "end": 0.24,
+      "matched": true
+    },
+    {
+      "text": "how",
+      "start": 0.24,
+      "end": 0.34,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 0.34,
+      "end": 0.42,
+      "matched": true
+    },
+    {
+      "text": "work",
+      "start": 0.42,
+      "end": 0.6,
+      "matched": true
+    },
+    {
+      "text": "now.",
+      "start": 0.6,
+      "end": 0.8,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 1.12,
+      "end": 1.18,
+      "matched": true
+    },
+    {
+      "text": "write",
+      "start": 1.18,
+      "end": 1.38,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 1.38,
+      "end": 1.54,
+      "matched": true
+    },
+    {
+      "text": "intent.",
+      "start": 1.54,
+      "end": 1.84,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 2.32,
+      "end": 2.48,
+      "matched": true
+    },
+    {
+      "text": "review",
+      "start": 2.48,
+      "end": 2.78,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 2.78,
+      "end": 2.92,
+      "matched": true
+    },
+    {
+      "text": "evidence.",
+      "start": 2.92,
+      "end": 3.28,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 3.74,
+      "end": 3.8,
+      "matched": true
+    },
+    {
+      "text": "merge.",
+      "start": 3.8,
+      "end": 4.04,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 4.44,
+      "end": 4.52,
+      "matched": true
+    },
+    {
+      "text": "AI",
+      "start": 4.52,
+      "end": 4.82,
+      "matched": true
+    },
+    {
+      "text": "does",
+      "start": 4.82,
+      "end": 5.18,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 5.18,
+      "end": 5.32,
+      "matched": true
+    },
+    {
+      "text": "typing.",
+      "start": 5.32,
+      "end": 5.6,
+      "matched": true
+    },
+    {
+      "text": "This",
+      "start": 6.2,
+      "end": 6.36,
+      "matched": true
+    },
+    {
+      "text": "talk",
+      "start": 6.36,
+      "end": 6.62,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 6.62,
+      "end": 6.82,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 6.82,
+      "end": 6.94,
+      "matched": true
+    },
+    {
+      "text": "second",
+      "start": 6.94,
+      "end": 7.18,
+      "matched": true
+    },
+    {
+      "text": "cut.",
+      "start": 7.18,
+      "end": 7.44,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 8.02,
+      "end": 8.08,
+      "matched": true
+    },
+    {
+      "text": "first",
+      "start": 8.08,
+      "end": 8.34,
+      "matched": true
+    },
+    {
+      "text": "ran",
+      "start": 8.34,
+      "end": 8.58,
+      "matched": true
+    },
+    {
+      "text": "over",
+      "start": 8.58,
+      "end": 8.76,
+      "matched": true
+    },
+    {
+      "text": "nine",
+      "start": 8.76,
+      "end": 9,
+      "matched": true
+    },
+    {
+      "text": "minutes,",
+      "start": 9,
+      "end": 9.3,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 9.3,
+      "end": 9.52,
+      "matched": true
+    },
+    {
+      "text": "barely",
+      "start": 9.52,
+      "end": 9.78,
+      "matched": true
+    },
+    {
+      "text": "showed",
+      "start": 9.78,
+      "end": 10.1,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 10.1,
+      "end": 10.26,
+      "matched": true
+    },
+    {
+      "text": "OS.",
+      "start": 10.26,
+      "end": 10.5,
+      "matched": true
+    },
+    {
+      "text": "Same",
+      "start": 11.16,
+      "end": 11.44,
+      "matched": true
+    },
+    {
+      "text": "tool,",
+      "start": 11.44,
+      "end": 11.76,
+      "matched": true
+    },
+    {
+      "text": "same",
+      "start": 12,
+      "end": 12.1,
+      "matched": true
+    },
+    {
+      "text": "process,",
+      "start": 12.1,
+      "end": 12.56,
+      "matched": true
+    },
+    {
+      "text": "again.",
+      "start": 12.56,
+      "end": 12.94,
+      "matched": true
+    },
+    {
+      "text": "So",
+      "start": 13.52,
+      "end": 13.56,
+      "matched": true
+    },
+    {
+      "text": "try",
+      "start": 13.56,
+      "end": 13.78,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 13.78,
+      "end": 14.04,
+      "matched": true
+    },
+    {
+      "text": "real",
+      "start": 14.04,
+      "end": 14.3,
+      "matched": true
+    },
+    {
+      "text": "task",
+      "start": 14.3,
+      "end": 14.72,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 14.72,
+      "end": 14.98,
+      "matched": true
+    },
+    {
+      "text": "week,",
+      "start": 14.98,
+      "end": 15.22,
+      "matched": true
+    },
+    {
+      "text": "inside",
+      "start": 15.22,
+      "end": 15.7,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 15.7,
+      "end": 15.96,
+      "matched": true
+    },
+    {
+      "text": "zhioua",
+      "start": 15.96,
+      "end": 16.26,
+      "matched": false
+    },
+    {
+      "text": "OS.",
+      "start": 16.26,
+      "end": 16.78,
+      "matched": true
+    },
+    {
+      "text": "Judge",
+      "start": 17.12,
+      "end": 17.36,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 17.36,
+      "end": 17.5,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 17.5,
+      "end": 17.66,
+      "matched": true
+    },
+    {
+      "text": "its",
+      "start": 17.66,
+      "end": 17.8,
+      "matched": true
+    },
+    {
+      "text": "evidence.",
+      "start": 17.8,
+      "end": 18.14,
+      "matched": true
+    },
+    {
+      "text": "talkreel,",
+      "start": 18.86,
+      "end": 19.28,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 19.44,
+      "end": 19.52,
+      "matched": true
+    },
+    {
+      "text": "tool",
+      "start": 19.52,
+      "end": 19.72,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 19.72,
+      "end": 19.88,
+      "matched": true
+    },
+    {
+      "text": "made",
+      "start": 19.88,
+      "end": 20.04,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 20.04,
+      "end": 20.26,
+      "matched": true
+    },
+    {
+      "text": "video,",
+      "start": 20.26,
+      "end": 20.56,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 20.56,
+      "end": 20.84,
+      "matched": true
+    },
+    {
+      "text": "open",
+      "start": 20.84,
+      "end": 21.16,
+      "matched": true
+    },
+    {
+      "text": "source,",
+      "start": 21.16,
+      "end": 21.56,
+      "matched": true
+    },
+    {
+      "text": "on",
+      "start": 21.56,
+      "end": 21.9,
+      "matched": true
+    },
+    {
+      "text": "free",
+      "start": 21.9,
+      "end": 22.14,
+      "matched": true
+    },
+    {
+      "text": "tools.",
+      "start": 22.14,
+      "end": 22.4,
+      "matched": true
+    }
+  ]
+}
