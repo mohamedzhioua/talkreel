@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { captionLines } from "../src/compose-captions.js";
+import { CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
 import { buildPage, composeChapter, sourceLabel, timelineScript } from "../src/compose.js";
 import { parseScene, resolveTimeline } from "../src/compose-scene.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
@@ -96,7 +96,7 @@ describe("source label", () => {
 describe("caption lines", () => {
   const w = (text: string, start: number, end: number) => ({ text, start, end, matched: true });
 
-  it("fill greedily to 48 characters and break after sentence ends", () => {
+  it("fill lines up to 48 characters and break after sentence ends", () => {
     const words = "This is a fairly long caption sentence that keeps on going past the limit. Next one".split(" ").map((t, i) => w(t, i * 0.3, i * 0.3 + 0.25));
     const lines = captionLines(words, 10);
     expect(lines.map((l) => l.text)).toEqual(["This is a fairly long caption sentence that", "keeps on going past the limit.", "Next one"]);
@@ -112,6 +112,68 @@ describe("caption lines", () => {
       [4.95, 5.7],
     ]);
     expect(captionLines([w("x", 0.02, 0.5)], 0.6)[0]).toMatchObject({ show: 0, hide: 0.6 });
+  });
+
+  // Real strings from talks/ai-engineering-today (review of the m1 frames).
+  const said = (text: string, t0 = 0) => text.split(" ").map((t, i) => w(t, t0 + i * 0.3, t0 + i * 0.3 + 0.25));
+  const texts = (s: string) => captionLines(said(s), 1000).map((l) => l.text);
+  const FUNCTION_END = new RegExp(`\\b(${[...CAPTION_FUNCTION_WORDS].join("|")})$`, "i");
+
+  it("never leaves a lone word on the last line of a sentence (01: \"us.\")", () => {
+    const lines = texts("In ten minutes: the words, how I work, and what it changes for us.");
+    expect(lines.at(-1)).not.toBe("us.");
+    expect(lines.at(-1)!.split(" ").length).toBeGreaterThan(1);
+    expect(lines.join(" ")).toBe("In ten minutes: the words, how I work, and what it changes for us.");
+  });
+
+  it("balances the last two lines, or absorbs a lone word up to the 54-character cap", () => {
+    // Greedy gave "An L L M agent runs tools in a loop to achieve a" / "goal.".
+    const bal = texts("An L L M agent runs tools in a loop to achieve a goal.");
+    expect(bal).toHaveLength(2);
+    for (const l of bal) expect(l.split(" ").length).toBeGreaterThan(1);
+    // Two words that cannot be split below the cap: the second is absorbed (45 + 1 + 4 = 50 characters).
+    const long = "x".repeat(45);
+    expect(captionLines([w(long, 0, 1), w("bye.", 1.1, 1.3)], 5).map((l) => l.text)).toEqual([`${long} bye.`]);
+    // Past the absorb cap the lone word stays on its own line.
+    const longer = "y".repeat(50);
+    expect(captionLines([w(longer, 0, 1), w("bye.", 1.1, 1.3)], 5).map((l) => l.text)).toEqual([longer, "bye."]);
+  });
+
+  it("no line exceeds the cap on the talk's real sentences", () => {
+    for (const s of [
+      "Then orchestrator and workers, and evaluator and optimizer.",
+      "So a new file, or a dependency change, asks me first.",
+      "Simon Willison says AI tools amplify existing expertise.",
+      "My rule: every run-until-done loop carries a wall clock cap, a receipt per tick, and an explicit stop reason.",
+    ]) {
+      for (const l of texts(s)) expect(l.length).toBeLessThanOrEqual(CAPTION_MAX_CHARS);
+    }
+  });
+
+  it("joins a short fragment like \"My rule:\", keeps \"wall clock cap\" whole and prefers clause breaks (03)", () => {
+    expect(texts("My rule: every run-until-done loop carries a wall clock cap, a receipt per tick, and an explicit stop reason.")).toEqual([
+      "My rule: every run-until-done loop carries",
+      "a wall clock cap, a receipt per tick,",
+      "and an explicit stop reason.",
+    ]);
+  });
+
+  it("never ends a line on a function word (03: \"toward a\")", () => {
+    for (const s of [
+      "Slash goal keeps Claude working toward a condition, and a fresh model, not the one doing the work, decides when it's met.",
+      "My rule: every run-until-done loop carries a wall clock cap, a receipt per tick, and an explicit stop reason.",
+      "In ten minutes: the words, how I work, and what it changes for us.",
+    ]) {
+      const lines = texts(s);
+      for (const l of lines.slice(0, -1)) expect(l).not.toMatch(FUNCTION_END);
+      expect(lines.join(" ")).toBe(s);
+    }
+  });
+
+  it("still breaks after . ? ! and fades a line out before the next one shows (03 at 65.30 s)", () => {
+    const lines = captionLines(said("Next, agent. Anthropic draws a clean line. My rule: every run-until-done loop carries a wall clock cap, a receipt per tick, and an explicit stop reason.", 60), 1000);
+    expect(lines.slice(0, 2).map((l) => l.text)).toEqual(["Next, agent.", "Anthropic draws a clean line."]);
+    for (let j = 0; j + 1 < lines.length; j++) expect(lines[j]!.hide + 0.08).toBeLessThanOrEqual(lines[j + 1]!.show + 1e-9);
   });
 });
 

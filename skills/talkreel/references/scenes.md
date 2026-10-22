@@ -227,12 +227,18 @@ Numbers are written with at most 3 decimals.
 
 **Captions** (composer-owned, styled by the theme):
 
-- Lines: fill greedily up to 48 characters (spaces included); always break
-  after a word ending in `.`, `?`, `!` or `:`, and before a word that starts
-  more than 0.6 s after the previous word ended.
+- Lines: at most 48 characters (spaces included); always break after a word
+  ending in `.`, `?` or `!`, and before a word that starts more than 0.6 s
+  after the previous word ended. Inside each such segment the breaks are the
+  cheapest under a fixed cost (`src/compose-captions.ts`): fill lines, prefer
+  breaking after `,` `;` or `:`, never end a line on a function word (a, an,
+  the, to, of, and, or, toward, for, with, in, on), avoid a short fragment
+  (under 14 characters, e.g. "My rule:") and a lone last word. A line may
+  reach 54 characters only to absorb a lone word that cannot be balanced.
 - A line shows (opacity 0 → 1 over 0.1 s) at its first word's `start − 0.05`
-  and hides (opacity 0 over 0.08 s) at the next line's show time, or at its
-  last word's `end + 0.3` if that comes first.
+  and hides (opacity 0 over 0.08 s) at its last word's `end + 0.3`, or 0.08 s
+  before the next line's show time if that comes first, so the outgoing line
+  is gone before the next one fades in.
 - Word state is the `data-state` attribute, driven by
   `tl.set(word, { attr: { "data-state": "current" } }, w.start)` and
   `tl.set(word, { attr: { "data-state": "spoken" } }, w.end)`. No attribute

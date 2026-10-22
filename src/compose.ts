@@ -16,7 +16,7 @@ import { loadSources, paths, readJson, type ChapterFile, type Talk } from "./tal
 import { readWavInfo } from "./wav.js";
 
 /** Bump when the generated page or timeline changes in a way that must re-render chapters. */
-export const COMPOSE_VERSION = "2";
+export const COMPOSE_VERSION = "3";
 
 /** talkreel's own package root (the folder holding dist/, src/, themes/). */
 export const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
