@@ -11,7 +11,7 @@
   <div data-block="split">
     <div class="col">
       <h3>Frame review</h3>
-      <p>“I tested a crossfade between beats; the two beats' text overlapped.”</p>
+      <p>“I tested a crossfade between beats; the two beats’ text overlapped.”</p>
     </div>
     <div class="col" data-cue="frame-fix">
       <h3>The fix</h3>
@@ -30,16 +30,18 @@
 <section data-beat="gap" data-cue="gap">
   <p>Images for chapters 1–5 · re-reviewed by fresh agents</p>
   <div data-block="terminal" data-title="frame reviewer · build session" data-rows="2">
-    <p data-result data-tone="warn">came back blocked … so those 5 chapters were never actually looked at</p>
+    <p data-out data-tone="warn">came back blocked … so those 5 chapters were never actually looked at</p>
   </div>
 </section>
 
 <section data-beat="ship" data-cue="pr">
-  <div data-block="terminal" data-title="ship · build session" data-rows="4">
+  <div data-block="terminal" data-title="ship · build session" data-rows="6">
     <p data-prompt="sh">gh pr create --base main --head m1 --title "M1: talkreel pipeline …"</p>
     <p data-out data-tone="accent">https://github.com/mohamedzhioua/talkreel/pull/1</p>
-    <p data-out data-tone="ok" data-cue="ci">test    pass    18s</p>
-    <p data-out data-tone="ok" data-cue="main">completed success "Merge pull request #1 …" ci main 23s</p>
+    <p data-prompt="sh" data-cue="ci">gh pr checks 1 --watch --interval 20</p>
+    <p data-out data-tone="ok">test    pass    18s</p>
+    <p data-prompt="sh" data-cue="main">gh run list --branch main --limit 3</p>
+    <p data-out data-tone="ok">completed success "Merge pull request #1 …" ci main 23s</p>
   </div>
 </section>
 

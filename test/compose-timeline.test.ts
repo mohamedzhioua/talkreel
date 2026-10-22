@@ -151,6 +151,9 @@ describe("terminal lines (scenes.md section 5a)", () => {
   it("scrolls one row per line past the thirteenth, computed without the browser", () => {
     const tl = resolveTimeline(scene(Array.from({ length: 15 }, (_, i) => `<p data-out>${i}</p>`).join("")), {}, 10);
     expect(tl.scrolls.map((s) => [r(s.t), s.y])).toEqual([[1.21, -40], [1.28, -80]]);
+    // Until then the window grows one row per line, from one row to thirteen.
+    expect(tl.grows.map((g) => g.rows)).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+    expect(r(tl.grows[0]!.t)).toBe(0.37);
   });
 
   it("warns when a cue lands before the line above finished, and when a chain runs past its beat", () => {

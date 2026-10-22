@@ -2,12 +2,17 @@
 // the window chrome, the scroll track, the cursors, the rail and the lit chip layers; every time
 // was already resolved in compose-scene.ts, so this only writes nodes and plan entries.
 import { escapeText, getAttr, hasAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
-import { terminalRows, type ResolvedTimeline } from "./compose-scene.js";
+import { TERM_ROW_PX, terminalRows, type ResolvedTimeline } from "./compose-scene.js";
+
+/** Viewport padding above and below the rows (theme.css .tr-term-vp). */
+const TERM_PAD_PX = 24;
 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 
 export interface BlocksPlan {
   scrolls: { id: string; t: number; y: number }[];
+  /** Viewport heights in px: `h0` before the first grow, then `h` from `t`. */
+  grows: { id: string; t: number; h: number; h0: number }[];
   cursors: { id: string; show: number; hide: number }[];
   chips: { id: string; rail: string; t: number; f: number; done: boolean }[];
 }
@@ -39,9 +44,10 @@ export function wrapTyped(p: HtmlElement): HtmlElement {
 
 /** Add chrome, tracks, cursors, rails and lit layers; returns their plan entries. */
 export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => string): BlocksPlan {
-  const plan: BlocksPlan = { scrolls: [], cursors: [], chips: [] };
+  const plan: BlocksPlan = { scrolls: [], grows: [], cursors: [], chips: [] };
 
   const trackOf = new Map<HtmlElement, string>();
+  const vpOf = new Map<HtmlElement, string>();
   const terminals = new Set<HtmlElement>();
   for (const t of tl.targets) {
     if (getAttr(t.el, "data-block") === "terminal") terminals.add(t.el);
@@ -51,14 +57,20 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
     const lines = block.children;
     const title = getAttr(block, "data-title");
     block.attrs.push({ name: "style", value: `--rows:${terminalRows(block)}` });
-    const vp = el("div", { class: "tr-term-vp" }, block);
+    // The block keeps its full height so the layout never moves; the window inside it grows.
+    const win = el("div", { class: "tr-term-win" }, block);
+    const vp = el("div", { class: "tr-term-vp" }, win);
     const track = el("div", { class: "tr-term-track" }, vp, lines);
     vp.children = [track];
     trackOf.set(block, idFor(track));
-    const bar = raw(block, `<div class="tr-term-bar"><i></i><i></i><i></i>${title ? `<span>${escapeText(title)}</span>` : ""}</div>`);
-    block.children = [bar, vp];
+    vpOf.set(block, idFor(vp));
+    const bar = raw(win, `<div class="tr-term-bar"><i></i><i></i><i></i>${title ? `<span>${escapeText(title)}</span>` : ""}</div>`);
+    win.children = [bar, vp];
+    block.children = [win];
   }
   for (const s of tl.scrolls) plan.scrolls.push({ id: trackOf.get(s.block)!, t: r3(s.t), y: s.y });
+  const vpHeight = (rows: number) => rows * TERM_ROW_PX + 2 * TERM_PAD_PX;
+  for (const g of tl.grows) plan.grows.push({ id: vpOf.get(g.block)!, t: r3(g.t), h: vpHeight(g.rows), h0: vpHeight(1) });
   for (const c of tl.cursors) {
     const cursor = el("span", { class: "tr-cursor" }, c.line);
     c.line.children.push(cursor);

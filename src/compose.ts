@@ -105,6 +105,7 @@ export interface Plan {
   lines: { id: string; show: number; hide: number }[];
   words: { id: string; start: number; end: number }[];
   scrolls: BlocksPlan["scrolls"];
+  grows: BlocksPlan["grows"];
   cursors: BlocksPlan["cursors"];
   chips: BlocksPlan["chips"];
   ambient: boolean;

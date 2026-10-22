@@ -270,7 +270,9 @@ describe("terminal, pipeline and ambient markup", () => {
 
   it("wraps terminal rows in a scroll track under the window bar; a prompt types only its text", () => {
     const p = build(`<section data-beat="a"><div data-block="terminal" data-title="claude · demo"><p data-prompt>hi &amp; bye</p><p data-out>ok</p></div></section>`);
-    expect(p.html).toMatch(/<div class="tr-term-bar"><i><\/i><i><\/i><i><\/i><span>claude · demo<\/span><\/div><div class="tr-term-vp"><div class="tr-term-track" id="tr-e-\d+">/);
+    expect(p.html).toMatch(/<div class="tr-term-win"><div class="tr-term-bar"><i><\/i><i><\/i><i><\/i><span>claude · demo<\/span><\/div><div class="tr-term-vp" id="tr-e-\d+"><div class="tr-term-track" id="tr-e-\d+">/);
+    // The window opens one row tall and grows to two rows when the second row enters.
+    expect(p.plan.grows.map((g) => [g.h0, g.h])).toEqual([[88, 128]]);
     expect(p.html).toMatch(/<p data-prompt id="(tr-e-\d+)"><span class="tr-typed" id="(tr-e-\d+)">hi &amp; bye<\/span><span class="tr-cursor" id="tr-e-\d+"><\/span><\/p>/);
     const prompt = p.plan.targets.filter((t) => t.t === 0.3);
     expect(prompt.map((t) => t.anim)).toEqual(["stream", "type"]);

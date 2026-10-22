@@ -118,6 +118,13 @@ export const TIMELINE_RUNTIME = `(function () {
       tl.fromTo(el, { y: at[s.id] }, { y: s.y, duration: 0.15, ease: "power2.out", immediateRender: false }, s.t);
       at[s.id] = s.y;
     });
+    var tall = {};
+    P.grows.forEach(function (g) {
+      var el = byId(g.id);
+      if (!(g.id in tall)) { tall[g.id] = g.h0; window.gsap.set(el, { height: g.h0 }); }
+      tl.fromTo(el, { height: tall[g.id] }, { height: g.h, duration: 0.15, ease: "power2.out", immediateRender: false }, g.t);
+      tall[g.id] = g.h;
+    });
     var rails = {};
     P.chips.forEach(function (c) { (rails[c.rail] = rails[c.rail] || []).push(c); });
     Object.keys(rails).forEach(function (id) {

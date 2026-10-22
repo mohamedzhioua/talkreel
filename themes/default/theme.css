@@ -428,6 +428,7 @@ section[data-beat] > p {
   gap: 80px;
   align-items: center;
 }
+[data-block="split"][data-align="top"] { align-items: start; }
 [data-block="split"] > .col {
   --tr-k: 0.7;
   min-width: 0;
@@ -452,15 +453,20 @@ section[data-beat] > p {
 /* Rows are a fixed 40 px and never wrap, so the composer computes scroll offsets in Node
    (src/compose-scene.ts: TERM_ROWS 13, TERM_ROW_PX 40, TERM_MAX_CHARS 72). Keep them in sync. */
 
+/* The block reserves the window's final height; .tr-term-win grows inside it (from the top). */
 [data-block="terminal"] {
   width: 1680px;
   max-width: 100%;
+  height: calc(var(--rows, 13) * 40px + 48px + 68px);
+  font-family: var(--tr-mono);
+  font-variant-ligatures: none;
+}
+[data-block="terminal"] .tr-term-win {
   background: #0d1016;
   border: 2px solid var(--tr-line);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-  font-family: var(--tr-mono);
 }
 [data-block="terminal"] .tr-term-bar {
   display: flex;
@@ -548,7 +554,7 @@ section[data-beat] > p {
 
 [data-block="pipeline"] {
   position: relative;
-  width: 1680px;
+  width: min(1680px, calc(var(--n, 6) * 300px));
   max-width: 100%;
   --gap: 24px;
 }
