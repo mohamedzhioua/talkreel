@@ -104,4 +104,16 @@ describe("chapter staleness", () => {
     touch(paths.sourceWav(talk, "en", "01"), "take 2");
     expect(await currentVoiceHash(talk, ch, parsed)).not.toBe(h1);
   });
+
+  it("voice.speed re-voices only when it is not 1", async () => {
+    const files = { "script/en/01-intro.md": "# Intro\n\nHello world.\n" };
+    const hash = async (voice: Record<string, unknown>) => {
+      const talk = loadTalk(makeTalk(files, { voice }));
+      const ch = listChapters(talk, "en")[0]!;
+      return currentVoiceHash(talk, ch, parseScriptFile(ch.file));
+    };
+    const plain = await hash({ mode: "ai", en: "af_heart" });
+    expect(await hash({ mode: "ai", en: "af_heart", speed: 1 })).toBe(plain);
+    expect(await hash({ mode: "ai", en: "af_heart", speed: 1.08 })).not.toBe(plain);
+  });
 });

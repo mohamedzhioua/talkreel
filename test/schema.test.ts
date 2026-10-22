@@ -20,6 +20,14 @@ describe("talk.json", () => {
     expect(talkConfigProblems(cfg)).toEqual(["talk.json: voice.de is required in ai mode"]);
     expect(talkConfigProblems({ ...cfg, voice: { mode: "own" } })).toEqual([]);
   });
+  it("accepts voice.speed from 0.8 to 1.3 and a boolean ambient, nothing else", () => {
+    const base = defaultTalkConfig("x", "X");
+    expect(talkConfigProblems({ ...base, ambient: true, voice: { ...base.voice, speed: 1.08 } })).toEqual([]);
+    for (const speed of [0.5, 1.5, "1.1"]) {
+      expect(talkConfigProblems({ ...base, voice: { ...base.voice, speed } })).toEqual(["talk.json: voice.speed must be a number from 0.8 to 1.3"]);
+    }
+    expect(talkConfigProblems({ ...base, ambient: "yes" })).toEqual(["talk.json: ambient must be true or false"]);
+  });
 });
 
 describe("sources.json", () => {
