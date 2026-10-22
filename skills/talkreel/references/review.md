@@ -5,10 +5,11 @@ frames, not the HTML: a scene that looks right in code can still overflow.
 
 ## Loop (at most 3 rounds)
 
+Rounds 1 and 2 review draft renders (talkreel render --quality draft). Before round 3, render every chapter at standard (talkreel render --quality standard; the quality change makes all chapters stale) and review those frames. A round-3 fix re-renders only its chapter, at standard.
+
 1. Run `talkreel frames` for the talk (add `--chapter NN` after the first round
    to look only at chapters you re-rendered). It extracts key frames to
-   `build/frames/<lang>/NN/` (0.5 s in, 0.9 s after every cue, so at least one
-   per beat once its content has entered, and 0.5 s before the end) and prints
+   `build/frames/<lang>/NN/` (0.5 s in, 0.15 s into every beat change as transition-<beat>, 0.9 s after every cue, and 0.5 s before the end) and prints
    JSON on stdout: `{"frames": [{lang, chapter, beat, label, time, path}]}`,
    where `label` is the cue name (or `start` / `end`).
 2. Open **every** PNG with the Read tool and look at it. Do not skip frames and
@@ -17,7 +18,7 @@ frames, not the HTML: a scene that looks right in code can still overflow.
    the frame path, the chapter, the beat id and what is wrong.
 4. Fix each defect in `scenes/NN-<chapter>.html` (or in the script if a cue is
    misplaced), then run `talkreel check`.
-5. Re-render only the chapters you changed: `talkreel render --chapter NN`.
+5. Re-render only the chapters you changed: `talkreel render --chapter NN`, at the round's quality.
 6. Next round from step 1, for the changed chapters.
 
 Stop after round 3 even if defects remain, and report them.
@@ -44,7 +45,7 @@ Stop after round 3 even if defects remain, and report them.
   time. If a beat is too short, shorten its text or move a cue. Never clamp
   caption timings.
 - **Transitions.** Look at the frames inside every beat change (the
-  `transition` frames from `talkreel frames`). Only the outgoing beat should be
+  `transition-<beat>` frames from `talkreel frames`). Only the outgoing beat should be
   fading, then the incoming one should enter; never both at once.
 - **The rubric is this checklist.** Grade every frame against it, every round,
   within the 3-round cap.

@@ -19,6 +19,7 @@ source labels; `talkreel check` fails on any `[s:id]` that is not here.
     {
       "id": "example-survey",
       "title": "Example Developer Survey 2025",
+      "publisher": "Example Org",
       "url": "https://example.org/survey-2025/results#ai",
       "quote": "The exact sentence from the page, copied character for character.",
       "date": "2025-07-01",
@@ -31,7 +32,8 @@ source labels; `talkreel check` fails on any `[s:id]` that is not here.
 | Field | Rule |
 |---|---|
 | `id` | Lowercase, digits and hyphens; unique; short and readable (`fowler-context`) |
-| `title` | The page or document title, as shown on screen in the source label |
+| `title` | The page or document title, as shown on screen in the source label; at most 50 characters (a post with no title: "<Author> on X") |
+| `publisher` | Who published it, organisation or person. The record's credit; not shown on screen |
 | `url` | The exact page where the quote appears, not a home page |
 | `quote` | Verbatim text from that page that contains the claim. Copy it; never paraphrase, never fix typos |
 | `date` | Publication date `YYYY-MM-DD` (or `YYYY` if that is all the page says) |
