@@ -7,7 +7,26 @@ export const TRANSITION = 0.3;
 export const STAGGER = 0.12;
 export const PADDING = 0.6;
 
-export const ANIMS = ["fade-up", "fade", "pop", "type", "draw"] as const;
+export const ANIMS = ["fade-up", "fade", "pop", "type", "draw", "stream", "slide"] as const;
+
+// Terminal geometry and pacing (scenes.md section 5a). Rows are fixed height and never wrap, so
+// the scroll offsets are computed here instead of measured in the browser.
+export const TERM_ROWS = 13;
+export const TERM_ROW_PX = 40;
+export const TERM_MAX_CHARS = 72;
+/** First line after the window appears. */
+export const TERM_OPEN = 0.3;
+/** An output line after the previous output line starts. */
+export const TERM_GAP = 0.07;
+/** An output line after a prompt finishes typing (the "enter"). */
+export const TERM_ENTER = 0.25;
+/** A prompt after the previous line has entered. */
+export const TERM_THINK = 0.4;
+export const TERM_ROLES = ["data-prompt", "data-out", "data-tool", "data-result", "data-diff"] as const;
+export const TERM_TONES = ["ok", "err", "warn", "dim", "accent"] as const;
+export const PIPELINE_MIN = 3;
+export const PIPELINE_MAX = 8;
+export const PIPELINE_CHIP_CHARS = 14;
 export type Anim = (typeof ANIMS)[number];
 export const CAMERAS = ["none", "push-in", "pan-left"] as const;
 export type Camera = (typeof CAMERAS)[number];
@@ -27,6 +46,8 @@ export type RuleId =
   | "E_SOURCE_MISSING"
   | "E_SOURCE_PLACE"
   | "E_UNKNOWN_SOURCE"
+  | "E_TERM_LINE"
+  | "E_PIPELINE"
   | "E_FORBIDDEN";
 
 export interface SceneIssue {
@@ -98,6 +119,57 @@ function issue(rule: RuleId, el: HtmlElement, message: string): SceneIssue {
 /** Node ids of a `<pre data-mermaid>` source occur in it as whole words. */
 function occursAsWord(source: string, id: string): boolean {
   return new RegExp(`(^|[^A-Za-z0-9_])${id.replace(/[^A-Za-z0-9]/g, "")}($|[^A-Za-z0-9_])`).test(source) && /^[A-Za-z0-9]+$/.test(id);
+}
+
+/** The role attribute of a terminal line, or null when it has none or several. */
+export function terminalRole(p: HtmlElement): (typeof TERM_ROLES)[number] | null {
+  const roles = TERM_ROLES.filter((r) => hasAttr(p, r));
+  return roles.length === 1 ? roles[0]! : null;
+}
+
+export function isPrompt(p: HtmlElement): boolean {
+  return hasAttr(p, "data-prompt");
+}
+
+function terminalIssues(block: HtmlElement): SceneIssue[] {
+  const out: SceneIssue[] = [];
+  const lines = elementChildren(block);
+  if (!lines.length) out.push(issue("E_TERM_LINE", block, "a terminal needs at least one <p> line"));
+  for (const p of lines) {
+    if (p.tag !== "p") {
+      out.push(issue("E_TERM_LINE", p, "a terminal holds only <p> lines"));
+      continue;
+    }
+    const role = terminalRole(p);
+    if (!role) out.push(issue("E_TERM_LINE", p, `a terminal line needs exactly one of ${TERM_ROLES.join(", ")}`));
+    const prompt = getAttr(p, "data-prompt");
+    if (role === "data-prompt" && prompt !== null && prompt !== "" && prompt !== "sh") out.push(issue("E_TERM_LINE", p, 'data-prompt is bare (Claude) or "sh" (shell)'));
+    const diff = getAttr(p, "data-diff");
+    if (role === "data-diff" && diff !== "add" && diff !== "del") out.push(issue("E_TERM_LINE", p, 'data-diff must be "add" or "del"'));
+    const tone = getAttr(p, "data-tone");
+    if (tone !== undefined && !(TERM_TONES as readonly string[]).includes(tone ?? "")) out.push(issue("E_TERM_LINE", p, `data-tone must be one of ${TERM_TONES.join(", ")}`));
+    if (elementChildren(p).length) out.push(issue("E_TERM_LINE", p, "a terminal line holds plain text only"));
+    const n = textContent(p).trim().length;
+    if (n > TERM_MAX_CHARS) out.push(issue("E_TERM_LINE", p, `${n} characters; a terminal line holds at most ${TERM_MAX_CHARS}`));
+  }
+  return out;
+}
+
+function pipelineIssues(block: HtmlElement): SceneIssue[] {
+  const kids = elementChildren(block);
+  const ol = kids.length === 1 && kids[0]!.tag === "ol" ? kids[0]! : null;
+  if (!ol) return [issue("E_PIPELINE", block, "a pipeline holds exactly one <ol>")];
+  const chips = elementChildren(ol);
+  const out: SceneIssue[] = [];
+  if (chips.length < PIPELINE_MIN || chips.length > PIPELINE_MAX || chips.some((c) => c.tag !== "li")) {
+    out.push(issue("E_PIPELINE", ol, `a pipeline has ${PIPELINE_MIN} to ${PIPELINE_MAX} <li> chips`));
+  }
+  for (const c of chips) {
+    const n = textContent(c).trim().length;
+    if (n > PIPELINE_CHIP_CHARS) out.push(issue("E_PIPELINE", c, `${n} characters; a chip holds at most ${PIPELINE_CHIP_CHARS}`));
+    if (elementChildren(c).length) out.push(issue("E_PIPELINE", c, "a chip holds plain text only"));
+  }
+  return out;
 }
 
 export interface StaticCheckOptions {
@@ -172,6 +244,8 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
     } else if (typeof block === "string" && SOURCE_REQUIRED.has(block)) {
       out.push(issue("E_SOURCE_MISSING", el, `a ${block} block needs data-source="s:<id>"`));
     }
+    if (block === "terminal") out.push(...terminalIssues(el));
+    if (block === "pipeline") out.push(...pipelineIssues(el));
     if (block === "diagram") {
       const pre = descendants(el).find((d) => hasAttr(d, "data-mermaid"));
       const source = pre ? textContent(pre) : "";
@@ -242,12 +316,39 @@ export interface ResolvedDiagram {
   renderId: string;
 }
 
+/** A terminal's content moves up to `y` px at `t` (line `row` entered below the last row). */
+export interface ResolvedScroll {
+  block: HtmlElement;
+  t: number;
+  y: number;
+}
+
+/** The cursor after a typed prompt: blinking from `show` until `hide`. */
+export interface ResolvedCursor {
+  line: HtmlElement;
+  show: number;
+  hide: number;
+}
+
+/** A pipeline chip lights at `t`; the rail then fills to `fraction` of its length. */
+export interface ResolvedChip {
+  block: HtmlElement;
+  chip: HtmlElement;
+  t: number;
+  fraction: number;
+  /** Lit when the beat opens (data-done): no pop, the rail starts there. */
+  done: boolean;
+}
+
 export interface ResolvedTimeline {
   duration: number;
   beats: ResolvedBeat[];
   targets: ResolvedTarget[];
   steps: ResolvedStep[];
   diagrams: ResolvedDiagram[];
+  scrolls: ResolvedScroll[];
+  cursors: ResolvedCursor[];
+  chips: ResolvedChip[];
   issues: SceneIssue[];
   warnings: SceneWarning[];
 }
@@ -271,27 +372,40 @@ function codeBlockOf(el: HtmlElement): HtmlElement | null {
   return null;
 }
 
+/** The terminal block of a terminal line (a <p> directly inside it), else null. */
+function terminalOf(el: HtmlElement): HtmlElement | null {
+  return el.tag === "p" && el.parent && getAttr(el.parent, "data-block") === "terminal" ? el.parent : null;
+}
+
+function isPipelineChip(el: HtmlElement): boolean {
+  return el.tag === "li" && blockOf(el) === "pipeline";
+}
+
 function defaultAnim(el: HtmlElement): Anim {
-  if (getAttr(el, "data-block") === "diagram") return "fade";
+  const block = getAttr(el, "data-block");
+  if (block === "diagram" || block === "terminal" || block === "pipeline") return "fade";
   if (hasAttr(el, "data-line") && codeBlockOf(el)) return "type";
+  if (terminalOf(el)) return isPrompt(el) ? "type" : "stream";
   return "fade-up";
 }
 
-function typeDuration(chars: number): number {
+export function typeDuration(chars: number): number {
   return Math.min(1.2, Math.max(0.3, 0.035 * chars));
 }
 
-const ANIM_DURATION: Record<Exclude<Anim, "type">, number> = { "fade-up": 0.6, fade: 0.6, pop: 0.5, draw: 0.8 };
+const ANIM_DURATION: Record<Exclude<Anim, "type">, number> = { "fade-up": 0.6, fade: 0.6, pop: 0.5, draw: 0.8, stream: 0.12, slide: 0.6 };
 
 /** The entrance targets of a beat, in document order (section 5, "Targets"). */
 export function beatTargets(beat: HtmlElement): HtmlElement[] {
   const set = new Set<HtmlElement>();
   const direct = new Set(elementChildren(beat));
   for (const el of descendants(beat)) {
-    if (isExcluded(el)) continue;
+    // Pipeline chips are always on screen; they light up (ResolvedChip), they do not enter.
+    if (isExcluded(el) || isPipelineChip(el)) continue;
     let target = direct.has(el) || hasAttr(el, "data-cue") || hasAttr(el, "data-anim");
     if (!target && el.tag === "li" && blockOf(el) === "list") target = true;
     if (!target && hasAttr(el, "data-line") && codeBlockOf(el)) target = true;
+    if (!target && terminalOf(el)) target = true;
     // An empty code line has no tween and appears with its block.
     if (target && hasAttr(el, "data-line") && codeBlockOf(el) && !hasAttr(el, "data-cue") && textContent(el).trim() === "") target = false;
     if (target) set.add(el);
@@ -344,6 +458,9 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
   const targets: ResolvedTarget[] = [];
   const steps: ResolvedStep[] = [];
   const diagrams: ResolvedDiagram[] = [];
+  const scrolls: ResolvedScroll[] = [];
+  const cursors: ResolvedCursor[] = [];
+  const chips: ResolvedChip[] = [];
 
   scene.beats.forEach((b, bi) => {
     const rb = beats[bi]!;
@@ -368,6 +485,34 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       return Math.max(t, rb.floor);
     };
 
+    // Terminal lines chain inside their block (section 5a): each starts after the line before it.
+    const terms = new Map<HtmlElement, { rows: number; prev: { t: number; duration: number; prompt: boolean } | null; cursor: ResolvedCursor | null }>();
+    const terminalLineTime = (el: HtmlElement, block: HtmlElement, t0: number, anim: Anim, duration: number): number => {
+      const st = terms.get(block) ?? { rows: 0, prev: null, cursor: null };
+      terms.set(block, st);
+      const blockT = base.get(block) ?? rb.floor;
+      const p = st.prev;
+      const next = !p ? blockT + TERM_OPEN : anim === "type" ? p.t + p.duration + TERM_THINK : p.prompt ? p.t + p.duration + TERM_ENTER : p.t + TERM_GAP;
+      let t: number;
+      if (hasAttr(el, "data-cue")) {
+        t = t0;
+        if (t < next - 1e-9) warnings.push({ line: el.line, message: `${describe(el)} is cued at ${t.toFixed(2)} s, before the line above it has finished (${next.toFixed(2)} s); the cue wins` });
+      } else t = Math.max(next, t0);
+      if (t + duration > rb.end + 1e-9 && !hasAttr(el, "data-cue")) {
+        warnings.push({ line: el.line, message: `${describe(el)} finishes at ${(t + duration).toFixed(2)} s, after its beat "${b.id}" ends (${rb.end.toFixed(2)} s); add a cue or cut lines` });
+      }
+      const row = st.rows++;
+      if (row >= TERM_ROWS) scrolls.push({ block, t, y: -(row - (TERM_ROWS - 1)) * TERM_ROW_PX });
+      if (st.cursor) st.cursor.hide = t;
+      st.cursor = null;
+      if (anim === "type") {
+        st.cursor = { line: el, show: t + duration, hide: rb.unmount };
+        cursors.push(st.cursor);
+      }
+      st.prev = { t, duration, prompt: anim === "type" };
+      return t;
+    };
+
     const slot = new Map<string, number>();
     let prev: ResolvedTarget | null = null;
     for (const el of list) {
@@ -378,8 +523,11 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       const chars = Math.max(1, textContent(el).trim().length);
       const duration = anim === "type" ? typeDuration(chars) : ANIM_DURATION[anim];
       const code = anim === "type" ? codeBlockOf(el) : null;
+      const term = terminalOf(el);
       let t: number;
-      if (code && prev && prev.anim === "type" && codeBlockOf(prev.el) === code && prev.base === t0) {
+      if (term) {
+        t = terminalLineTime(el, term, t0, anim, duration);
+      } else if (code && prev && prev.anim === "type" && codeBlockOf(prev.el) === code && prev.base === t0) {
         t = prev.t + prev.duration; // chained typing
       } else {
         const key = t0.toFixed(6);
@@ -407,9 +555,23 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         steps.push({ el: st, beat: bi, figure: fig, t, nodes, edges });
       }
     }
+
+    // Pipeline chips: equal widths, so the k-th of n chips sits at k/(n-1) of the rail.
+    for (const pl of descendants(b.el).filter((d) => getAttr(d, "data-block") === "pipeline")) {
+      const blockT = base.get(pl) ?? resolveBase(pl);
+      const ol = elementChildren(pl).find((c) => c.tag === "ol");
+      const list = ol ? elementChildren(ol).filter((c) => c.tag === "li") : [];
+      let k = 0;
+      list.forEach((chip, i) => {
+        const fraction = list.length > 1 ? i / (list.length - 1) : 1;
+        const done = hasAttr(chip, "data-done");
+        const t = done ? blockT : hasAttr(chip, "data-cue") ? Math.max(resolveBase(chip), blockT) : blockT + STAGGER * k++;
+        chips.push({ block: pl, chip, t, fraction, done });
+      });
+    }
   });
 
-  return { duration: D, beats, targets, steps, diagrams, issues, warnings };
+  return { duration: D, beats, targets, steps, diagrams, scrolls, cursors, chips, issues, warnings };
 }
 
 /** Cue names used anywhere in the scene (beats, elements, steps). */

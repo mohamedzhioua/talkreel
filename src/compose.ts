@@ -4,6 +4,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildBlocks, isTerminalPrompt, wrapTyped, type BlocksPlan } from "./compose-blocks.js";
 import { applyDisplays, captionLines, type CaptionLine } from "./compose-captions.js";
 import { TIMELINE_RUNTIME } from "./compose-runtime.js";
 import { resolveCues } from "./cues.js";
@@ -16,12 +17,14 @@ import { loadSources, paths, readJson, type ChapterFile, type Talk } from "./tal
 import { readWavInfo } from "./wav.js";
 
 /** Bump when the generated page or timeline changes in a way that must re-render chapters. */
-export const COMPOSE_VERSION = "4";
+export const COMPOSE_VERSION = "5";
 
 /** talkreel's own package root (the folder holding dist/, src/, themes/). */
 export const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** Locate an installed npm package by walking up node_modules folders from talkreel's root. */
+export const TAG_MAX_CHARS = 14;
+
 export function packageDir(name: string): string {
   for (let dir = PACKAGE_ROOT; ; dir = dirname(dir)) {
     const p = join(dir, "node_modules", name);
@@ -89,6 +92,8 @@ export interface PageInput {
   sources: ReadonlyMap<string, Source>;
   /** `[[display|spoken]]` groups of the script; captions show the display text. */
   displays?: readonly DisplayForm[];
+  /** Ambient layer (talk.json `ambient: true`) with its chapter tag text, e.g. "03 · Spec". */
+  ambient?: { tag: string };
 }
 
 export interface Plan {
@@ -99,6 +104,10 @@ export interface Plan {
   steps: { host: string; renderId: string; t: number; nodes: string[]; edges: [string, string][] }[];
   lines: { id: string; show: number; hide: number }[];
   words: { id: string; start: number; end: number }[];
+  scrolls: BlocksPlan["scrolls"];
+  cursors: BlocksPlan["cursors"];
+  chips: BlocksPlan["chips"];
+  ambient: boolean;
 }
 
 export interface Page {
@@ -138,11 +147,14 @@ export function buildPage(input: PageInput): Page {
     setAttr(el, "data-track-index", "1");
   }
 
-  const targets = tl.targets.map((t) => {
+  const targets = tl.targets.flatMap((t) => {
     const o: Plan["targets"][number] = { id: idFor(t.el), anim: t.anim, t: Math.round(t.t * 1000) / 1000, d: Math.round(t.duration * 1000) / 1000 };
     if (t.chars !== undefined) o.n = t.chars;
-    return o;
+    // A typed prompt: the line (and its glyph) appears, then only its text types in.
+    if (t.anim === "type" && isTerminalPrompt(t.el)) return [{ id: o.id, anim: "stream", t: o.t, d: 0.12 }, { ...o, id: idFor(wrapTyped(t.el)) }];
+    return [o];
   });
+  const blocks = buildBlocks(tl, idFor);
 
   const hostOf = new Map<HtmlElement, string>();
   const diagrams = tl.diagrams.map((d) => {
@@ -186,7 +198,9 @@ ${hasDiagram ? '  <script src="vendor/mermaid.min.js"></script>\n' : ""}</head>
 <body>
   <div id="tr-root" class="tr-root" data-composition-id="main"
        data-start="0" data-duration="${r3(D)}" data-width="1920" data-height="1080">
-    <div class="tr-stage">
+${input.ambient ? `    <div class="tr-ambient" aria-hidden="true"><i class="tr-blob tr-blob-a" id="tr-blob-a"></i><i class="tr-blob tr-blob-b" id="tr-blob-b"></i><i class="tr-grid" id="tr-grid"></i></div>
+    <p class="tr-tag" id="tr-tag">${escapeText(input.ambient.tag)}</p>
+` : ""}    <div class="tr-stage">
 ${beatsHtml}
     </div>
     <div id="tr-captions" class="tr-captions clip" data-start="0" data-duration="${r3(D)}" data-track-index="2">
@@ -210,6 +224,8 @@ ${lineHtml}
     steps,
     lines: lines.map((l, j) => ({ id: `tr-cap-${j}`, show: round(l.show), hide: round(l.hide) })),
     words: captions.words.map((w, k) => ({ id: `tr-w-${k}`, start: round(w.start), end: round(w.end) })),
+    ...blocks,
+    ambient: !!input.ambient,
   };
   return { html, plan, lines, hasDiagram };
 }
@@ -291,7 +307,9 @@ export function composeChapter(talk: Talk, ch: ChapterFile): ComposeResult {
   const sources = new Map(loadSources(talk).sources.map((s) => [s.id, s]));
   const rel = `scenes/${ch.chapter}-${ch.name}.html`;
   const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()));
-  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays });
+  if (talk.config.ambient && chapter.tag.length > TAG_MAX_CHARS) warnings.push({ message: `chapter tag "${chapter.tag}" is ${chapter.tag.length} characters; keep it at most ${TAG_MAX_CHARS} (# Title {tag: X})` });
+  const ambient = talk.config.ambient ? { tag: `${ch.chapter} · ${chapter.tag}` } : undefined;
+  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays, ambient });
 
   const dir = buildPaths.dir(talk, ch.lang, ch.chapter);
   mkdirSync(dir, { recursive: true });

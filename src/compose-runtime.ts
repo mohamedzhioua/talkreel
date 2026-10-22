@@ -26,6 +26,10 @@ export const TIMELINE_RUNTIME = `(function () {
       tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, t);
     } else if (anim === "pop") {
       tl.fromTo(el, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, t);
+    } else if (anim === "stream") {
+      tl.fromTo(el, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.12, ease: "power1.out" }, t);
+    } else if (anim === "slide") {
+      tl.fromTo(el, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, t);
     } else if (anim === "type") {
       tl.fromTo(el, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: duration, ease: "steps(" + chars + ")" }, t);
     } else if (anim === "draw") {
@@ -104,6 +108,49 @@ export const TIMELINE_RUNTIME = `(function () {
       tl.set(el, { attr: { "data-state": "current" } }, w.start);
       tl.set(el, { attr: { "data-state": "spoken" } }, w.end);
     });
+
+    // Terminal scroll and pipeline rail: several tweens on one property, so each starts from the
+    // explicit previous value and never renders early (seek order must not change a frame).
+    var at = {};
+    P.scrolls.forEach(function (s) {
+      var el = byId(s.id);
+      if (!(s.id in at)) { at[s.id] = 0; window.gsap.set(el, { y: 0 }); }
+      tl.fromTo(el, { y: at[s.id] }, { y: s.y, duration: 0.15, ease: "power2.out", immediateRender: false }, s.t);
+      at[s.id] = s.y;
+    });
+    var rails = {};
+    P.chips.forEach(function (c) { (rails[c.rail] = rails[c.rail] || []).push(c); });
+    Object.keys(rails).forEach(function (id) {
+      var el = byId(id);
+      var list = rails[id].slice().sort(function (a, b) { return a.t - b.t || a.f - b.f; });
+      var f = 0;
+      list.forEach(function (c) { if (c.done) f = Math.max(f, c.f); });
+      window.gsap.set(el, { scaleX: f });
+      list.forEach(function (c) {
+        var lit = byId(c.id);
+        if (c.done) { window.gsap.set(lit, { opacity: 1 }); return; }
+        tl.fromTo(lit, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, c.t);
+        if (c.f > f) {
+          tl.fromTo(el, { scaleX: f }, { scaleX: c.f, duration: 0.5, ease: "power2.inOut", immediateRender: false }, c.t);
+          f = c.f;
+        }
+      });
+    });
+    // A cursor is one tween from show to hide whose ease is a square wave: on, off, ... off.
+    P.cursors.forEach(function (c) {
+      var span = c.hide - c.show;
+      if (span <= 0) return;
+      tl.fromTo(byId(c.id), { opacity: 0 }, { opacity: 1, duration: span, ease: function (p) {
+        if (p >= 1) return 0;
+        return Math.floor((p * span) / 0.53) % 2 === 0 ? 1 : 0;
+      } }, c.show);
+    });
+    if (P.ambient) {
+      tl.fromTo("#tr-blob-a", { x: 0, y: 0, scale: 1 }, { x: -260, y: 140, scale: 1.15, duration: P.D, ease: "none" }, 0);
+      tl.fromTo("#tr-blob-b", { x: 0, y: 0, scale: 1 }, { x: 240, y: -100, scale: 1.1, duration: P.D, ease: "none" }, 0);
+      tl.fromTo("#tr-grid", { y: 0 }, { y: -Math.min(120, 4 * P.D), duration: P.D, ease: "none" }, 0);
+      tl.fromTo("#tr-tag", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+    }
 
     tl.set({}, {}, P.D);
     window.__timelines = window.__timelines || {};
