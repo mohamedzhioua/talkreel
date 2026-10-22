@@ -68,6 +68,7 @@ describe("scene validator", () => {
     ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out data-tone="red">x</p></div></section>`],
     ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out>${"x".repeat(73)}</p></div></section>`],
     ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out>a <b>b</b></p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal" data-rows="20"><p data-out>x</p></div></section>`],
     ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ul><li>a</li><li>b</li><li>c</li></ul></div></section>`],
     ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ol><li>a</li><li>b</li></ol></div></section>`],
     ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ol><li>a</li><li>b</li><li>fifteen chars!!</li></ol></div></section>`],

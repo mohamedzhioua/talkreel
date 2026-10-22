@@ -12,6 +12,13 @@ export const ANIMS = ["fade-up", "fade", "pop", "type", "draw", "stream", "slide
 // Terminal geometry and pacing (scenes.md section 5a). Rows are fixed height and never wrap, so
 // the scroll offsets are computed here instead of measured in the browser.
 export const TERM_ROWS = 13;
+export const TERM_MIN_ROWS = 2;
+
+/** Visible rows of a terminal: data-rows (2..13), else 13. */
+export function terminalRows(block: HtmlElement): number {
+  const n = Number(getAttr(block, "data-rows"));
+  return Number.isInteger(n) && n >= TERM_MIN_ROWS && n <= TERM_ROWS ? n : TERM_ROWS;
+}
 export const TERM_ROW_PX = 40;
 export const TERM_MAX_CHARS = 72;
 /** First line after the window appears. */
@@ -135,6 +142,8 @@ function terminalIssues(block: HtmlElement): SceneIssue[] {
   const out: SceneIssue[] = [];
   const lines = elementChildren(block);
   if (!lines.length) out.push(issue("E_TERM_LINE", block, "a terminal needs at least one <p> line"));
+  const rows = getAttr(block, "data-rows");
+  if (rows !== undefined && terminalRows(block) !== Number(rows)) out.push(issue("E_TERM_LINE", block, `data-rows must be a whole number from ${TERM_MIN_ROWS} to ${TERM_ROWS}`));
   for (const p of lines) {
     if (p.tag !== "p") {
       out.push(issue("E_TERM_LINE", p, "a terminal holds only <p> lines"));
@@ -502,7 +511,8 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         warnings.push({ line: el.line, message: `${describe(el)} finishes at ${(t + duration).toFixed(2)} s, after its beat "${b.id}" ends (${rb.end.toFixed(2)} s); add a cue or cut lines` });
       }
       const row = st.rows++;
-      if (row >= TERM_ROWS) scrolls.push({ block, t, y: -(row - (TERM_ROWS - 1)) * TERM_ROW_PX });
+      const rows = terminalRows(block);
+      if (row >= rows) scrolls.push({ block, t, y: -(row - (rows - 1)) * TERM_ROW_PX });
       if (st.cursor) st.cursor.hide = t;
       st.cursor = null;
       if (anim === "type") {

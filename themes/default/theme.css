@@ -482,7 +482,7 @@ section[data-beat] > p {
 }
 [data-block="terminal"] .tr-term-vp {
   position: relative;
-  height: calc(13 * 40px + 48px);
+  height: calc(var(--rows, 13) * 40px + 48px);
   padding: 24px 32px;
   overflow: hidden;
 }

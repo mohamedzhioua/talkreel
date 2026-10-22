@@ -2,7 +2,7 @@
 // the window chrome, the scroll track, the cursors, the rail and the lit chip layers; every time
 // was already resolved in compose-scene.ts, so this only writes nodes and plan entries.
 import { escapeText, getAttr, hasAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
-import type { ResolvedTimeline } from "./compose-scene.js";
+import { terminalRows, type ResolvedTimeline } from "./compose-scene.js";
 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -50,6 +50,7 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
   for (const block of terminals) {
     const lines = block.children;
     const title = getAttr(block, "data-title");
+    block.attrs.push({ name: "style", value: `--rows:${terminalRows(block)}` });
     const vp = el("div", { class: "tr-term-vp" }, block);
     const track = el("div", { class: "tr-term-track" }, vp, lines);
     vp.children = [track];
