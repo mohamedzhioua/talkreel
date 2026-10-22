@@ -38,6 +38,16 @@ Stop after round 3 even if defects remain, and report them.
   caption line with the beat); a build step is not visible before its cue.
 - **Empty or cluttered.** No blank frame mid-beat; no beat with more than one
   primary block.
+- **Reading time** (a heuristic, not a hard rule). Primary on-screen text must
+  stay visible for at least `letters / 15 + 1.5` seconds; title and chapter cards
+  for at least 4 s. Measure it from the beat's cue time to the next beat's cue
+  time. If a beat is too short, shorten its text or move a cue. Never clamp
+  caption timings.
+- **Transitions.** Look at the frames inside every beat change (the
+  `transition` frames from `talkreel frames`). Only the outgoing beat should be
+  fading, then the incoming one should enter; never both at once.
+- **The rubric is this checklist.** Grade every frame against it, every round,
+  within the 3-round cap.
 
 ## Fixes, in order of preference
 
