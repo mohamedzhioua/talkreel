@@ -1,5 +1,0 @@
-# Guardrails {tag: Guardrails}
-
-Rules in a prompt get reasoned away. In the zhioua OS, hooks hold them. {#scope}Say the AI adds a file nobody asked for. This is what [[scope-addition-guard|scope addition guard]] prints. {#scope-action}No approval on record, so drop it, and report it under suggested, not done. Strict scope: suggest, never add. {#verify-gate}Say it tries to finish without evidence. [[verify-gate|Verify gate]] prints this, and the agent can't finish. {#loop-guard}Say one command fails three times in a row. [[loop-guard|Loop guard]] blocks the next try. Question the plan. Never attempt fix [[N+1|N plus one]].
-
-{#scoreboard}To be honest about this build: [[verify-gate|verify gate]] ran at all fifty-one stops, and passed every time. The other two never fired. {#real-block}One guard did fire, today. While I researched this video, a read-only research agent tried to redirect output into a file. {#blocked}Blocked, with the reason and the fix. Read-only agents report findings. They don't improvise a write.

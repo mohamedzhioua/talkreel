@@ -2,14 +2,9 @@
 
 Turn any repo, doc or idea into a narrated explainer video. Free, local, bilingual (EN/FR), built by AI agents.
 
-## Demo
+## Your talks stay yours
 
-<!-- demo: the first talk rendered by talkreel; added with the first release -->
-
-Two talks made by talkreel ship as examples:
-
-- `talks/how-i-ship-with-ai/`: a 5-minute tour of how its maintainer works with an AI engineering OS, told through the build of talkreel itself, with terminal views and a stage pipeline.
-- `talks/ai-engineering-today/`: the first, 10-minute talk, "Software engineering with AI today".
+A talk lives in `talks/<slug>/` (start one with `talkreel new <slug>`). Git ignores the whole `talks/` folder, so scripts, scenes, audio and videos stay on your machine and are never committed to this repo.
 
 ## Why it exists
 
