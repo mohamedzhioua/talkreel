@@ -1,0 +1,20 @@
+[project]
+name = "talkreel-audio"
+version = "0.1.0"
+description = "talkreel audio helper: Kokoro TTS and faster-whisper word timestamps, JSON on stdout."
+license = "MIT"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "kokoro-onnx>=0.6.1,<0.7",
+    "faster-whisper>=1.2.1,<2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.uv]
+# Not an installable package: the TS CLI puts this directory on PYTHONPATH.
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,18 @@
+<!-- Block: split. Two .col children; each holds h3 + p, or one nested block.
+     Cues assume {#before} {#after}. The stat is a placeholder, not a sourced fact. -->
+
+<section data-beat="compare" data-cue="before">
+  <h2>Before and after</h2>
+  <div data-block="split">
+    <div class="col">
+      <h3>Prompt and hope</h3>
+      <p>One long chat, no spec, the model decides what done means and nobody runs the tests.</p>
+    </div>
+    <div class="col" data-cue="after">
+      <div data-block="stat" data-source="s:example-survey">
+        <p class="value">46%</p>
+        <p class="label">distrust the accuracy of AI tool output</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,15 @@
+<!-- Block: code. One [data-line] per source line; lines type in one after another.
+     Escape < > & in code. Cue assumes {#hash} in the script. -->
+
+<section data-beat="code" data-cue="hash">
+  <div data-block="code" data-lang="ts">
+    <p class="filename">src/state.ts</p>
+    <pre><code>
+      <span data-line><span class="c">// A stage is stale when its input hash changes</span></span>
+      <span data-line>export function isStale(stage: Stage, inputs: string[]) {</span>
+      <span data-line data-emph>  const hash = sha256(inputs.join("\n"));</span>
+      <span data-line>  return state.stages[stage]?.hash !== <mark>hash</mark>;</span>
+      <span data-line>}</span>
+    </code></pre>
+  </div>
+</section>

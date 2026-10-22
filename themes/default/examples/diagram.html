@@ -1,0 +1,18 @@
+<!-- Block: diagram. Mermaid flowchart; nodes and edges reveal on cues.
+     Cues assume {#pipeline} {#voice} {#align} {#render} in the script. -->
+
+<section data-beat="pipeline" data-cue="pipeline">
+  <h2 data-anim="fade">One chapter, end to end</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  S[Script] --> V[Voice]
+  V --> A[Align]
+  A --> R[Render]
+  R --> Q{Review}
+  Q -->|fix| R</pre>
+    <i data-step data-nodes="V" data-edges="S-V" data-cue="voice"></i>
+    <i data-step data-nodes="A" data-edges="V-A" data-cue="align"></i>
+    <i data-step data-nodes="R,Q" data-edges="A-R,R-Q,Q-R" data-cue="render"></i>
+    <figcaption>Every stage writes plain files you can edit</figcaption>
+  </figure>
+</section>
