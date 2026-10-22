@@ -30,11 +30,22 @@ export interface ParsedChapter {
   spokenText: string;
   cues: Marker[];
   citations: Marker[];
+  /**
+   * Display forms from `[[display|spoken]]`: the voice says `count` words starting at `first`,
+   * the captions show them as the single word `text` (punctuation around the marker kept).
+   */
+  displays: DisplayForm[];
+}
+
+export interface DisplayForm {
+  first: number;
+  count: number;
+  text: string;
 }
 
 const CITE_RE = /\[s:([^\]]+)\]/g;
 const CUE_RE = /\{#([A-Za-z0-9][A-Za-z0-9_-]*)\}/g;
-const MARKER_RE = /\[s:([^\]]+)\]|\{#([A-Za-z0-9][A-Za-z0-9_-]*)\}/g;
+const MARKER_RE = /\[s:([^\]]+)\]|\{#([A-Za-z0-9][A-Za-z0-9_-]*)\}|\[\[([^\]|]+)\|([^\]|]+)\]\]/g;
 
 /** Strip inline markdown that is never spoken, keeping the words. */
 function stripInlineMarkdown(s: string): string {
@@ -105,6 +116,7 @@ export function parseScript(source: string): ParsedChapter {
   const words: string[] = [];
   const cues: Marker[] = [];
   const citations: Marker[] = [];
+  const displays: DisplayForm[] = [];
   const paraTexts: string[] = [];
 
   for (const para of paragraphs) {
@@ -114,9 +126,15 @@ export function parseScript(source: string): ParsedChapter {
       let cleaned = "";
       let last = 0;
       const markers: { offset: number; cue?: string; cite?: string }[] = [];
+      // [[display|spoken]] keeps its spoken words in place; the span is remembered for captions.
+      const spans: { from: number; to: number; display: string }[] = [];
       for (const m of seg.text.matchAll(MARKER_RE)) {
         cleaned += seg.text.slice(last, m.index);
-        if (m[1] !== undefined) markers.push({ offset: cleaned.length, cite: m[1] });
+        if (m[3] !== undefined) {
+          const from = cleaned.length;
+          cleaned += m[4]!;
+          spans.push({ from, to: cleaned.length, display: m[3].trim() });
+        } else if (m[1] !== undefined) markers.push({ offset: cleaned.length, cite: m[1] });
         else markers.push({ offset: cleaned.length, cue: m[2]! });
         last = m.index + m[0].length;
       }
@@ -124,6 +142,7 @@ export function parseScript(source: string): ParsedChapter {
 
       // Tokenise; a token with nothing speakable (a lone dash, a stray dot) joins the previous word.
       const starts: number[] = [];
+      const ends: number[] = [];
       for (const t of cleaned.matchAll(/\S+/g)) {
         const tok = t[0];
         if (normToken(tok) === "" && words.length > paraStart) {
@@ -134,6 +153,7 @@ export function parseScript(source: string): ParsedChapter {
         }
         if (normToken(tok) === "") continue;
         starts.push(t.index);
+        ends.push(t.index + tok.length);
         words.push(tok);
       }
       const segBase = words.length - starts.length;
@@ -143,11 +163,20 @@ export function parseScript(source: string): ParsedChapter {
         if (mk.cue !== undefined) cues.push({ id: mk.cue, ...marker });
         else for (const id of mk.cite!.split(",").map((s) => s.trim()).filter(Boolean)) citations.push({ id, ...marker });
       }
+      for (const sp of spans) {
+        const inside = starts.map((st, j) => [st, j] as const).filter(([st, j]) => st < sp.to && ends[j]! > sp.from);
+        if (!inside.length) continue;
+        const [firstStart, j0] = inside[0]!;
+        const [lastStart, j1] = inside[inside.length - 1]!;
+        const prefix = cleaned.slice(firstStart, sp.from);
+        const suffix = words[segBase + j1]!.slice(sp.to - lastStart);
+        displays.push({ first: segBase + j0, count: j1 - j0 + 1, text: prefix + sp.display + suffix });
+      }
     }
     if (words.length > paraStart) paraTexts.push(words.slice(paraStart).join(" "));
   }
 
-  return { title, words, spokenText: paraTexts.join("\n\n"), cues, citations };
+  return { title, words, spokenText: paraTexts.join("\n\n"), cues, citations, displays };
 }
 
 export function parseScriptFile(file: string): ParsedChapter {

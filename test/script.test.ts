@@ -76,3 +76,24 @@ describe("resolveCues", () => {
     expect(() => resolveCues(ch, { lang: "en", words: [] })).toThrow(/re-run/);
   });
 });
+
+describe("display forms", () => {
+  it("speaks the second form, records the first for captions, keeps the punctuation around it", () => {
+    const ch = parseScript("# T\n\nIt speaks [[MCP|M C P]], and ([[122|one hundred twenty-two]]) {#n}tests pass.\n");
+    expect(ch.spokenText).toBe("It speaks M C P, and (one hundred twenty-two) tests pass.");
+    expect(ch.displays).toEqual([
+      { first: 2, count: 3, text: "MCP," },
+      { first: 6, count: 3, text: "(122)" },
+    ]);
+    // Cues still count spoken words.
+    expect(ch.cues[0]!.wordIndex).toBe(9);
+    expect(ch.words[9]).toBe("tests");
+  });
+
+  it("changes the spoken hash only through the spoken form", () => {
+    const a = parseScript("# T\n\nRun [[npm test|N P M test]] now.\n");
+    const b = parseScript("# T\n\nRun [[npm run test|N P M test]] now.\n");
+    expect(spokenHash(a)).toBe(spokenHash(b));
+    expect(a.displays[0]!.text).not.toBe(b.displays[0]!.text);
+  });
+});

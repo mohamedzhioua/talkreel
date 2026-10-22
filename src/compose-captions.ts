@@ -1,5 +1,6 @@
 // Caption lines for the composed page (scenes.md section 10, "Captions").
 import type { CaptionWord } from "./schema.js";
+import type { DisplayForm } from "./script.js";
 
 export const CAPTION_MAX_CHARS = 48;
 /** Hard cap for a line that absorbs a lone word it could not be balanced with (theme.css: 1600 px at 52 px). */
@@ -111,4 +112,25 @@ function lineCost(words: CaptionWord[], a: number, b: number, len: number, whole
   if (b - a === 1 && lastLine) c += COST.orphan;
   else if (len < FRAGMENT_CHARS) c += COST.fragment;
   return c;
+}
+
+/**
+ * Caption words as shown: each `[[display|spoken]]` group of spoken words becomes one word with
+ * the display text, spanning the group's first start to its last end. Cue times are resolved on
+ * the spoken words before this, so they do not move.
+ */
+export function applyDisplays(words: CaptionWord[], displays: readonly DisplayForm[]): CaptionWord[] {
+  const byFirst = new Map(displays.map((d) => [d.first, d]));
+  const out: CaptionWord[] = [];
+  for (let k = 0; k < words.length; k++) {
+    const d = byFirst.get(k);
+    if (!d || k + d.count > words.length) {
+      out.push(words[k]!);
+      continue;
+    }
+    const group = words.slice(k, k + d.count);
+    out.push({ text: d.text, start: group[0]!.start, end: group[group.length - 1]!.end, matched: group.every((w) => w.matched) });
+    k += d.count - 1;
+  }
+  return out;
 }
