@@ -78,3 +78,19 @@ export function renderArgs(dir: string, output: string, fps: number, quality: Qu
 export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions): Promise<RunResult> {
   return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism())), dir, opts);
 }
+
+/**
+ * True when the process crashed rather than reported a failure: a Windows NTSTATUS exception
+ * code (0xC0000000 and up). On this box `hyperframes check` hit 0xC0000409 on one chapter in
+ * each of two full renders and passed on a plain re-run, so a crash earns one retry.
+ */
+export function isProcessCrash(code: number): boolean {
+  return code >= 0xc0000000;
+}
+
+export async function retryOnCrash(step: () => Promise<RunResult>, onRetry: (code: number) => void): Promise<RunResult> {
+  const first = await step();
+  if (!isProcessCrash(first.code)) return first;
+  onRetry(first.code);
+  return step();
+}

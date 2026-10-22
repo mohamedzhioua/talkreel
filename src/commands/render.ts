@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, relative } from "node:path";
 import { buildPaths, composeChapter } from "../compose.js";
 import { chaptersTxt, concatMp4, outPaths, probeDuration, transcriptMd } from "../compose-concat.js";
-import { hfCheck, hfRender, HYPERFRAMES_VERSION, installedHyperframesVersion, isQuality, type Quality } from "../compose-hyperframes.js";
+import { hfCheck, hfRender, HYPERFRAMES_VERSION, installedHyperframesVersion, isQuality, retryOnCrash, type Quality } from "../compose-hyperframes.js";
 import { SceneError } from "../compose-scene.js";
 import { parseScriptFile } from "../script.js";
 import { chapterStatus, currentConcatHash, currentRenderHash, lastRenderQuality } from "../stages.js";
@@ -58,7 +58,8 @@ async function renderChapter(talk: Talk, ch: ChapterFile, hash: string, quality:
   for (const w of composed.warnings) console.error(`${key}: warning: ${w.line ? `line ${w.line}: ` : ""}${w.message}`);
   const dir = composed.dir;
   console.log(`${key}: composed ${relative(talk.dir, dir)} (${composed.duration.toFixed(2)} s, ${composed.timeline.beats.length} beats); hyperframes check`);
-  const chk = await hfCheck(dir, composed.duration, { telemetry });
+  const retryNote = (step: string) => (code: number) => console.error(`${key}: hyperframes ${step} crashed (exit ${code}); retrying once`);
+  const chk = await retryOnCrash(() => hfCheck(dir, composed.duration, { telemetry }), retryNote("check"));
   if (chk.code !== 0) {
     console.error(`${key}: hyperframes check failed (exit ${chk.code}):\n${tail(chk.stdout + "\n" + chk.stderr, 60)}`);
     return false;
@@ -68,7 +69,7 @@ async function renderChapter(talk: Talk, ch: ChapterFile, hash: string, quality:
   const mp4 = buildPaths.mp4(talk, ch.lang, ch.chapter);
   rmSync(mp4, { force: true });
   console.log(`${key}: rendering (${quality})`);
-  const r = await hfRender(dir, mp4, talk.config.fps, quality, { telemetry });
+  const r = await retryOnCrash(() => hfRender(dir, mp4, talk.config.fps, quality, { telemetry }), retryNote("render"));
   if (r.code !== 0 || !existsSync(mp4)) {
     console.error(`${key}: hyperframes render failed (exit ${r.code}):\n${tail(r.stdout + "\n" + r.stderr, 60)}`);
     return false;
