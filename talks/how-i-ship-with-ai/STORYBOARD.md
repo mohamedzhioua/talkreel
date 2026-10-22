@@ -248,35 +248,15 @@ flowchart LR
 | blocked | "Blocked, with the reason and the fix…" | T5b lines 04–07 |
 
 **T5**: title "what each hook prints when it blocks". Source: OS hook message.
-- These are the hooks' printed text. In this build only verify-gate ran, and it never blocked; the other two never fired.
-- `<path>` and `<signal>` are the hook's own placeholders, kept as is.
-- Line 06 cuts the OS script path to `…`.
+- These rows are the hooks' printed text. In this build only verify-gate ran, and it never blocked; the other two never fired.
+- Each hook prints its messages as single lines. A line longer than a row is cut with `…`, never wrapped.
+- A dim `# <hook name>` row heads each hook's block, because scope-addition-guard prints under the label `scope-sensitive`.
+- `<path>` and `<signal>` are the hook's own placeholders.
+- The verify-gate row cuts the OS script path to `…`.
 
-```
-01  out            err     cue:scope         | scope-sensitive: no approval on record
-02  out            err     chain             |   path: <path> (signal: <signal>)
-03  out            err     cue:scope-action  |   action: if this addition was not requested, drop it and report it
-04  out            err     chain             |           under *Suggested, not done*.
-05  out            err     cue:verify-gate   | verify-gate: no captured evidence for this session.
-06  out            warn    chain             | verify-gate: run your checks via … before finishing.
-07  out            warn    cue:loop-guard    | loop-guard: this command has now failed 3 consecutive time(s):
-08  out            warn    chain             | loop-guard: repeated-failure stop rule (hard):
-09  out            warn    chain             |   3 failed attempts at the same target means STOP — question the
-10  out            warn    chain             |   hypothesis/architecture/plan; never attempt fix N+1.
-11  out            err     chain             | loop-guard: BLOCKED — this command already failed 3 consecutive time(s):
-```
-
-**T5b**: title "2026-10-22 · while researching this video". Source: OS hook message, a real block that fired on 2026-10-22 against a read-only research subagent. The text is verbatim, wrapped under its field labels.
-
-```
-01  out            err     cue:real-block    | read-only-agent-guard: blocked.
-02  out            -       chain             |   agent  : zhioua-os:researcher (read-only subagent — must not
-03  out            -       chain             |            mutate the working tree)
-04  out            warn    cue:blocked       |   reason : write-shaped Bash — redirect to a file (> or >>)
-05  out            -       chain             |   fix    : read-only agents report findings and hand writes back
-06  out            -       chain             |            to the main session or an implementer; do not improvise
-07  out            -       chain             |            a write.
-```
+**T5b**: title "2026-10-22 · while researching this video". Source: OS hook message, a real block that fired on 2026-10-22 against a read-only research subagent.
+- Each field is one row, cut with `…`.
+- The fix field shows its start, then its end on a second `fix    : …` row.
 
 ---
 
