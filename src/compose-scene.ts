@@ -436,6 +436,42 @@ export function beatTargets(beat: HtmlElement): HtmlElement[] {
  * Resolve every beat, entrance, diagram step and camera move to absolute times.
  * `cueTimes` maps a cue name to seconds (resolveCues); `audioDuration` is A, so D = A + 0.6.
  */
+export interface TagFade {
+  t: number;
+  from: number;
+  to: number;
+  d: number;
+}
+
+export const TAG_IN_AT = 0.2;
+export const TAG_IN = 0.6;
+export const TAG_OUT = 0.3;
+
+/**
+ * Opacity tweens for the ambient chapter tag. It fades in at 0.2 s and stays, except while a beat
+ * whose primary block is `title` is on screen: it fades out as that beat enters and back in as the
+ * next beat enters. A chapter that opens on a title keeps the tag hidden until the title leaves.
+ */
+export function tagFades(scene: Scene, beats: ResolvedBeat[]): TagFade[] {
+  const isTitle = (i: number) => elementChildren(scene.beats[i]!.el).some((c) => getAttr(c, "data-block") === "title");
+  const out: TagFade[] = [];
+  let shown = false;
+  if (!isTitle(0)) {
+    out.push({ t: TAG_IN_AT, from: 0, to: 1, d: TAG_IN });
+    shown = true;
+  }
+  for (let i = 1; i < beats.length; i++) {
+    if (isTitle(i) && shown) {
+      out.push({ t: beats[i]!.start, from: 1, to: 0, d: TAG_OUT });
+      shown = false;
+    } else if (!isTitle(i) && !shown) {
+      out.push({ t: beats[i]!.start, from: 0, to: 1, d: TAG_IN });
+      shown = true;
+    }
+  }
+  return out;
+}
+
 export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, audioDuration: number): ResolvedTimeline {
   const D = audioDuration + PADDING;
   const issues: SceneIssue[] = [];

@@ -254,7 +254,8 @@ fades in (0.6 s).
 With `"ambient": true` in talk.json, the composer adds a slow background drift
 (two soft gradients and a faint grid) and a chapter tag `NN · Tag` above the
 safe area (y 16..56). The tag comes from `{tag: …}` in the script heading. Off by
-default.
+default. The tag fades out while a beat whose primary block is `title` is on
+screen, and back in with the next beat.
 
 ## Theme files the composer uses
 

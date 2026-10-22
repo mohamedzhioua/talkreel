@@ -3,7 +3,4 @@ node_modules/
 dist/
 .venv/
 __pycache__/
-talks/*/build/
-talks/*/out/
-talks/*/audio/
-talks/*/talk.state.json
+talks/
