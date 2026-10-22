@@ -125,3 +125,61 @@ describe("stagger, nesting and defaults", () => {
     expect(tl.issues.map((i) => i.rule).sort()).toEqual(["E_CUE_BEFORE_BEAT", "E_CUE_ORDER"]);
   });
 });
+
+describe("terminal lines (scenes.md section 5a)", () => {
+  const scene = (lines: string) => parseScene(`<section data-beat="a"><div data-block="terminal">${lines}</div></section>`);
+
+  it("chain: prompt types after the window opens, output follows the enter, cues win, cursor blinks between", () => {
+    const tl = resolveTimeline(
+      scene(`<p data-prompt>abc</p><p data-tool>Bash(x)</p><p data-result>ok</p><p data-result data-cue="late">later</p><p data-prompt="sh">x</p>`),
+      { late: 5 },
+      10,
+    );
+    expect(tl.issues).toEqual([]);
+    expect(targetsOf(tl).map((t) => [t.el, t.anim, t.t])).toEqual([
+      ["div[terminal]", "fade", 0],
+      ["p", "type", 0.3],
+      ["p", "stream", 0.85],
+      ["p", "stream", 0.92],
+      ["p@late", "stream", 5],
+      ["p", "type", 5.52],
+    ]);
+    expect(tl.cursors.map((c) => [r(c.show), r(c.hide)])).toEqual([[0.6, 0.85], [5.82, 10.6]]);
+    expect(tl.warnings).toEqual([]);
+  });
+
+  it("scrolls one row per line past the thirteenth, computed without the browser", () => {
+    const tl = resolveTimeline(scene(Array.from({ length: 15 }, (_, i) => `<p data-out>${i}</p>`).join("")), {}, 10);
+    expect(tl.scrolls.map((s) => [r(s.t), s.y])).toEqual([[1.21, -40], [1.28, -80]]);
+  });
+
+  it("warns when a cue lands before the line above finished, and when a chain runs past its beat", () => {
+    const early = resolveTimeline(scene(`<p data-prompt>${"x".repeat(30)}</p><p data-out data-cue="c">y</p>`), { c: 0.5 }, 10);
+    expect(early.warnings.map((w) => w.message)).toEqual([expect.stringMatching(/cued at 0\.50 s, before the line above it has finished \(1\.6[0-9] s\); the cue wins/)]);
+    const long = resolveTimeline(
+      parseScene(`<section data-beat="a"><div data-block="terminal"><p data-prompt>${"x".repeat(40)}</p></div></section><section data-beat="b" data-cue="b"><p>next</p></section>`),
+      { b: 1 },
+      10,
+    );
+    expect(long.warnings.map((w) => w.message)).toEqual([expect.stringMatching(/finishes at 1\.50 s, after its beat "a" ends \(1\.00 s\)/)]);
+  });
+});
+
+describe("pipeline chips", () => {
+  it("done chips light with the beat, cued chips at their cue, at k/(n-1) of the rail", () => {
+    const tl = resolveTimeline(
+      parseScene(`<section data-beat="a"><div data-block="pipeline"><ol><li data-done>A</li><li data-done>B</li><li>C</li><li data-cue="go">D</li></ol></div></section>`),
+      { go: 3 },
+      10,
+    );
+    expect(tl.issues).toEqual([]);
+    expect(tl.chips.map((c) => [r(c.t), r(c.fraction), c.done])).toEqual([
+      [0, 0, true],
+      [0, 0.333, true],
+      [0, 0.667, false],
+      [3, 1, false],
+    ]);
+    // Chips are always on screen: they light up, they never enter.
+    expect(targetsOf(tl).map((t) => t.el)).toEqual(["div[pipeline]"]);
+  });
+});

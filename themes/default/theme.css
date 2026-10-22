@@ -447,3 +447,187 @@ section[data-beat] > p {
 }
 [data-block="split"] > .col > [data-block="code"] pre { padding: 28px 32px; }
 [data-block="split"] > .col > [data-block="definition"] { padding: 36px 40px; }
+
+/* ---------- terminal ---------- */
+/* Rows are a fixed 40 px and never wrap, so the composer computes scroll offsets in Node
+   (src/compose-scene.ts: TERM_ROWS 13, TERM_ROW_PX 40, TERM_MAX_CHARS 72). Keep them in sync. */
+
+[data-block="terminal"] {
+  width: 1680px;
+  max-width: 100%;
+  background: #0d1016;
+  border: 2px solid var(--tr-line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  font-family: var(--tr-mono);
+}
+[data-block="terminal"] .tr-term-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 0 28px;
+  background: var(--tr-surface-2);
+  border-bottom: 2px solid var(--tr-line);
+}
+[data-block="terminal"] .tr-term-bar i { width: 16px; height: 16px; border-radius: 50%; background: #ff5f57; }
+[data-block="terminal"] .tr-term-bar i:nth-child(2) { background: #febc2e; }
+[data-block="terminal"] .tr-term-bar i:nth-child(3) { background: #28c840; }
+[data-block="terminal"] .tr-term-bar span {
+  margin-left: 20px;
+  font-size: 28px;
+  color: var(--tr-muted);
+  white-space: nowrap;
+}
+[data-block="terminal"] .tr-term-vp {
+  position: relative;
+  height: calc(13 * 40px + 48px);
+  padding: 24px 32px;
+  overflow: hidden;
+}
+[data-block="terminal"] .tr-term-track { will-change: transform; }
+[data-block="terminal"] .tr-term-track > p {
+  position: relative;
+  height: 40px;
+  line-height: 40px;
+  font-size: 30px;
+  white-space: pre;
+  color: var(--tr-ink);
+  margin: 0 -32px;
+  padding: 0 32px;
+}
+[data-block="terminal"] p[data-prompt]::before { content: "> "; color: var(--tr-accent); font-weight: 600; }
+[data-block="terminal"] p[data-prompt="sh"]::before { content: "$ "; color: #3fb950; }
+[data-block="terminal"] p[data-prompt] { font-weight: 600; }
+[data-block="terminal"] .tr-typed { display: inline-block; }
+[data-block="terminal"] .tr-cursor {
+  display: inline-block;
+  width: 16px;
+  height: 32px;
+  margin-left: 4px;
+  vertical-align: -6px;
+  background: var(--tr-accent);
+  opacity: 0;
+}
+[data-block="terminal"] p[data-tool] { padding-left: 64px; }
+[data-block="terminal"] p[data-tool]::before {
+  content: "";
+  position: absolute;
+  left: 38px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3fb950;
+}
+[data-block="terminal"] p[data-result] { padding-left: 96px; color: var(--tr-muted); }
+[data-block="terminal"] p[data-result]::before {
+  content: "";
+  position: absolute;
+  left: 50px;
+  top: 4px;
+  width: 22px;
+  height: 18px;
+  border-left: 2px solid var(--tr-dim);
+  border-bottom: 2px solid var(--tr-dim);
+}
+[data-block="terminal"] p[data-diff="add"] { color: #56d364; background: rgba(63, 185, 80, 0.12); }
+[data-block="terminal"] p[data-diff="del"] { color: #ff7b72; background: rgba(248, 81, 73, 0.12); }
+[data-block="terminal"] p[data-diff="add"]::before { content: "+ "; }
+[data-block="terminal"] p[data-diff="del"]::before { content: "- "; }
+[data-block="terminal"] p[data-tone="ok"] { color: #56d364; }
+[data-block="terminal"] p[data-tone="warn"] { color: #e3b341; }
+[data-block="terminal"] p[data-tone="dim"] { color: var(--tr-muted); }
+[data-block="terminal"] p[data-tone="accent"] { color: var(--tr-accent); }
+[data-block="terminal"] p[data-tone="err"] { color: #ffa198; background: rgba(248, 81, 73, 0.16); box-shadow: inset 6px 0 0 #f85149; }
+
+/* ---------- pipeline ---------- */
+/* Chips have equal widths (flex: 1 1 0), so the composer puts the k-th of n chips at k/(n-1) of
+   the rail; the rail runs between the first and the last chip centres. --n is the chip count. */
+
+[data-block="pipeline"] {
+  position: relative;
+  width: 1680px;
+  max-width: 100%;
+  --gap: 24px;
+}
+[data-block="pipeline"] ol { position: relative; z-index: 1; display: flex; gap: var(--gap); list-style: none; }
+[data-block="pipeline"] li {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 52px;
+  border: 2px solid var(--tr-line);
+  background: var(--tr-surface);
+  color: var(--tr-muted);
+  font-size: 30px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+[data-block="pipeline"] .tr-chip-lit {
+  position: absolute;
+  inset: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 52px;
+  background: var(--tr-accent);
+  color: #0b0c10;
+  box-shadow: 0 0 40px rgba(245, 165, 36, 0.35);
+  opacity: 0;
+}
+[data-block="pipeline"] .tr-rail {
+  position: absolute;
+  z-index: 0;
+  top: 49px;
+  height: 6px;
+  left: calc((100% - (var(--n) - 1) * var(--gap)) / var(--n) / 2);
+  right: calc((100% - (var(--n) - 1) * var(--gap)) / var(--n) / 2);
+  border-radius: 3px;
+  background: var(--tr-line);
+  overflow: hidden;
+}
+[data-block="pipeline"] .tr-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--tr-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* ---------- ambient layer (talk.json "ambient": true) ---------- */
+
+.tr-ambient { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.tr-blob { position: absolute; display: block; width: 1100px; height: 1100px; border-radius: 50%; }
+.tr-blob-a { left: 1100px; top: -520px; background: radial-gradient(circle, rgba(245, 165, 36, 0.16), transparent 62%); }
+.tr-blob-b { left: -420px; top: 420px; background: radial-gradient(circle, rgba(90, 120, 200, 0.16), transparent 62%); }
+.tr-grid {
+  position: absolute;
+  display: block;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1240px;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 80%);
+}
+.tr-stage { z-index: 1; }
+.tr-tag {
+  position: absolute;
+  z-index: 1;
+  left: var(--tr-safe-left);
+  top: 16px;
+  font-family: var(--tr-mono);
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: var(--tr-muted);
+}

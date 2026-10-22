@@ -60,6 +60,17 @@ describe("scene validator", () => {
     ["E_FORBIDDEN", `<section data-beat="a"><a href="//cdn.example.com/x">x</a></section>`],
     ["E_FORBIDDEN", `<section data-beat="a" class="clip"><p>x</p></section>`],
     ["E_FORBIDDEN", `<section data-beat="a"><p id="tr-mine">x</p></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><div>x</div></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p>no role</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out data-tool>two roles</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-prompt="zsh">x</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-diff="mod">x</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out data-tone="red">x</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out>${"x".repeat(73)}</p></div></section>`],
+    ["E_TERM_LINE", `<section data-beat="a"><div data-block="terminal"><p data-out>a <b>b</b></p></div></section>`],
+    ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ul><li>a</li><li>b</li><li>c</li></ul></div></section>`],
+    ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ol><li>a</li><li>b</li></ol></div></section>`],
+    ["E_PIPELINE", `<section data-beat="a"><div data-block="pipeline"><ol><li>a</li><li>b</li><li>fifteen chars!!</li></ol></div></section>`],
   ];
   for (const [rule, html, cues] of cases) {
     it(`${rule}: ${html.replace(/\s+/g, " ").slice(0, 90)}`, () => {

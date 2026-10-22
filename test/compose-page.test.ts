@@ -260,3 +260,38 @@ describe("caption display forms", () => {
     expect(applyDisplays(words, [{ first: 4, count: 2, text: "x" }])).toEqual(words);
   });
 });
+
+describe("terminal, pipeline and ambient markup", () => {
+  const build = (html: string, ambient?: { tag: string }) => {
+    const scene = parseScene(html);
+    const tl = resolveTimeline(scene, {}, 4);
+    return buildPage({ lang: "en", scene, timeline: tl, captions: { lang: "en", words: [{ text: "x", start: 0, end: 1, matched: true }] }, audioDuration: 4, sources: new Map(), ambient });
+  };
+
+  it("wraps terminal rows in a scroll track under the window bar; a prompt types only its text", () => {
+    const p = build(`<section data-beat="a"><div data-block="terminal" data-title="claude · demo"><p data-prompt>hi &amp; bye</p><p data-out>ok</p></div></section>`);
+    expect(p.html).toMatch(/<div class="tr-term-bar"><i><\/i><i><\/i><i><\/i><span>claude · demo<\/span><\/div><div class="tr-term-vp"><div class="tr-term-track" id="tr-e-\d+">/);
+    expect(p.html).toMatch(/<p data-prompt id="(tr-e-\d+)"><span class="tr-typed" id="(tr-e-\d+)">hi &amp; bye<\/span><span class="tr-cursor" id="tr-e-\d+"><\/span><\/p>/);
+    const prompt = p.plan.targets.filter((t) => t.t === 0.3);
+    expect(prompt.map((t) => t.anim)).toEqual(["stream", "type"]);
+    expect(p.plan.cursors).toHaveLength(1);
+  });
+
+  it("adds a rail and one lit layer per chip, with the chip count for the rail's ends", () => {
+    const p = build(`<section data-beat="a"><div data-block="pipeline"><ol><li data-done>Idea</li><li>Spec</li><li>Ship</li></ol></div></section>`);
+    expect(p.html).toContain('style="--n:3"');
+    expect(p.html).toMatch(/<div class="tr-rail"><i class="tr-rail-fill" id="tr-e-\d+"><\/i><\/div><ol>/);
+    expect(p.html.match(/class="tr-chip-lit"/g)).toHaveLength(3);
+    expect(p.plan.chips.map((c) => [c.f, c.done])).toEqual([[0, true], [0.5, false], [1, false]]);
+  });
+
+  it("has no ambient or tag nodes unless asked", () => {
+    const off = build(`<section data-beat="a"><p>x</p></section>`);
+    expect(off.html).not.toMatch(/tr-ambient|tr-tag/);
+    expect(off.plan.ambient).toBe(false);
+    const on = build(`<section data-beat="a"><p>x</p></section>`, { tag: "03 · Spec" });
+    expect(on.html).toContain('<p class="tr-tag" id="tr-tag">03 · Spec</p>');
+    expect(on.html).toContain('class="tr-ambient"');
+    expect(on.plan.ambient).toBe(true);
+  });
+});
