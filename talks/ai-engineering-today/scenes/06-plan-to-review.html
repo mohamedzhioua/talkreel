@@ -1,7 +1,7 @@
 <!-- 06 how I work: plan to review. Brief and beat grid: ../STORYBOARD.md -->
 
 <section data-beat="chapter">
-  <div data-block="chapter-card" data-anim="pop" data-cue="slices">
+  <div data-block="chapter-card" data-anim="pop">
     <p class="number">06</p>
     <h2 class="title">How I work: plan to review</h2>
   </div>
@@ -34,7 +34,7 @@
   <div data-block="list">
     <h3 class="heading">Only three gates ask me</h3>
     <ol>
-      <li data-cue="gate-spec">The spec</li>
+      <li>The spec</li>
       <li data-cue="gate-user">User-challenge decisions</li>
       <li data-cue="gate-human">Merge, tag and publish</li>
     </ol>
@@ -45,7 +45,7 @@
   <div data-block="list">
     <h3 class="heading">Every other call gets a class</h3>
     <ul>
-      <li data-cue="mechanical">Mechanical: the spec decides. Do it.</li>
+      <li>Mechanical: the spec decides. Do it.</li>
       <li data-cue="taste">Taste: cheap to reverse. Decide, say why.</li>
       <li data-cue="user-challenge">User challenge: stop and recommend.</li>
     </ul>
@@ -60,7 +60,9 @@
   I --> SR[Spec review]
   SR --> QR[Quality review]
   QR --> F[Capped fix loop]
-  F --> V[Verify]</pre>
+  F --> V[Verify]
+  classDef box height:114px,y:-57px
+  class I,SR,QR,F,V box</pre>
     <figcaption data-cue="parallel">talkreel: built by parallel subagents, with tests</figcaption>
   </figure>
 </section>
@@ -74,9 +76,10 @@
 
 <section data-beat="cross-review" data-cue="cross-review">
   <figure data-block="diagram">
-    <pre data-mermaid>flowchart LR
-  A[One side builds] --> D[The real diff]
-  D --> B[Fresh reviewer]</pre>
+    <pre data-mermaid>%%{init: {"flowchart": {"wrappingWidth": 600}}}%%
+flowchart LR
+  A[Side A builds] --> D[The real diff]
+  D --> B[Side B reviews]</pre>
     <figcaption>Claude or Codex, on either side</figcaption>
   </figure>
 </section>

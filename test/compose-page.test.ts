@@ -99,7 +99,8 @@ describe("caption lines", () => {
   it("fill lines up to 48 characters and break after sentence ends", () => {
     const words = "This is a fairly long caption sentence that keeps on going past the limit. Next one".split(" ").map((t, i) => w(t, i * 0.3, i * 0.3 + 0.25));
     const lines = captionLines(words, 10);
-    expect(lines.map((l) => l.text)).toEqual(["This is a fairly long caption sentence that", "keeps on going past the limit.", "Next one"]);
+    // "that" may not end a line (COMPOSE_VERSION 4), so it opens the second one.
+    expect(lines.map((l) => l.text)).toEqual(["This is a fairly long caption sentence", "that keeps on going past the limit.", "Next one"]);
     for (const l of lines) expect(l.text.length).toBeLessThanOrEqual(48);
   });
 
@@ -168,6 +169,37 @@ describe("caption lines", () => {
       for (const l of lines.slice(0, -1)) expect(l).not.toMatch(FUNCTION_END);
       expect(lines.join(" ")).toBe(s);
     }
+  });
+
+  it("never ends a line on this, its, that, while, what, it (04-08 review)", () => {
+    for (const [s, bad] of [
+      ["Anthropic's research system works this way, with a lead agent delegating to subagents in parallel.", "works this"],
+      ["Its central bet: a rule the model can reason its way around is not a rule.", "reason its"],
+      ["A second AI, given only that doc, found that nobody owned the timeline.", "found that"],
+      ["Anthropic's Justin Young found that a long-running agent tended to try to do too much at once.", "found that"],
+      ["And across tools, one side implements while a fresh context on the other, Claude or Codex, reviews the real diff.", "implements while"],
+      ["That's the whole path, and you're watching what came out of it.", "and you're watching what"],
+      ["Boris Cherny, who created Claude Code, calls it probably the most important thing.", "calls it"],
+    ] as const) {
+      const lines = texts(s);
+      for (const l of lines.slice(0, -1)) {
+        expect(l.endsWith(bad)).toBe(false);
+        expect(l).not.toMatch(FUNCTION_END);
+      }
+      expect(lines.join(" ")).toBe(s);
+    }
+  });
+
+  it("never splits a hyphenated compound across lines (06: \"human-owned\")", () => {
+    const s = "The spec, user challenge decisions, and human-owned boundaries like merge, tag and publish.";
+    const lines = texts(s);
+    expect(lines.some((l) => l.split(" ").includes("human-owned"))).toBe(true);
+    expect(lines.join(" ")).toBe(s);
+    // A compound the script writes across words ("human- owned") still never breaks at its hyphen.
+    const split = texts("The spec, user challenge decisions, and very human- owned boundaries like merge, tag and publish.");
+    for (const l of split.slice(0, -1)) expect(l).not.toMatch(/-$/);
+    for (const l of split.slice(1)) expect(l).not.toMatch(/^-/);
+    expect(split.some((l) => l.includes("human- owned"))).toBe(true);
   });
 
   it("still breaks after . ? ! and fades a line out before the next one shows (03 at 65.30 s)", () => {

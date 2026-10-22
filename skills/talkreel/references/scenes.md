@@ -232,7 +232,9 @@ Numbers are written with at most 3 decimals.
   after the previous word ended. Inside each such segment the breaks are the
   cheapest under a fixed cost (`src/compose-captions.ts`): fill lines, prefer
   breaking after `,` `;` or `:`, never end a line on a function word (a, an,
-  the, to, of, and, or, toward, for, with, in, on), avoid a short fragment
+  the, to, of, and, or, toward, for, with, in, on, this, that, its, it, what,
+  while, their, our, your, my, is, are, be, by, from, as, at, into, than),
+  never split a hyphenated compound at its hyphen, avoid a short fragment
   (under 14 characters, e.g. "My rule:") and a lone last word. A line may
   reach 54 characters only to absorb a lone word that cannot be balanced.
 - A line shows (opacity 0 → 1 over 0.1 s) at its first word's `start − 0.05`

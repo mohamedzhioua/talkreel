@@ -6,4 +6,4 @@
 
 {#agent-loop}The agent loop has four beats. Gather context, take action, verify work, repeat. [s:s8] {#verify-beat}Verify is a beat, not an extra.
 
-{#slash-loop}Some loops you start on purpose. Slash loop re-runs a prompt on an interval. [s:s50] {#slash-goal}Slash goal keeps Claude working toward a condition, and a fresh model, not the one doing the work, decides when it's met. [s:s51, s52] {#cap}My rule: every run-until-done loop carries a wall clock cap, {#receipt}a receipt per tick, {#stop-reason}and an explicit stop reason. [s:s53] {#remember-loop}A loop without a cap is a bill. {#no-stop}A loop without a stop reason is a mystery.
+{#slash-loop}Some loops you start on purpose. Slash loop re-runs a prompt on an interval. [s:s50] {#slash-goal}Slash goal keeps Claude working toward a condition, and a fresh model, not the one doing the work, decides when it's met. [s:s51, s52] {#cap}My rule: every run-until-done loop carries {#wall-clock}a wall clock cap, {#receipt}a receipt per tick, {#stop-reason}and an explicit stop reason. [s:s53] {#remember-loop}A loop without a cap is a bill. {#no-stop}A loop without a stop reason is a mystery.
