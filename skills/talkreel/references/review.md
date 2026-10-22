@@ -6,8 +6,11 @@ frames, not the HTML: a scene that looks right in code can still overflow.
 ## Loop (at most 3 rounds)
 
 1. Run `talkreel frames` for the talk (add `--chapter NN` after the first round
-   to look only at chapters you re-rendered). It extracts key frames, at least
-   one per beat once its content has entered, and prints their PNG paths.
+   to look only at chapters you re-rendered). It extracts key frames to
+   `build/frames/<lang>/NN/` (0.5 s in, 0.9 s after every cue, so at least one
+   per beat once its content has entered, and 0.5 s before the end) and prints
+   JSON on stdout: `{"frames": [{lang, chapter, beat, label, time, path}]}`,
+   where `label` is the cue name (or `start` / `end`).
 2. Open **every** PNG with the Read tool and look at it. Do not skip frames and
    do not judge from file names.
 3. Check each frame against the checklist below. Write down each defect with

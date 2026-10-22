@@ -31,26 +31,34 @@ missing.
 
 ## Work loop
 
-1. **Find the talk.** If the user names a new topic, run
-   `new "<topic>"` and use the slug it prints. Otherwise use the talk the user
+1. **Find the talk.** If the user names a new topic, pick a slug
+   (`[a-z0-9-]`) and run `new <slug> --title "<topic>"`; it creates
+   `talks/<slug>/` in the working directory. Otherwise use the talk the user
    names, or the only folder under `talks/`; if there are several, ask which.
-2. **Read the state.** Run `status --json` for that talk. It lists the stages in
-   order with their state (missing, stale or done), per chapter where that
-   applies. The next stage is the first that is not done.
+   Every other command takes `--talk talks/<slug>` (without it the CLI expects
+   `talk.json` in the current directory).
+2. **Read the state.** Run `status --json` for that talk. It prints
+   `{talk, dir, chapters, concat}`: one entry per script chapter
+   (`{lang, chapter, title, script, voice, align, render}`) and one concat entry
+   per language, each stage as `{status: "fresh" | "stale", reason?}`.
+   Research, script, translate and scenes are not in it: a stage of yours is
+   due when its files are missing (`sources.json` empty, no `script/<lang>/`,
+   no `scenes/NN-<chapter>.html` for a chapter). The next stage is the first
+   that is not done, in the table order.
 3. **Run that stage** (table below), then go back to step 2.
 4. **Stop at the checkpoints**, and whenever a stage fails twice for the same
    reason: report the failing output and what you tried.
 
 | Stage | Who | How |
 |---|---|---|
-| new | CLI | `new "<topic>"` creates `talks/<slug>/talk.json` |
+| new | CLI | `new <slug> --title "<topic>"` creates `talks/<slug>/talk.json` |
 | research | you | Follow `references/research.md`; write `sources.json` |
 | script | you | Follow `references/script.md`; write `script/en/NN-<chapter>.md` |
 | translate (optional) | you | Only when `talk.json` lists another language; `references/translate.md` |
 | scenes | you | Follow `references/scenes.md`; write `scenes/NN-<chapter>.html`, then run `check` |
-| voice | CLI | `voice [--lang en]`; skipped by the CLI in own-voice mode |
+| voice | CLI | `voice [--lang en]`; in own-voice mode it never synthesizes, it only converts `audio/<lang>/NN.wav`, so still run it |
 | align | CLI | `align [--lang en]` |
-| render | CLI | `render [--chapter NN] [--lang en]`; `--quality draft` while iterating |
+| render | CLI | `render [--chapter NN] [--lang en]`; `--quality draft` while iterating. Renders only stale chapters, then joins them (it refuses to join draft and standard chapters) |
 | review | you | Follow `references/review.md` (`frames`, look, fix, re-render; at most 3 rounds) |
 
 Only the CLI does mechanical work. Do not call TTS, Whisper, HyperFrames or

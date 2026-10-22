@@ -1,6 +1,8 @@
 // `talkreel check`: every [s:id] in the scripts must exist in sources.json, and (via the scene
 // hook below) every stat or quote building block in the scenes must name a known source.
-import { relative } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join, relative } from "node:path";
+import { parseScene, validateScene, type SceneIssue } from "./compose-scene.js";
 import { parseScriptFile, ScriptError } from "./script.js";
 import { listChapters, loadSources, TalkError, type Talk } from "./talk.js";
 import type { Source } from "./schema.js";
@@ -19,11 +21,34 @@ export interface CheckContext {
 export type SceneCheck = (ctx: CheckContext) => Promise<CheckIssue[]> | CheckIssue[];
 
 /**
- * HOOK for the compose builder: check scenes/NN-*.html so that every stat or quote building
- * block cites an id present in ctx.sources. Return one issue per problem; [] means clean.
+ * Run the scene validator (scenes.md rules that need no timing) on every scenes/NN-*.html:
+ * structure, forbidden content, beats, animations, diagram steps, data-source on stat and quote
+ * blocks with ids present in ctx.sources, and cue names against each language's script.
+ * Timing rules (E_CUE_ORDER, E_CUE_BEFORE_BEAT) need captions and run at compose time.
  */
-export function checkSceneSources(_ctx: CheckContext): CheckIssue[] {
-  return [];
+export function checkSceneSources(ctx: CheckContext): CheckIssue[] {
+  const dir = join(ctx.talk.dir, "scenes");
+  if (!existsSync(dir)) return [];
+  const issues: CheckIssue[] = [];
+  const ids = new Set(ctx.sources.keys());
+  for (const f of readdirSync(dir).filter((n) => /^\d{2}-.+\.html$/.test(n)).sort()) {
+    const file = `scenes/${f}`;
+    const scene = parseScene(readFileSync(join(dir, f), "utf8"));
+    const toIssue = (i: SceneIssue, lang?: string): CheckIssue => ({ file, line: i.line, message: `${i.rule} ${i.element}: ${i.message}${lang ? ` (script/${lang})` : ""}` });
+    issues.push(...validateScene(scene, { sources: ids }).map((i) => toIssue(i)));
+    for (const lang of ctx.talk.config.languages) {
+      const ch = listChapters(ctx.talk, lang).find((c) => `${c.chapter}-${c.name}.html` === f);
+      if (!ch) continue;
+      let cues: Set<string>;
+      try {
+        cues = new Set(parseScriptFile(ch.file).cues.map((c) => c.id));
+      } catch {
+        continue; // the script problem is reported by the script checks
+      }
+      for (const i of validateScene(scene, { sources: ids, cues })) if (i.rule === "E_UNKNOWN_CUE") issues.push(toIssue(i, lang));
+    }
+  }
+  return issues;
 }
 
 /** Scene-side checks run after the script checks. Append to this list rather than editing check(). */
