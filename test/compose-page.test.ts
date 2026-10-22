@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { applyDisplays, CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
 import { buildPage, composeChapter, sourceLabel, timelineScript, typographic } from "../src/compose.js";
@@ -295,6 +296,35 @@ describe("terminal, pipeline and ambient markup", () => {
     expect(on.html).toContain('<p class="tr-tag" id="tr-tag">03 · Spec</p>');
     expect(on.html).toContain('class="tr-ambient"');
     expect(on.plan.ambient).toBe(true);
+    expect(off.plan.tag).toEqual([]);
+  });
+
+  it("keeps prose from ending on a lone word", () => {
+    const css = readFileSync(fileURLToPath(new URL("../themes/default/theme.css", import.meta.url)), "utf8");
+    const rule = css.match(/([^{}]+)\{\s*text-wrap:\s*pretty;\s*\}/);
+    expect(rule).not.toBeNull();
+    for (const sel of ['[data-block="split"] > .col > p', '[data-block="definition"] .text', '[data-block="list"] li']) expect(rule![1]).toContain(sel);
+  });
+
+  it("hides the chapter tag while a title beat is on screen", () => {
+    const title = `<div data-block="title"><h1>T</h1></div>`;
+    const html = (a: string, b: string, c: string) =>
+      `<section data-beat="a">${a}</section><section data-beat="b" data-cue="b">${b}</section><section data-beat="c" data-cue="c">${c}</section>`;
+    const scene = (h: string) => parseScene(h);
+    const page = (h: string) => {
+      const s = scene(h);
+      const tl = resolveTimeline(s, { b: 1, c: 2 }, 4);
+      return buildPage({ lang: "en", scene: s, timeline: tl, captions: { lang: "en", words: [{ text: "x", start: 0, end: 1, matched: true }] }, audioDuration: 4, sources: new Map(), ambient: { tag: "01 · X" } });
+    };
+    const fades = (h: string) => page(h).plan.tag.map((f) => [f.t, f.to]);
+    // No title: one fade-in at 0.2 s.
+    expect(fades(html("<p>x</p>", "<p>y</p>", "<p>z</p>"))).toEqual([[0.2, 1]]);
+    // A title in the middle: out as it enters, back in with the next beat.
+    expect(fades(html("<p>x</p>", title, "<p>z</p>"))).toEqual([[0.2, 1], [1, 0], [2, 1]]);
+    // Opening on a title: hidden until the title leaves.
+    expect(fades(html(title, "<p>y</p>", "<p>z</p>"))).toEqual([[1, 1]]);
+    // Ending on a title: out, never back.
+    expect(fades(html("<p>x</p>", "<p>y</p>", title))).toEqual([[0.2, 1], [2, 0]]);
   });
 });
 

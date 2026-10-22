@@ -11,13 +11,13 @@ import { resolveCues } from "./cues.js";
 import { hashJson, sha256, sha256File } from "./hash.js";
 import { classList, escapeText, getAttr, hasAttr, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
 import { captionsProblems, type CaptionsFile, type Source } from "./schema.js";
-import { parseScene, resolveTimeline, SceneError, usedCues, validateScene, type ResolvedTimeline, type Scene, type SceneIssue, type SceneWarning } from "./compose-scene.js";
+import { parseScene, resolveTimeline, SceneError, tagFades, usedCues, validateScene, type ResolvedTimeline, type TagFade, type Scene, type SceneIssue, type SceneWarning } from "./compose-scene.js";
 import { parseScriptFile, type DisplayForm, type ParsedChapter } from "./script.js";
 import { loadSources, paths, readJson, type ChapterFile, type Talk } from "./talk.js";
 import { readWavInfo } from "./wav.js";
 
 /** Bump when the generated page or timeline changes in a way that must re-render chapters. */
-export const COMPOSE_VERSION = "7";
+export const COMPOSE_VERSION = "8";
 
 /** talkreel's own package root (the folder holding dist/, src/, themes/). */
 export const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -114,6 +114,8 @@ export interface Plan {
   cursors: BlocksPlan["cursors"];
   chips: BlocksPlan["chips"];
   ambient: boolean;
+  /** Chapter tag opacity tweens; empty without the ambient layer. */
+  tag: TagFade[];
 }
 
 export interface Page {
@@ -232,6 +234,7 @@ ${lineHtml}
     words: captions.words.map((w, k) => ({ id: `tr-w-${k}`, start: round(w.start), end: round(w.end) })),
     ...blocks,
     ambient: !!input.ambient,
+    tag: input.ambient ? tagFades(input.scene, tl.beats).map((f) => ({ ...f, t: round(f.t) })) : [],
   };
   return { html, plan, lines, hasDiagram };
 }
