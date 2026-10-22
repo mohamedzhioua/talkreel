@@ -171,4 +171,16 @@ describe("frame points", () => {
     ]);
     expect(framePoints({ late: 9.8 }, 10).map((p) => p.time)).toEqual([0.5, 9.5, 9.95]);
   });
+
+  it("adds a transition frame 0.15 s into every beat change, none for the first beat", () => {
+    const beats = [{ id: "open", start: 0 }, { id: "two", start: 2 }, { id: "three", start: 4 }];
+    expect(framePoints({ b: 4, a: 2 }, 10, beats)).toEqual([
+      { label: "start", time: 0.5 },
+      { label: "transition-two", time: 2.15 },
+      { label: "a", time: 2.9 },
+      { label: "transition-three", time: 4.15 },
+      { label: "b", time: 4.9 },
+      { label: "end", time: 9.5 },
+    ]);
+  });
 });
