@@ -28,11 +28,17 @@ export interface FrameInfo extends FramePoint {
 }
 
 /**
- * Key frame times: chapter start + 0.5 s, each cue + 0.9 s (its content has entered by then),
+ * Key frame times: chapter start + 0.5 s, 0.15 s into every beat change (`transition-<beat>`,
+ * beats only, never element cues), each cue + 0.9 s (its content has entered by then),
  * and 0.5 s before the end. Sorted, de-duplicated, kept inside the video.
  */
-export function framePoints(cueTimes: Record<string, number>, duration: number): FramePoint[] {
+export function framePoints(
+  cueTimes: Record<string, number>,
+  duration: number,
+  beats: readonly { id: string; start: number }[] = [],
+): FramePoint[] {
   const pts: FramePoint[] = [{ label: "start", time: 0.5 }];
+  for (const b of beats) if (b.start > 0) pts.push({ label: `transition-${b.id}`, time: b.start + 0.15 });
   for (const [name, t] of Object.entries(cueTimes).sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]))) pts.push({ label: name, time: t + 0.9 });
   pts.push({ label: "end", time: duration - 0.5 });
   const out: FramePoint[] = [];
@@ -74,7 +80,7 @@ export async function cmdFrames(talk: Talk, opts: FramesOptions): Promise<number
       const dir = buildPaths.framesDir(talk, ch.lang, ch.chapter);
       mkdirSync(dir, { recursive: true });
       for (const f of readdirSync(dir)) if (f.endsWith(".png")) rmSync(join(dir, f));
-      const pts = framePoints(cueTimes, duration);
+      const pts = framePoints(cueTimes, duration, beats);
       for (const [i, p] of pts.entries()) {
         const file = join(dir, `${String(i).padStart(2, "0")}-${p.time.toFixed(2)}s-${p.label}.png`);
         const r = await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", "-ss", p.time.toFixed(3), "-i", mp4, "-frames:v", "1", file]);
