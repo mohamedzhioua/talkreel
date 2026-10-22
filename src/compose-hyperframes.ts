@@ -1,5 +1,6 @@
 // HyperFrames CLI (pinned 0.8.185), spawned as process.execPath + its JS entry: never npx, never
 // a shell. Telemetry and skill installs are off unless the user passes --telemetry.
+import { availableParallelism } from "node:os";
 import { join } from "node:path";
 import { envWithFfmpeg, findTool } from "./ffmpeg.js";
 import { run, type RunResult } from "./proc.js";
@@ -47,10 +48,33 @@ export function isQuality(q: string): q is Quality {
   return q in QUALITIES;
 }
 
-export async function hfCheck(dir: string, opts: HfOptions): Promise<RunResult> {
-  return hyperframes(["check", dir], dir, opts);
+/**
+ * `hyperframes check` arguments. `--range 0,<duration>` keeps the runtime, layout, overlap,
+ * motion and contrast passes over the whole chapter but skips the craft pass, which samples
+ * 8 frames per second of video and only ever reports warnings (it cost ~30-75 s on a 66 s
+ * chapter, see .spike/perf). Craft warnings never failed a render; they are no longer reported.
+ */
+export function checkArgs(dir: string, duration: number): string[] {
+  return ["check", dir, "--range", `0,${Math.floor(duration * 1000) / 1000}`];
+}
+
+export async function hfCheck(dir: string, duration: number, opts: HfOptions): Promise<RunResult> {
+  return hyperframes(checkArgs(dir, duration), dir, opts);
+}
+
+/**
+ * Explicit render worker count. Left to "auto", HyperFrames spends 20-45 s per chapter on a
+ * calibration browser session; on an 8-thread laptop it settles on 3 workers, and 6 was slower
+ * (capture and encode contend for the same cores). Half the logical CPUs minus one, 1..4.
+ */
+export function renderWorkers(logicalCpus: number): number {
+  return Math.max(1, Math.min(4, Math.floor(logicalCpus / 2) - 1));
+}
+
+export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number): string[] {
+  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", "landscape", "--quality", QUALITIES[quality], "--workers", String(workers)];
 }
 
 export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions): Promise<RunResult> {
-  return hyperframes(["render", dir, "--output", output, "--fps", String(fps), "--resolution", "landscape", "--quality", QUALITIES[quality]], dir, opts);
+  return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism())), dir, opts);
 }

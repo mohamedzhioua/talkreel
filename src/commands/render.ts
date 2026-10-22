@@ -58,7 +58,7 @@ async function renderChapter(talk: Talk, ch: ChapterFile, hash: string, quality:
   for (const w of composed.warnings) console.error(`${key}: warning: ${w.line ? `line ${w.line}: ` : ""}${w.message}`);
   const dir = composed.dir;
   console.log(`${key}: composed ${relative(talk.dir, dir)} (${composed.duration.toFixed(2)} s, ${composed.timeline.beats.length} beats); hyperframes check`);
-  const chk = await hfCheck(dir, { telemetry });
+  const chk = await hfCheck(dir, composed.duration, { telemetry });
   if (chk.code !== 0) {
     console.error(`${key}: hyperframes check failed (exit ${chk.code}):\n${tail(chk.stdout + "\n" + chk.stderr, 60)}`);
     return false;

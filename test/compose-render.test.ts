@@ -3,11 +3,13 @@ import { dirname } from "node:path";
 import { describe, expect, it } from "vitest";
 import { framePoints } from "../src/commands/frames.js";
 import { qualityMixProblem, staleRenders } from "../src/commands/render.js";
+import { statusReport } from "../src/commands/status.js";
 import { buildPaths } from "../src/compose.js";
+import { checkArgs, renderArgs, renderWorkers } from "../src/compose-hyperframes.js";
 import { chapterOffsets, chaptersTxt, concatList, concatListLine, outPaths, transcriptMd, youtubeTime } from "../src/compose-concat.js";
 import { currentConcatHash, currentRenderHash } from "../src/stages.js";
 import { emptyState } from "../src/schema.js";
-import { chapterKey, recordStage } from "../src/state.js";
+import { chapterKey, recordStage, writeState } from "../src/state.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
 import { writeWav } from "./compose-fixtures.js";
 import { makeTalk } from "./helpers.js";
@@ -129,6 +131,33 @@ describe("stale-chapter selection", () => {
     expect(h1).not.toBeNull();
     put(buildPaths.mp4(talk, "en", "02"), "mp4 02 re-rendered");
     expect(await currentConcatHash(talk, "en")).not.toBe(h1);
+  });
+
+  it("status reports concat stale when out/<slug>-<lang>.mp4 is missing", async () => {
+    const { talk, state } = await renderedTalk();
+    const out = outPaths(talk, "en");
+    put(out.chapters, "00:00 A\n");
+    put(out.transcript, "# t\n");
+    recordStage(state, "concat", "en", (await currentConcatHash(talk, "en"))!);
+    writeState(paths.state(talk), state);
+    const missing = (await statusReport(talk)).concat.en!;
+    expect(missing.status).toBe("stale");
+    expect(missing.reason).toMatch(/output missing: .*\.mp4$/);
+    put(out.video, "joined");
+    // With the video back, concat is no longer stale for a missing output.
+    expect((await statusReport(talk)).concat.en!.reason ?? "").not.toMatch(/output missing/);
+  });
+});
+
+describe("hyperframes arguments", () => {
+  it("check covers the whole chapter through --range, floored to the millisecond (HyperFrames rejects an end past its duration)", () => {
+    expect(checkArgs("/b", 66.1113333)).toEqual(["check", "/b", "--range", "0,66.111"]);
+    expect(checkArgs("/b", 12)).toEqual(["check", "/b", "--range", "0,12"]);
+  });
+
+  it("render passes an explicit worker count so HyperFrames skips calibration", () => {
+    expect(renderArgs("/b", "/b/c.mp4", 30, "draft", 3)).toEqual(["render", "/b", "--output", "/b/c.mp4", "--fps", "30", "--resolution", "landscape", "--quality", "draft", "--workers", "3"]);
+    expect([1, 2, 4, 8, 12, 16, 64].map(renderWorkers)).toEqual([1, 1, 1, 3, 4, 4, 4]);
   });
 });
 

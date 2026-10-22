@@ -17,7 +17,8 @@ commands:
   new <slug> --title "<title>"     create talks/<slug>/
   status [--json]                  per-chapter, per-stage stale/fresh
   doctor [--json]                  check Node, FFmpeg, uv, Python 3.11 and the models
-  check                            fail on unknown [s:id] and unsourced stat/quote blocks
+  check                            validate scripts and scenes: unknown [s:id], unsourced
+                                   stat/quote blocks, and every scene rule that needs no timing
   voice [--lang en] [--chapter NN] synthesize (or normalise own) narration
   align [--lang en] [--chapter NN] word-timed captions from the narration
   render [--lang en] [--chapter NN] [--quality standard|draft] [--telemetry]

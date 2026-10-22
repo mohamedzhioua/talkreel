@@ -1,3 +1,4 @@
+import { outPaths } from "../compose-concat.js";
 import { chapterStatus, currentConcatHash, type ChapterStatus } from "../stages.js";
 import { readState, stageStatus, type StageStatus } from "../state.js";
 import { listChapters, paths, type Talk } from "../talk.js";
@@ -16,7 +17,8 @@ export async function statusReport(talk: Talk): Promise<StatusReport> {
   for (const lang of talk.config.languages) {
     const chs = listChapters(talk, lang);
     for (const ch of chs) chapters.push(await chapterStatus(talk, state, ch));
-    let c = stageStatus(state, "concat", lang, await currentConcatHash(talk, lang));
+    const out = outPaths(talk, lang);
+    let c = stageStatus(state, "concat", lang, await currentConcatHash(talk, lang), [out.video, out.chapters, out.transcript]);
     if (c.status === "fresh" && chapters.some((s) => s.lang === lang && s.render.status === "stale")) c = { status: "stale", reason: "a chapter render is stale" };
     if (chs.length) concat[lang] = c;
   }
