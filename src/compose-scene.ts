@@ -476,6 +476,8 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
     const list = beatTargets(b.el);
     const isTarget = new Set(list);
     const base = new Map<HtmlElement, number>();
+    // Resolved entrance time of each target (its base plus any slot stagger).
+    const entered = new Map<HtmlElement, number>();
     const nearestTargetAncestor = (el: HtmlElement): HtmlElement | null => {
       for (let p = el.parent; p && p !== b.el; p = p.parent) if (isTarget.has(p)) return p;
       return null;
@@ -499,7 +501,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
     const terminalLineTime = (el: HtmlElement, block: HtmlElement, t0: number, anim: Anim, duration: number): number => {
       const st = terms.get(block) ?? { rows: 0, prev: null, cursor: null };
       terms.set(block, st);
-      const blockT = base.get(block) ?? rb.floor;
+      const blockT = entered.get(block) ?? base.get(block) ?? rb.floor;
       const p = st.prev;
       const next = !p ? blockT + TERM_OPEN : anim === "type" ? p.t + p.duration + TERM_THINK : p.prompt ? p.t + p.duration + TERM_ENTER : p.t + TERM_GAP;
       let t: number;
@@ -548,6 +550,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       const rt: ResolvedTarget = { el, beat: bi, anim, base: t0, t, duration };
       if (anim === "type") rt.chars = chars;
       targets.push(rt);
+      entered.set(el, t);
       prev = rt;
     }
 
@@ -568,7 +571,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
 
     // Pipeline chips: equal widths, so the k-th of n chips sits at k/(n-1) of the rail.
     for (const pl of descendants(b.el).filter((d) => getAttr(d, "data-block") === "pipeline")) {
-      const blockT = base.get(pl) ?? resolveBase(pl);
+      const blockT = entered.get(pl) ?? base.get(pl) ?? resolveBase(pl);
       const ol = elementChildren(pl).find((c) => c.tag === "ol");
       const list = ol ? elementChildren(ol).filter((c) => c.tag === "li") : [];
       let k = 0;
