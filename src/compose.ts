@@ -4,14 +4,14 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { captionLines, type CaptionLine } from "./compose-captions.js";
+import { applyDisplays, captionLines, type CaptionLine } from "./compose-captions.js";
 import { TIMELINE_RUNTIME } from "./compose-runtime.js";
 import { resolveCues } from "./cues.js";
 import { hashJson, sha256, sha256File } from "./hash.js";
 import { classList, escapeText, getAttr, hasAttr, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
 import { captionsProblems, type CaptionsFile, type Source } from "./schema.js";
 import { parseScene, resolveTimeline, SceneError, usedCues, validateScene, type ResolvedTimeline, type Scene, type SceneIssue, type SceneWarning } from "./compose-scene.js";
-import { parseScriptFile, type ParsedChapter } from "./script.js";
+import { parseScriptFile, type DisplayForm, type ParsedChapter } from "./script.js";
 import { loadSources, paths, readJson, type ChapterFile, type Talk } from "./talk.js";
 import { readWavInfo } from "./wav.js";
 
@@ -87,6 +87,8 @@ export interface PageInput {
   captions: CaptionsFile;
   audioDuration: number;
   sources: ReadonlyMap<string, Source>;
+  /** `[[display|spoken]]` groups of the script; captions show the display text. */
+  displays?: readonly DisplayForm[];
 }
 
 export interface Plan {
@@ -111,7 +113,8 @@ export interface Page {
  * labels, Mermaid hosts), so pass a freshly parsed scene.
  */
 export function buildPage(input: PageInput): Page {
-  const { scene, timeline: tl, captions } = input;
+  const { scene, timeline: tl } = input;
+  const captions = { ...input.captions, words: applyDisplays(input.captions.words, input.displays ?? []) };
   const D = tl.duration;
   const usedIds = new Set<string>();
   let nextId = 0;
@@ -288,7 +291,7 @@ export function composeChapter(talk: Talk, ch: ChapterFile): ComposeResult {
   const sources = new Map(loadSources(talk).sources.map((s) => [s.id, s]));
   const rel = `scenes/${ch.chapter}-${ch.name}.html`;
   const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()));
-  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources });
+  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays });
 
   const dir = buildPaths.dir(talk, ch.lang, ch.chapter);
   mkdirSync(dir, { recursive: true });
@@ -325,6 +328,7 @@ export function sceneInputHash(sceneSource: string, chapter: ParsedChapter, sour
   return hashJson({
     scene: sha256(sceneSource),
     cues: chapter.cues.map((c) => [c.id, c.wordIndex]),
+    displays: chapter.displays.map((d) => [d.first, d.count, d.text]),
     sources: cited.map((id) => sources.get(id) ?? null),
   });
 }

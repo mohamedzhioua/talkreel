@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
+import { applyDisplays, CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
 import { buildPage, composeChapter, sourceLabel, timelineScript } from "../src/compose.js";
 import { parseScene, resolveTimeline } from "../src/compose-scene.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
@@ -244,5 +244,19 @@ describe("composeChapter writes a self-contained project", () => {
     for (const m of css.matchAll(/url\("([^"]+)"\)/g)) expect(existsSync(join(b, m[1]!))).toBe(true);
     writeFileSync(join(dir, "scenes", "02-verification.html"), WORKED_SCENE.replace(' data-source="s:example-survey"', ""));
     expect(() => composeChapter(talk, ch)).toThrow(/E_SOURCE_MISSING/);
+  });
+});
+
+describe("caption display forms", () => {
+  it("merges a spoken group into one shown word spanning its first start to its last end", () => {
+    const w = (text: string, start: number, matched = true) => ({ text, start, end: start + 0.25, matched });
+    const words = [w("It", 0), w("M", 0.5), w("C", 0.75, false), w("P,", 1), w("ok.", 1.5)];
+    expect(applyDisplays(words, [{ first: 1, count: 3, text: "MCP," }])).toEqual([
+      w("It", 0),
+      { text: "MCP,", start: 0.5, end: 1.25, matched: false },
+      w("ok.", 1.5),
+    ]);
+    // A group that runs past the captions (stale captions) is left alone.
+    expect(applyDisplays(words, [{ first: 4, count: 2, text: "x" }])).toEqual(words);
   });
 });
