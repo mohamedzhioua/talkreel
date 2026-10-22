@@ -5,7 +5,7 @@ import { framePoints } from "../src/commands/frames.js";
 import { qualityMixProblem, staleRenders } from "../src/commands/render.js";
 import { statusReport } from "../src/commands/status.js";
 import { buildPaths } from "../src/compose.js";
-import { checkArgs, renderArgs, renderWorkers } from "../src/compose-hyperframes.js";
+import { checkArgs, isProcessCrash, renderArgs, renderWorkers, retryOnCrash } from "../src/compose-hyperframes.js";
 import { chapterOffsets, chaptersTxt, concatList, concatListLine, outPaths, transcriptMd, youtubeTime } from "../src/compose-concat.js";
 import { currentConcatHash, currentRenderHash } from "../src/stages.js";
 import { emptyState } from "../src/schema.js";
@@ -158,6 +158,25 @@ describe("hyperframes arguments", () => {
   it("render passes an explicit worker count so HyperFrames skips calibration", () => {
     expect(renderArgs("/b", "/b/c.mp4", 30, "draft", 3)).toEqual(["render", "/b", "--output", "/b/c.mp4", "--fps", "30", "--resolution", "landscape", "--quality", "draft", "--workers", "3"]);
     expect([1, 2, 4, 8, 12, 16, 64].map(renderWorkers)).toEqual([1, 1, 1, 3, 4, 4, 4]);
+  });
+});
+
+describe("crash retry", () => {
+  it("treats Windows exception codes as crashes, ordinary failures as failures", () => {
+    expect(isProcessCrash(3221226505)).toBe(true); // 0xC0000409
+    expect([0, 1, 2, 3, 127, 255].some(isProcessCrash)).toBe(false);
+  });
+
+  it("retries a crash exactly once and never retries an ordinary failure", async () => {
+    const results = [{ code: 3221226505, stdout: "", stderr: "" }, { code: 0, stdout: "ok", stderr: "" }];
+    let calls = 0;
+    const retried: number[] = [];
+    const ok = await retryOnCrash(async () => results[calls++]!, (c) => retried.push(c));
+    expect([ok.code, calls, retried]).toEqual([0, 2, [3221226505]]);
+
+    calls = 0;
+    const fail = await retryOnCrash(async () => (calls++, { code: 1, stdout: "", stderr: "" }), () => retried.push(-1));
+    expect([fail.code, calls, retried.length]).toEqual([1, 1, 1]);
   });
 });
 
