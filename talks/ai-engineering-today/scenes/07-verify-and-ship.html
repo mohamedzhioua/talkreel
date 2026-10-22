@@ -1,0 +1,91 @@
+<!-- 07 how I work: verify and ship. Brief and beat grid: ../STORYBOARD.md -->
+
+<section data-beat="chapter">
+  <div data-block="chapter-card" data-anim="pop" data-cue="verify">
+    <p class="number">07</p>
+    <h2 class="title">How I work: verify and ship</h2>
+  </div>
+</section>
+
+<section data-beat="boris" data-cue="boris">
+  <figure data-block="quote" data-source="s:s62">
+    <blockquote>give Claude a way to verify its work.</blockquote>
+    <figcaption>Boris Cherny, creator of Claude Code</figcaption>
+  </figure>
+</section>
+
+<section data-beat="verify-gate" data-cue="verify-gate">
+  <h2>Guardrail 1: verify gate</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  A[Agent stops] --> G{Verify gate}
+  G -->|evidence| S[Stop allowed]
+  G -->|none| K[Keep working]</pre>
+    <figcaption data-cue="forcing-function">Checks that evidence exists, not that it passed</figcaption>
+  </figure>
+</section>
+
+<section data-beat="loop-guard" data-cue="loop-guard">
+  <h2>Guardrail 2: loop guard</h2>
+  <div data-block="stat" data-source="s:s64" data-anim="pop">
+    <p class="value">3</p>
+    <p class="label">failed attempts at one command, then the next is refused</p>
+  </div>
+</section>
+
+<section data-beat="scope-guard" data-cue="scope-guard">
+  <h2>Guardrail 3: scope addition guard</h2>
+  <figure data-block="quote" data-source="s:s35">
+    <blockquote>The most common failure with a capable agent is not a wrong line of code. It is work you never asked for</blockquote>
+    <figcaption>AI Engineering OS, on strict scope</figcaption>
+  </figure>
+</section>
+
+<section data-beat="asks-first" data-cue="asks-first">
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  E[Agent edit] --> G{Scope guard}
+  G -->|new file or dep| Q[Asks me first]
+  G -->|in scope| P[Proceeds]</pre>
+    <figcaption>A new file or a dependency change asks me first</figcaption>
+  </figure>
+</section>
+
+<section data-beat="routing" data-cue="routing">
+  <div data-block="definition" data-source="s:s65">
+    <p class="term">Model routing</p>
+    <p class="text">Escalate on stakes, not cost.</p>
+  </div>
+</section>
+
+<section data-beat="ship" data-cue="push-once">
+  <h2>Ship</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  V[Verify] --> P[Push once]
+  P -->|wait for CI| L[Land verify]
+  L --> R[Receipt]</pre>
+    <i data-step data-nodes="P" data-edges="V-P" data-cue="push-once"></i>
+    <i data-step data-nodes="L,R" data-edges="P-L,L-R" data-cue="land-verify"></i>
+    <figcaption>One push per finished plan, never per commit</figcaption>
+  </figure>
+</section>
+
+<section data-beat="frame-catch" data-cue="frame-catch" data-align="center">
+  <h2>Frame review caught two overlapping slides</h2>
+</section>
+
+<section data-beat="payoff" data-cue="payoff">
+  <h2>The whole path</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  I[Idea] --> R[Research]
+  R --> G[Intake grill]
+  G --> D[Design doc]
+  D --> S[Spike]
+  S --> A{Approved}
+  A --> B[Build and test]
+  B --> V[Render]</pre>
+    <figcaption>You’re watching what came out of it</figcaption>
+  </figure>
+</section>

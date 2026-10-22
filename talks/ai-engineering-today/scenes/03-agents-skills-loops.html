@@ -1,0 +1,99 @@
+<!-- 03 agents, skills and loops. Brief and beat grid: ../STORYBOARD.md -->
+
+<section data-beat="chapter">
+  <div data-block="chapter-card" data-anim="pop" data-cue="agent">
+    <p class="number">03</p>
+    <h2 class="title">Agents, skills and loops</h2>
+  </div>
+</section>
+
+<section data-beat="workflow" data-cue="workflow">
+  <div data-block="definition" data-source="s:s5">
+    <p class="term">Workflow</p>
+    <p class="text">The model and its tools follow code paths you wrote in advance.</p>
+  </div>
+</section>
+
+<section data-beat="agent" data-cue="agent-def" data-camera="pan-left">
+  <div data-block="definition" data-source="s:s6">
+    <p class="term">Agent</p>
+    <p class="text">The model directs its own process and its own tool use.</p>
+  </div>
+</section>
+
+<section data-beat="tools-in-a-loop" data-cue="tools-in-a-loop">
+  <figure data-block="quote" data-source="s:s48">
+    <blockquote>LLMs autonomously using tools in a loop.</blockquote>
+    <figcaption>Anthropic Applied AI team</figcaption>
+  </figure>
+</section>
+
+<section data-beat="simon" data-cue="simon">
+  <figure data-block="quote" data-source="s:s49">
+    <blockquote>An LLM agent runs tools in a loop to achieve a goal.</blockquote>
+    <figcaption>Simon Willison, co-creator of Django</figcaption>
+  </figure>
+</section>
+
+<section data-beat="skill" data-cue="skill">
+  <div data-block="definition" data-source="s:s9">
+    <p class="term">Skill</p>
+    <p class="text">A folder with a SKILL.md file, plus instructions, scripts and resources.</p>
+  </div>
+</section>
+
+<section data-beat="manual" data-cue="manual">
+  <figure data-block="quote" data-source="s:s10">
+    <blockquote>skills let Claude load information only as needed</blockquote>
+    <figcaption>Barry Zhang and co-authors, Anthropic</figcaption>
+  </figure>
+</section>
+
+<section data-beat="agent-loop" data-cue="agent-loop">
+  <h2>The agent loop</h2>
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  G[Gather context] --> T[Take action]
+  T --> V[Verify work]
+  V -->|repeat| G</pre>
+    <figcaption data-cue="verify-beat">Verify is a beat, not an extra</figcaption>
+  </figure>
+</section>
+
+<section data-beat="slash-loop" data-cue="slash-loop">
+  <div data-block="definition" data-source="s:s50">
+    <p class="term">/loop</p>
+    <p class="text">Re-runs a prompt on an interval, inside a Claude Code session.</p>
+  </div>
+</section>
+
+<section data-beat="slash-goal" data-cue="slash-goal">
+  <div data-block="definition" data-source="s:s52">
+    <p class="term">/goal</p>
+    <p class="text">Claude keeps working toward a condition, and a fresh model decides when it is met.</p>
+  </div>
+</section>
+
+<section data-beat="cap" data-cue="cap">
+  <div data-block="list">
+    <h3 class="heading">Every run-until-done loop carries</h3>
+    <ul>
+      <li>A wall-clock cap</li>
+      <li>A receipt per tick</li>
+      <li>An explicit stop reason</li>
+    </ul>
+  </div>
+</section>
+
+<section data-beat="remember" data-cue="remember-loop">
+  <div data-block="split">
+    <div class="col">
+      <h3>No cap</h3>
+      <p>A bill.</p>
+    </div>
+    <div class="col">
+      <h3>No stop reason</h3>
+      <p>A mystery.</p>
+    </div>
+  </div>
+</section>
