@@ -347,6 +347,7 @@ were copied.
   where the narration turns to a new idea; element cues for builds inside one.
 - Every figure or quote on screen comes from `sources.json` and carries
   `data-source`; its numbers match the source's quote.
+- A quote block always carries a figcaption naming the speaker and role; the source label under it names the work, host and year, never the speaker.
 - Respect the text limits in `blocks.md`. Too much text: split the beat.
 - Give each beat several seconds of narration. A beat shorter than about 2.5 s
   reads as a flash.

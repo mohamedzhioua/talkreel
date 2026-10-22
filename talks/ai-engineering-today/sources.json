@@ -226,7 +226,7 @@
     },
     {
       "id": "s43",
-      "title": "The hottest new programming language is English",
+      "title": "Andrej Karpathy on X",
       "publisher": "Andrej Karpathy (X)",
       "url": "https://x.com/karpathy/status/1617979122625712128",
       "quote": "The hottest new programming language is English",
@@ -274,7 +274,7 @@
     },
     {
       "id": "s49",
-      "title": "I think “agent” may finally have a widely enough agreed upon definition to be useful jargon now",
+      "title": "“Agent” may finally have a useful definition",
       "publisher": "Simon Willison’s Weblog",
       "url": "https://simonwillison.net/2025/Sep/18/agents/",
       "quote": "An LLM agent runs tools in a loop to achieve a goal.",
@@ -314,7 +314,7 @@
     },
     {
       "id": "s54",
-      "title": "Orchestrate subagents at scale with dynamic workflows",
+      "title": "Orchestrate subagents with dynamic workflows",
       "publisher": "Anthropic (Claude Code docs)",
       "url": "https://code.claude.com/docs/en/workflows",
       "quote": "Dynamic workflows orchestrate many subagents from a script Claude writes and you can rerun.",
