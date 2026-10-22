@@ -3,7 +3,7 @@ import { dirname, relative } from "node:path";
 import * as helper from "../audio-helper.js";
 import { toCanonicalWav } from "../ffmpeg.js";
 import { parseScriptFile } from "../script.js";
-import { currentVoiceHash, voiceId, voiceOutputs } from "../stages.js";
+import { currentVoiceHash, voiceId, voiceOutputs, voiceSpeed } from "../stages.js";
 import { chapterKey, readState, recordStage, stageStatus, writeState } from "../state.js";
 import { paths, selectChapters, type Talk } from "../talk.js";
 
@@ -41,7 +41,7 @@ export async function cmdVoice(talk: Talk, lang: string, chapter?: string): Prom
         writeFileSync(textFile, parsed.spokenText + "\n", "utf8");
         mkdirSync(dirname(src), { recursive: true });
         console.log(`${key}: synthesizing ${parsed.words.length} words with ${voiceId(talk, lang)}`);
-        const r = await helper.tts(textFile, voiceId(talk, lang), lang, src);
+        const r = await helper.tts(textFile, voiceId(talk, lang), lang, src, voiceSpeed(talk));
         console.log(`${key}: ${r.duration.toFixed(2)} s at ${r.sample_rate} Hz`);
       }
       await toCanonicalWav(src, canonical);

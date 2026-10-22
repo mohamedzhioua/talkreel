@@ -68,7 +68,7 @@ export function stageStatus(state: TalkState, stage: StageName, key: string, cur
 // ---------- input hashes, one function per stage ----------
 
 export type VoiceInputs =
-  | { mode: "ai"; spokenHash: string; voice: string; engine: string }
+  | { mode: "ai"; spokenHash: string; voice: string; engine: string; speed?: number }
   | { mode: "own"; sourceWavHash: string; format: string };
 
 export function voiceInputHash(i: VoiceInputs): string {

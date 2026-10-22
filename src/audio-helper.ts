@@ -33,8 +33,8 @@ export interface TtsResult {
   sample_rate: number;
 }
 
-export async function tts(textFile: string, voice: string, lang: string, out: string): Promise<TtsResult> {
-  const v = await runHelper(["tts", "--text-file", textFile, "--voice", voice, "--lang", lang, "--out", out]);
+export async function tts(textFile: string, voice: string, lang: string, out: string, speed = 1): Promise<TtsResult> {
+  const v = await runHelper(["tts", "--text-file", textFile, "--voice", voice, "--lang", lang, "--out", out, "--speed", String(speed)]);
   const o = v as Partial<TtsResult>;
   if (typeof o?.duration !== "number" || typeof o?.sample_rate !== "number") throw new HelperError("tts: unexpected JSON " + JSON.stringify(v));
   return o as TtsResult;
