@@ -177,7 +177,7 @@ EARS acceptance:
 | What is committed for the example talk | User-Challenge | Script, scenes, sources, captions, `talk.json`. WAV and MP4 are gitignored and regenerable; the demo MP4 is a GitHub release asset embedded in the README | yes |
 | Talk content origin | User-Challenge | Claude drafts from `docs/research/` plus the agreed outline; the maintainer edits the script before voicing | yes |
 | `talkreel check` scope | User-Challenge | Unknown `[s:id]` plus stat and quote blocks without a source; free prose is covered by maintainer review | yes |
-| M1 acceptance | User-Challenge | ffprobe gives 9–11 min on `out/<slug>-en.mp4`; a one-chapter French sample at `out/<slug>-fr-ch01.mp4`; maintainer watches and approves | yes |
+| M1 acceptance | User-Challenge | ffprobe gives 9–11 min on `out/<slug>-en.mp4`; a one-chapter French sample at `out/<slug>-fr.mp4` (rendered from chapter 01 only, `--lang fr --chapter 01`); maintainer watches and approves | yes |
 
 All User-Challenge rows above were confirmed by the maintainer on 2026-10-21 ("do everything recommended").
 | Commit the M1 talk as the example | Taste | Decided; it doubles as the README demo | yes |
