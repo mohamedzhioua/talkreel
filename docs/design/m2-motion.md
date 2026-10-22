@@ -76,7 +76,7 @@ The pipeline is unchanged: script → scenes → `talkreel voice` → `align` �
 
 - Each line takes an optional `data-tone`.
 - Rows are a fixed 30 px mono at a 40 px line height with `white-space: pre`, so a row is always one line high. Over 72 chars is an error.
-- `data-rows` (2–13, default 13) sizes the window, so a two-line terminal does not show eleven empty rows.
+- `data-rows` (2–13, default 13) is the window's final height. The window opens one row tall and grows a row as each row arrives (heights computed in Node), while the block reserves the final height so the slide never shifts. This came from the frame review: a full-height window with one row looked empty.
 - `compose-scene.ts` resolves every line's start time and its scroll offset. The runtime only plays tweens.
   - The scroll is one `tl.to(track, {y})` per line that needs it, all on the same property, with `immediateRender: false`.
   - The cursor is one element after the last prompt, with a finite yoyo blink sized to the beat.

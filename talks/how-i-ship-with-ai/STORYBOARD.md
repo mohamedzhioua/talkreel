@@ -171,73 +171,53 @@ flowchart LR
 
 ---
 
-## 04 · Spec to code (about 56 s, 163 words)
+## 04 · Spec to code (about 60 s)
 
 - **Output:**
   - slicing is the human's call: the OS refused to let the AI start it
-  - subagents did the typing
-  - each slice runs a capped path
-  - one real failure, its fix, then green
+  - the two workflows the maintainer relies on, `review` and `execute`, shown as they print in the terminal
+  - both were **run for real on 2026-10-22** on this video's own engine change (branch `m2-motion`), and their results are what the rows show
 - **Technical route:**
-  1. terminal (a real refusal)
-  2. definition
-  3. pipeline, filled at four cues
-  4. terminal (crash, then fix, then green)
-- **Signature:** the to-slices refusal, then the err rows of the crash, then the green line.
+  1. terminal (the real refusal)
+  2. split (what each workflow does)
+  3. terminal (the review run)
+  4. pipeline (execute's phases)
+  5. terminal (the execute run, the diff, the re-verification, the merge)
+- **Signature:** the first review call refused with `needs_input` and 0 agents spawned. Then 9 agents, 2 findings confirmed 3–0. Then execute passes its first round, and the maintainer's own re-run shows 154 passed.
 
 | cue | spoken from | on screen |
 |---|---|---|
-| (start) | "Next, the plan, cut into slices…" | Terminal T4, line 01 (the AI's Skill call) |
-| refused | "The OS refused…" | T4 lines 02–04 (err) |
-| go | "My answer: go ahead, build…" | T4 line 05, the maintainer's prompt typed |
-| agents | "Thirty-three subagents…" | `definition`: term "33 subagents", text "8 explore, 1 researcher, 9 implementer, 1 reviewer, 3 docs, 11 general." (build session) |
-| rail | "In the OS, each slice runs one path…" | `pipeline` R4 enters; `Implement` lights |
-| reviews | "Then two reviews…" | R4 `Spec review` and `Quality review` light (two chips share this cue) |
-| fix-loop | "A failed round counts one attempt…" | R4 `Fix` lights |
-| verify | "Then verify, then a result…" | R4 `Verify` and `Result` light; the rail is full |
-| crash | "A full render crashed…" | Terminal T4b, lines 01–02 (err) |
-| retry | "The fix was one rule…" | T4b line 03, the commit subject |
-| green | "It went in as its own commit…" | T4b line 04 (ok) |
+| (start) | "Next, the plan, cut into slices…" | Terminal T4: the AI's Skill call |
+| refused | "The OS refused…" | T4 refusal rows (err) |
+| go | "My answer: go ahead, build." | T4 prompt typed |
+| workflows | "From there, two workflows…" | `split`: review (lenses, three skeptic voters, 2 of 3) · execute (implement, spec review, quality review, verify; capped at 3 failed attempts), from the OS instructions and the workflows' own phase text |
+| bad-call | "My first review call…" | Terminal T4r rows 01–04 |
+| lenses | "The second call worked…" | T4r rows 05–08 |
+| skeptics | "Then every finding faces three skeptics…" | T4r row 09 |
+| findings | "Two findings survived…" | T4r rows 10–13 |
+| execute | "So execute fixed them…" | `pipeline`: Implement lights with the block; Spec review, Quality review, Verify and Result light at `phases` |
+| result | "This run passed the first round…" | Terminal T4e rows 01–08 |
+| reverify | "Then I re-ran the checks myself…" | T4e rows 09–12 |
 
-**T4**: title "build session". Source: build session. Line 01 renders the AI's call to the Skill tool. Lines 02–04 are the refusal, verbatim and wrapped. Line 05 is the maintainer's real reply.
+**T4** (build session): the refusal, verbatim, shown as three output rows under the tool call. Then the maintainer's reply, "go ahead build".
 
-```
-01  tool           -       beat         | Skill(zhioua-os:to-slices)
-02  result         err     cue:refused  | Skill zhioua-os:to-slices cannot be used with Skill tool due to
-03  out            err     chain        |   disable-model-invocation. Ask the user to run /zhioua-os:to-slices
-04  out            err     chain        |   themselves
-05  prompt-claude  -       cue:go       | go ahead build
-```
+**T4r**: "replayed from the real session · review workflow". Source: the `zhioua-os:review` workflow results from 2026-10-22, run on the M2a code diff (23 files).
+- Rows 01–04 come from the first invocation:
+  - `status` is `needs_input`
+  - `invalid` reads `unknown arg "sessionModel" (known: mode, package, …`
+  - the usage line reads `agent_count 0`
+- Rows 05–13 come from the second invocation:
+  - the per-lens coverage: reviewer 2 findings over 15 files, security 0 over 8, performance 0 over 5
+  - the verify coverage: 6 voter agents, 0 died, 2 confirmed, 0 refuted
+  - finding F1: `src/stages.ts:76`, medium, its summary cut with `…`, votes 3/0/0
+  - the usage line: 9 agents, 0 errors
+- Fields are excerpted with `…`. No value is changed.
 
-**R4** (`pipeline`, 6 chips, source OS instructions; the execute workflow's phase titles):
-
-| chip | lights at |
-|---|---|
-| `Implement` | `data-cue="rail"` |
-| `Spec review` | `data-cue="reviews"` |
-| `Quality review` | `data-cue="reviews"` |
-| `Fix` | `data-cue="fix-loop"` |
-| `Verify` | `data-cue="verify"` |
-| `Result` | `data-cue="verify"` |
-
-All six are cued, so none of them lights early with the block.
-
-**T4b**: title "render · build session". Source: build session.
-- Line 03 is the real fix commit's subject (talkreel commit 0f0086e).
-- Lines 04–08 are that commit's real diff, from talkreel's public history: `isProcessCrash` in `src/compose-hyperframes.ts` and the changed call in `src/commands/render.ts`. Line 08 is cut with `…`.
-- It happened once in each of two full renders. The narration says so.
-
-```
-01  out            err     cue:crash    | en/01: hyperframes check failed (exit 3221226505):
-02  out            err     chain        | render failed for 1 chapter(s); concat not run
-03  out            accent  cue:retry    | fix(render): retry hyperframes once after a process crash
-04  diff-add       -       chain        | export function isProcessCrash(code: number): boolean {
-05  diff-add       -       chain        |   return code >= 0xc0000000;
-06  diff-add       -       chain        | }
-07  diff-del       -       chain        |   const chk = await hfCheck(dir, composed.duration, { telemetry });
-08  diff-add       -       chain        |   const chk = await retryOnCrash(() => hfCheck(…), retryNote("check"));
-09  out            ok      cue:green    |      Tests  122 passed (122)
-```
+**T4e**: "replayed from the real session · execute workflow". Source: the `zhioua-os:execute` result from 2026-10-22 (run 20261022T103225Z).
+- Rows 01–05: `status` complete, attempts 0, then the spec, quality and verify verdicts.
+- Rows 06–07: the real diff of F1's fix in `src/stages.ts` (talkreel commit e60849b), cut with `…`.
+- Row 08: the usage line, 4 agents and 0 errors.
+- Rows 09–12: the maintainer session's own re-verification and merge: `npx vitest run` gave 154 passed (154), then `git merge --ff-only m2-review-fixes` and the merged commit's subject.
 
 ---
 
