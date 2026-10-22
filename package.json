@@ -22,14 +22,15 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "smoke": "npm run build && node scripts/smoke.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "gsap": "^3.15.0",
     "hyperframes": "0.8.185",
-    "mermaid": "^12.2.0"
+    "mermaid": "12.2.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
