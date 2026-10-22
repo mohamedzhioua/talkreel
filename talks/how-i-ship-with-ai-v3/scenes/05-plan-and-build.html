@@ -1,0 +1,92 @@
+<section data-beat="rail" data-align="center">
+  <h2>The plan: only a human can start it</h2>
+  <div data-block="pipeline">
+    <ol>
+      <li data-done>Map</li>
+      <li data-done>Ticket</li>
+      <li data-done>Save</li>
+      <li data-done>Grill</li>
+      <li>Plan</li>
+    </ol>
+  </div>
+</section>
+
+<section data-beat="slices" data-cue="slices">
+  <div data-block="terminal" data-title="projects-app · to-slices · run S" data-rows="9">
+    <p data-prompt>/zhioua-os:to-slices</p>
+    <p data-out data-tone="accent">Context Read</p>
+    <p data-out>- I read the spec and its brief, plus docs/CODEBASE_MAP.md and its open…</p>
+    <p data-out data-tone="accent" data-cue="s1">Slice S1 — Filter by one valid status</p>
+    <p data-out data-tone="accent" data-cue="s2">Slice S2 — Reject invalid or repeated status</p>
+    <p data-out data-tone="warn" data-cue="gate">- Proposed error body (needs your OK at G2): 400, content-type:</p>
+    <p data-out data-tone="warn">  application/json, {"error":"invalid status","allowed":["active",…</p>
+    <p data-out data-tone="dim">- Rejected as horizontal: "add a status argument to listProjects" as…</p>
+    <p data-prompt data-cue="approve">Your recommendations are ok</p>
+  </div>
+</section>
+
+<section data-beat="plan" data-cue="plan">
+  <p>4edb1a8 docs: add CU-demo-142 slice plan (G1, G2 approved)</p>
+  <div data-block="code" data-lang="md">
+    <p class="filename">docs/roadmap/CU-demo-142-status-filter.md</p>
+    <pre><code>
+      <span data-line data-anim="fade"># CU-demo-142 — Status filter on the project list: slice plan</span>
+      <span data-line data-anim="fade"></span>
+      <span data-line data-anim="fade">_Planned 2026-10-22 on branch `cu-demo-142-status-filter`, from…</span>
+      <span data-line data-anim="fade">G1 (plan) and G2 (error body) approved 2026-10-22 ("Your…</span>
+      <span data-line data-anim="fade">No code started._</span>
+      <span data-line data-anim="fade"></span>
+      <span data-line data-anim="fade">## Source Boundary</span>
+      <span data-line data-anim="fade"></span>
+      <span data-line data-anim="fade">- **Source:** the Requirement Brief in</span>
+      <span data-line data-emph data-anim="fade">  [`docs/specs/CU-demo-142-status-filter.md`](../specs/CU-demo-…</span>
+      <span data-line data-anim="fade">  done criteria 1–9.</span>
+    </code></pre>
+  </div>
+</section>
+
+<section data-beat="phases" data-cue="execute" data-align="center">
+  <h2>execute · one slice at a time</h2>
+  <div data-block="pipeline">
+    <ol>
+      <li>Implement</li>
+      <li data-cue="spec">Spec review</li>
+      <li data-cue="quality">Quality review</li>
+      <li data-cue="verify">Verify</li>
+    </ol>
+  </div>
+</section>
+
+<section data-beat="slice-one" data-cue="launch">
+  <div data-block="terminal" data-title="projects-app · execute workflow · run S" data-rows="13">
+    <p data-out>Branch is clean at 4edb1a8. Launching the execute workflow on S1 only.</p>
+    <p data-tool>Workflow(zhioua-os:execute)</p>
+    <p data-out data-tone="err" data-cue="refused">The run stopped before any agent started (0 agents), because three…</p>
+    <p data-out data-tone="err">- the plan ID must be lowercase (cu-demo-142);</p>
+    <p data-out data-tone="err">- the slice ID must be lowercase (s1);</p>
+    <p data-out data-tone="err">- one review-focus line contained an apostrophe, which the workflow…</p>
+    <p data-tool data-cue="again">Workflow(zhioua-os:execute)</p>
+    <p data-result data-tone="ok" data-cue="pass">S1 came back complete, passing spec review, quality review and verify…</p>
+    <p data-out data-cue="own">The diff stays inside the slice's files and matches the plan: the…</p>
+    <p data-out data-tone="ok">ℹ tests 11</p>
+    <p data-out data-tone="ok">ℹ pass 11</p>
+    <p data-out data-tone="ok">ℹ fail 0</p>
+    <p data-out data-tone="accent">a3df2e8 projects: filter the list by one status (CU-demo-142 S1)</p>
+  </div>
+</section>
+
+<section data-beat="slice-two" data-cue="second">
+  <div data-block="terminal" data-title="projects-app · execute workflow · run S" data-rows="11">
+    <p data-tool>Workflow(zhioua-os:execute)</p>
+    <p data-result data-tone="ok">S2 came back complete in one round, with no findings at any stage.</p>
+    <p data-diff="add" data-cue="allowed">const { listProjects, STATUSES } = require("./projects");</p>
+    <p data-diff="add">  const statuses = url.searchParams.getAll("status");</p>
+    <p data-diff="add">  if (statuses.length &gt; 1 || (status &amp;&amp; !STATUSES.includes(status))) {</p>
+    <p data-diff="add">    res.writeHead(400, { "content-type": "application/json" });</p>
+    <p data-out data-tone="ok" data-cue="seventeen">✔ the 400 body lists allowed values from STATUSES (0.4882ms)</p>
+    <p data-out data-tone="ok">ℹ tests 17</p>
+    <p data-out data-tone="ok">ℹ pass 17</p>
+    <p data-out data-tone="ok">ℹ fail 0</p>
+    <p data-out data-tone="accent">f6866c3 projects: reject invalid or repeated status filters (CU-demo-…</p>
+  </div>
+</section>

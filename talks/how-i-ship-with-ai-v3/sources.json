@@ -1,0 +1,52 @@
+{
+  "sources": [
+    {
+      "id": "cherny-fortune",
+      "title": "Software engineers could go extinct this year, says Claude Code creator",
+      "publisher": "Fortune (Jacqueline Munis), quoting Boris Cherny, creator of Claude Code",
+      "url": "https://fortune.com/2026/02/24/will-claude-destroy-software-engineer-coding-jobs-creator-says-printing-press/",
+      "quote": "Experiment with the tools, get to know them, don't be scared of them. Just dive in, try them, be on the bleeding edge, be on the frontier",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "cherny-generalists",
+      "title": "Software engineers could go extinct this year, says Claude Code creator",
+      "publisher": "Fortune (Jacqueline Munis), quoting Boris Cherny, creator of Claude Code",
+      "url": "https://fortune.com/2026/02/24/will-claude-destroy-software-engineer-coding-jobs-creator-says-printing-press/",
+      "quote": "I think a lot of the people that will be rewarded the most over the next few years, they won't just be AI native, and they don't just know how to use these tools really well, but also they're curious and they're generalists, and they cross over multiple disciplines and can think about the broader problem they're solving rather than just the engineering part of it",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "anthropic-work",
+      "title": "How AI is transforming work at Anthropic",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/research/how-ai-is-transforming-work-at-anthropic",
+      "quote": "Nobody knows what's going to happen… the important thing is to just be really adaptable.",
+      "date": "2025-12-02"
+    },
+    {
+      "id": "anthropic-context",
+      "title": "Effective context engineering for AI agents",
+      "publisher": "Anthropic",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "quote": "At Anthropic, we view context engineering as the natural progression of prompt engineering.",
+      "date": "2025-09-29"
+    },
+    {
+      "id": "bls",
+      "title": "Occupational Outlook Handbook: Software Developers, Quality Assurance Analysts, and Testers",
+      "publisher": "US Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm",
+      "quote": "Overall employment of software developers, quality assurance analysts, and testers is projected to grow 10 percent from 2025 to 2035, much faster than the average for all occupations.",
+      "date": "2026-08-27"
+    },
+    {
+      "id": "bls-pay",
+      "title": "Occupational Outlook Handbook: Software Developers, Quality Assurance Analysts, and Testers",
+      "publisher": "US Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm",
+      "quote": "The median annual wage for software developers was $135,980 in May 2025.",
+      "date": "2026-08-27"
+    }
+  ]
+}

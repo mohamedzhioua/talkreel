@@ -1,0 +1,76 @@
+<section data-beat="define">
+  <div data-block="definition">
+    <p class="term">Context engineering</p>
+    <p class="text">Choosing what the AI sees: instructions, tools, files and history.</p>
+  </div>
+</section>
+
+<section data-beat="workbench" data-cue="workbench">
+  <figure data-block="diagram">
+    <pre data-mermaid>flowchart LR
+  I[Instructions] --> W[Workbench]
+  T[Tools] --> W
+  F[Files] --> W
+  H[History] --> W
+  W --> A[The AI]</pre>
+    <figcaption>Only what the job needs</figcaption>
+  </figure>
+</section>
+
+<section data-beat="quote" data-cue="quote">
+  <figure data-block="quote" data-source="s:anthropic-context">
+    <blockquote>At Anthropic, we view context engineering as the natural progression of prompt engineering.</blockquote>
+    <figcaption>Anthropic, Effective context engineering</figcaption>
+  </figure>
+</section>
+
+<section data-beat="skill" data-cue="skill">
+  <div data-block="list">
+    <h3 class="heading">Skill and agent</h3>
+    <ul>
+      <li>A skill is a recipe</li>
+      <li data-cue="agent">An agent is the AI, using tools to follow it</li>
+    </ul>
+  </div>
+</section>
+
+<section data-beat="harness" data-cue="harness">
+  <div data-block="split" data-align="top">
+    <div class="col">
+      <h3>Harness</h3>
+      <p>Claude Code: the workspace, its tools and its permissions.</p>
+    </div>
+    <div class="col" data-cue="workflow">
+      <h3>Dynamic workflow</h3>
+      <p>Runs agents step by step, and checks each step.</p>
+    </div>
+  </div>
+</section>
+
+<section data-beat="loop" data-cue="loop">
+  <div data-block="terminal" data-title="throwaway repo · a guard test I set up" data-rows="13">
+    <p data-prompt>Run the command `node test.js` as a Bash call. If it fails, run exactly…</p>
+    <p data-tool data-cue="failed">Bash(node test.js)</p>
+    <p data-result data-tone="err">Exit code 1 … 120 !== 119</p>
+    <p data-tool>Bash(node test.js)</p>
+    <p data-result data-tone="err">Exit code 1 … 120 !== 119</p>
+    <p data-tool>Bash(node test.js)</p>
+    <p data-result data-tone="err">Exit code 1 … 120 !== 119</p>
+    <p data-out data-tone="warn" data-cue="loop-guard">loop-guard: this command has now failed 3 consecutive time(s):</p>
+    <p data-out data-tone="warn">loop-guard:   node test.js</p>
+    <p data-out data-tone="warn">loop-guard: repeated-failure stop rule (hard): 3 failed attempts at…</p>
+    <p data-out data-tone="warn">loop-guard: stop retrying — surface the failed attempts and re-derive…</p>
+    <p data-out data-tone="accent" data-cue="stopped">A hook stopped me after the third call, so I made three Bash calls,</p>
+    <p data-out data-tone="accent">  not four.</p>
+  </div>
+</section>
+
+<section data-beat="words" data-cue="hooks">
+  <div data-block="list">
+    <h3 class="heading">Two more words</h3>
+    <ul>
+      <li>Hooks: small checks on every command and edit</li>
+      <li data-cue="handoff">Handoff: what's done and what's next</li>
+    </ul>
+  </div>
+</section>
