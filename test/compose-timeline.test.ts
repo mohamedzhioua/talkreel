@@ -183,3 +183,10 @@ describe("pipeline chips", () => {
     expect(targetsOf(tl).map((t) => t.el)).toEqual(["div[pipeline]"]);
   });
 });
+
+describe("terminal rows", () => {
+  it("data-rows sets the visible rows, so scrolling starts after that many lines", () => {
+    const tl = resolveTimeline(parseScene(`<section data-beat="a"><div data-block="terminal" data-rows="3">${"<p data-out>x</p>".repeat(4)}</div></section>`), {}, 10);
+    expect(tl.scrolls.map((s) => s.y)).toEqual([-40]);
+  });
+});
