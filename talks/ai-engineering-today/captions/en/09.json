@@ -1,0 +1,611 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "Three",
+      "start": 0,
+      "end": 0.24,
+      "matched": true
+    },
+    {
+      "text": "things",
+      "start": 0.24,
+      "end": 0.6,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 0.6,
+      "end": 0.76,
+      "matched": true
+    },
+    {
+      "text": "take",
+      "start": 0.76,
+      "end": 0.98,
+      "matched": true
+    },
+    {
+      "text": "with",
+      "start": 0.98,
+      "end": 1.18,
+      "matched": true
+    },
+    {
+      "text": "you.",
+      "start": 1.18,
+      "end": 1.36,
+      "matched": true
+    },
+    {
+      "text": "One,",
+      "start": 1.7,
+      "end": 1.94,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 2.18,
+      "end": 2.26,
+      "matched": true
+    },
+    {
+      "text": "words.",
+      "start": 2.26,
+      "end": 2.58,
+      "matched": true
+    },
+    {
+      "text": "Context",
+      "start": 3.34,
+      "end": 3.82,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 3.82,
+      "end": 4,
+      "matched": true
+    },
+    {
+      "text": "everything",
+      "start": 4,
+      "end": 4.38,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 4.38,
+      "end": 4.6,
+      "matched": true
+    },
+    {
+      "text": "model",
+      "start": 4.6,
+      "end": 4.82,
+      "matched": true
+    },
+    {
+      "text": "sees.",
+      "start": 4.82,
+      "end": 5.2,
+      "matched": true
+    },
+    {
+      "text": "An",
+      "start": 5.88,
+      "end": 5.98,
+      "matched": true
+    },
+    {
+      "text": "agent",
+      "start": 5.98,
+      "end": 6.3,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 6.3,
+      "end": 6.54,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 6.54,
+      "end": 6.64,
+      "matched": true
+    },
+    {
+      "text": "model",
+      "start": 6.64,
+      "end": 6.96,
+      "matched": true
+    },
+    {
+      "text": "using",
+      "start": 6.96,
+      "end": 7.26,
+      "matched": true
+    },
+    {
+      "text": "tools",
+      "start": 7.26,
+      "end": 7.68,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 7.68,
+      "end": 7.9,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 7.9,
+      "end": 8,
+      "matched": true
+    },
+    {
+      "text": "loop.",
+      "start": 8,
+      "end": 8.18,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 8.56,
+      "end": 8.7,
+      "matched": true
+    },
+    {
+      "text": "workflow",
+      "start": 8.7,
+      "end": 9.06,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 9.06,
+      "end": 9.32,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 9.32,
+      "end": 9.42,
+      "matched": true
+    },
+    {
+      "text": "path",
+      "start": 9.42,
+      "end": 9.62,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 9.62,
+      "end": 9.8,
+      "matched": true
+    },
+    {
+      "text": "wrote.",
+      "start": 9.8,
+      "end": 9.98,
+      "matched": true
+    },
+    {
+      "text": "Two,",
+      "start": 10.52,
+      "end": 10.76,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 10.92,
+      "end": 10.96,
+      "matched": true
+    },
+    {
+      "text": "job.",
+      "start": 10.96,
+      "end": 11.28,
+      "matched": true
+    },
+    {
+      "text": "We",
+      "start": 11.62,
+      "end": 11.68,
+      "matched": true
+    },
+    {
+      "text": "direct",
+      "start": 11.68,
+      "end": 11.98,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 11.98,
+      "end": 12.26,
+      "matched": true
+    },
+    {
+      "text": "we",
+      "start": 12.26,
+      "end": 12.38,
+      "matched": true
+    },
+    {
+      "text": "verify.",
+      "start": 12.38,
+      "end": 12.66,
+      "matched": true
+    },
+    {
+      "text": "Three,",
+      "start": 13.38,
+      "end": 13.76,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 14.08,
+      "end": 14.18,
+      "matched": true
+    },
+    {
+      "text": "rules.",
+      "start": 14.18,
+      "end": 14.46,
+      "matched": true
+    },
+    {
+      "text": "A",
+      "start": 15.14,
+      "end": 15.28,
+      "matched": true
+    },
+    {
+      "text": "rule",
+      "start": 15.28,
+      "end": 15.48,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 15.48,
+      "end": 15.74,
+      "matched": true
+    },
+    {
+      "text": "really",
+      "start": 15.74,
+      "end": 16.02,
+      "matched": true
+    },
+    {
+      "text": "matters",
+      "start": 16.02,
+      "end": 16.42,
+      "matched": true
+    },
+    {
+      "text": "belongs",
+      "start": 16.42,
+      "end": 16.82,
+      "matched": true
+    },
+    {
+      "text": "in",
+      "start": 16.82,
+      "end": 17.16,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 17.16,
+      "end": 17.24,
+      "matched": true
+    },
+    {
+      "text": "hook,",
+      "start": 17.24,
+      "end": 17.54,
+      "matched": true
+    },
+    {
+      "text": "not",
+      "start": 17.72,
+      "end": 17.82,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 17.82,
+      "end": 17.96,
+      "matched": true
+    },
+    {
+      "text": "prompt.",
+      "start": 17.96,
+      "end": 18.2,
+      "matched": true
+    },
+    {
+      "text": "One",
+      "start": 18.78,
+      "end": 19.02,
+      "matched": true
+    },
+    {
+      "text": "thing",
+      "start": 19.02,
+      "end": 19.24,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 19.24,
+      "end": 19.4,
+      "matched": true
+    },
+    {
+      "text": "try",
+      "start": 19.4,
+      "end": 19.62,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 19.62,
+      "end": 19.86,
+      "matched": true
+    },
+    {
+      "text": "week.",
+      "start": 19.86,
+      "end": 20.1,
+      "matched": true
+    },
+    {
+      "text": "Pick",
+      "start": 20.58,
+      "end": 20.74,
+      "matched": true
+    },
+    {
+      "text": "one",
+      "start": 20.74,
+      "end": 21.02,
+      "matched": true
+    },
+    {
+      "text": "real",
+      "start": 21.02,
+      "end": 21.28,
+      "matched": true
+    },
+    {
+      "text": "task.",
+      "start": 21.28,
+      "end": 21.64,
+      "matched": true
+    },
+    {
+      "text": "Before",
+      "start": 22.18,
+      "end": 22.4,
+      "matched": true
+    },
+    {
+      "text": "you",
+      "start": 22.4,
+      "end": 22.58,
+      "matched": true
+    },
+    {
+      "text": "prompt,",
+      "start": 22.58,
+      "end": 22.9,
+      "matched": true
+    },
+    {
+      "text": "write",
+      "start": 23.18,
+      "end": 23.3,
+      "matched": true
+    },
+    {
+      "text": "three",
+      "start": 23.3,
+      "end": 23.6,
+      "matched": true
+    },
+    {
+      "text": "lines:",
+      "start": 23.6,
+      "end": 24.02,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 24.32,
+      "end": 24.4,
+      "matched": true
+    },
+    {
+      "text": "goal,",
+      "start": 24.4,
+      "end": 24.66,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 24.82,
+      "end": 24.9,
+      "matched": true
+    },
+    {
+      "text": "limits,",
+      "start": 24.9,
+      "end": 25.2,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 25.32,
+      "end": 25.42,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 25.42,
+      "end": 25.52,
+      "matched": true
+    },
+    {
+      "text": "check",
+      "start": 25.52,
+      "end": 25.78,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 25.78,
+      "end": 25.96,
+      "matched": true
+    },
+    {
+      "text": "proves",
+      "start": 25.96,
+      "end": 26.24,
+      "matched": true
+    },
+    {
+      "text": "it's",
+      "start": 26.24,
+      "end": 26.54,
+      "matched": true
+    },
+    {
+      "text": "done.",
+      "start": 26.54,
+      "end": 26.68,
+      "matched": true
+    },
+    {
+      "text": "Then",
+      "start": 27.18,
+      "end": 27.5,
+      "matched": true
+    },
+    {
+      "text": "give",
+      "start": 27.5,
+      "end": 27.68,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 27.68,
+      "end": 27.82,
+      "matched": true
+    },
+    {
+      "text": "agent",
+      "start": 27.82,
+      "end": 28.16,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 28.16,
+      "end": 28.4,
+      "matched": true
+    },
+    {
+      "text": "check.",
+      "start": 28.4,
+      "end": 28.68,
+      "matched": true
+    },
+    {
+      "text": "English",
+      "start": 29.18,
+      "end": 29.5,
+      "matched": true
+    },
+    {
+      "text": "may",
+      "start": 29.5,
+      "end": 29.82,
+      "matched": true
+    },
+    {
+      "text": "be",
+      "start": 29.82,
+      "end": 29.92,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 29.92,
+      "end": 30.04,
+      "matched": true
+    },
+    {
+      "text": "hottest",
+      "start": 30.04,
+      "end": 30.36,
+      "matched": true
+    },
+    {
+      "text": "new",
+      "start": 30.36,
+      "end": 30.68,
+      "matched": true
+    },
+    {
+      "text": "programming",
+      "start": 30.68,
+      "end": 31.08,
+      "matched": true
+    },
+    {
+      "text": "language.",
+      "start": 31.08,
+      "end": 31.56,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 32.12,
+      "end": 32.24,
+      "matched": true
+    },
+    {
+      "text": "engineering",
+      "start": 32.24,
+      "end": 32.68,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 32.68,
+      "end": 33.04,
+      "matched": true
+    },
+    {
+      "text": "still",
+      "start": 33.04,
+      "end": 33.22,
+      "matched": true
+    },
+    {
+      "text": "ours.",
+      "start": 33.22,
+      "end": 33.5,
+      "matched": true
+    }
+  ]
+}

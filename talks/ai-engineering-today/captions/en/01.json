@@ -1,0 +1,455 @@
+{
+  "lang": "en",
+  "words": [
+    {
+      "text": "In",
+      "start": 0,
+      "end": 0.12,
+      "matched": true
+    },
+    {
+      "text": "January",
+      "start": 0.12,
+      "end": 0.58,
+      "matched": true
+    },
+    {
+      "text": "twenty",
+      "start": 0.58,
+      "end": 0.926,
+      "matched": true
+    },
+    {
+      "text": "twenty-three,",
+      "start": 0.926,
+      "end": 1.56,
+      "matched": true
+    },
+    {
+      "text": "Andrej",
+      "start": 2.02,
+      "end": 2.44,
+      "matched": true
+    },
+    {
+      "text": "Karpathy",
+      "start": 2.44,
+      "end": 3.06,
+      "matched": true
+    },
+    {
+      "text": "posted",
+      "start": 3.06,
+      "end": 3.5,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 3.5,
+      "end": 3.72,
+      "matched": true
+    },
+    {
+      "text": "single",
+      "start": 3.72,
+      "end": 4.02,
+      "matched": true
+    },
+    {
+      "text": "line.",
+      "start": 4.02,
+      "end": 4.38,
+      "matched": true
+    },
+    {
+      "text": "The",
+      "start": 5.02,
+      "end": 5.1,
+      "matched": true
+    },
+    {
+      "text": "hottest",
+      "start": 5.1,
+      "end": 5.42,
+      "matched": true
+    },
+    {
+      "text": "new",
+      "start": 5.42,
+      "end": 5.78,
+      "matched": true
+    },
+    {
+      "text": "programming",
+      "start": 5.78,
+      "end": 6.2,
+      "matched": true
+    },
+    {
+      "text": "language",
+      "start": 6.2,
+      "end": 6.7,
+      "matched": true
+    },
+    {
+      "text": "is",
+      "start": 6.7,
+      "end": 6.96,
+      "matched": true
+    },
+    {
+      "text": "English.",
+      "start": 6.96,
+      "end": 7.24,
+      "matched": true
+    },
+    {
+      "text": "As",
+      "start": 7.94,
+      "end": 8.1,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 8.1,
+      "end": 8.2,
+      "matched": true
+    },
+    {
+      "text": "May",
+      "start": 8.2,
+      "end": 8.38,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 8.38,
+      "end": 8.6,
+      "matched": true
+    },
+    {
+      "text": "year,",
+      "start": 8.6,
+      "end": 8.86,
+      "matched": true
+    },
+    {
+      "text": "Anthropic",
+      "start": 9.14,
+      "end": 9.54,
+      "matched": true
+    },
+    {
+      "text": "says",
+      "start": 9.54,
+      "end": 9.9,
+      "matched": true
+    },
+    {
+      "text": "more",
+      "start": 9.9,
+      "end": 10.16,
+      "matched": true
+    },
+    {
+      "text": "than",
+      "start": 10.16,
+      "end": 10.32,
+      "matched": true
+    },
+    {
+      "text": "eighty",
+      "start": 10.32,
+      "end": 10.6,
+      "matched": true
+    },
+    {
+      "text": "percent",
+      "start": 10.6,
+      "end": 11.06,
+      "matched": true
+    },
+    {
+      "text": "of",
+      "start": 11.06,
+      "end": 11.26,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 11.26,
+      "end": 11.34,
+      "matched": true
+    },
+    {
+      "text": "code",
+      "start": 11.34,
+      "end": 11.66,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 11.66,
+      "end": 11.86,
+      "matched": true
+    },
+    {
+      "text": "merges",
+      "start": 11.86,
+      "end": 12.24,
+      "matched": true
+    },
+    {
+      "text": "was",
+      "start": 12.24,
+      "end": 12.48,
+      "matched": true
+    },
+    {
+      "text": "authored",
+      "start": 12.48,
+      "end": 12.92,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 12.92,
+      "end": 13.1,
+      "matched": true
+    },
+    {
+      "text": "Claude.",
+      "start": 13.1,
+      "end": 13.56,
+      "matched": true
+    },
+    {
+      "text": "That",
+      "start": 14.08,
+      "end": 14.28,
+      "matched": true
+    },
+    {
+      "text": "number",
+      "start": 14.28,
+      "end": 14.5,
+      "matched": true
+    },
+    {
+      "text": "needs",
+      "start": 14.5,
+      "end": 14.8,
+      "matched": true
+    },
+    {
+      "text": "context.",
+      "start": 14.8,
+      "end": 15.24,
+      "matched": true
+    },
+    {
+      "text": "We'll",
+      "start": 15.88,
+      "end": 16.04,
+      "matched": true
+    },
+    {
+      "text": "get",
+      "start": 16.04,
+      "end": 16.2,
+      "matched": true
+    },
+    {
+      "text": "to",
+      "start": 16.2,
+      "end": 16.38,
+      "matched": true
+    },
+    {
+      "text": "it.",
+      "start": 16.38,
+      "end": 16.56,
+      "matched": true
+    },
+    {
+      "text": "And",
+      "start": 17.02,
+      "end": 17.14,
+      "matched": true
+    },
+    {
+      "text": "this",
+      "start": 17.14,
+      "end": 17.3,
+      "matched": true
+    },
+    {
+      "text": "video",
+      "start": 17.3,
+      "end": 17.6,
+      "matched": true
+    },
+    {
+      "text": "was",
+      "start": 17.6,
+      "end": 17.82,
+      "matched": true
+    },
+    {
+      "text": "made",
+      "start": 17.82,
+      "end": 18.08,
+      "matched": true
+    },
+    {
+      "text": "by",
+      "start": 18.08,
+      "end": 18.3,
+      "matched": true
+    },
+    {
+      "text": "a",
+      "start": 18.3,
+      "end": 18.4,
+      "matched": true
+    },
+    {
+      "text": "tool",
+      "start": 18.4,
+      "end": 18.68,
+      "matched": true
+    },
+    {
+      "text": "that",
+      "start": 18.68,
+      "end": 18.94,
+      "matched": true
+    },
+    {
+      "text": "AI",
+      "start": 18.94,
+      "end": 19.32,
+      "matched": true
+    },
+    {
+      "text": "agents",
+      "start": 19.32,
+      "end": 19.76,
+      "matched": true
+    },
+    {
+      "text": "built,",
+      "start": 19.76,
+      "end": 20.18,
+      "matched": true
+    },
+    {
+      "text": "under",
+      "start": 20.18,
+      "end": 20.68,
+      "matched": true
+    },
+    {
+      "text": "rules",
+      "start": 20.68,
+      "end": 21.04,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 21.04,
+      "end": 21.28,
+      "matched": true
+    },
+    {
+      "text": "wrote.",
+      "start": 21.28,
+      "end": 21.5,
+      "matched": true
+    },
+    {
+      "text": "In",
+      "start": 22.14,
+      "end": 22.26,
+      "matched": true
+    },
+    {
+      "text": "ten",
+      "start": 22.26,
+      "end": 22.52,
+      "matched": true
+    },
+    {
+      "text": "minutes:",
+      "start": 22.52,
+      "end": 22.74,
+      "matched": true
+    },
+    {
+      "text": "the",
+      "start": 23.28,
+      "end": 23.44,
+      "matched": true
+    },
+    {
+      "text": "words,",
+      "start": 23.44,
+      "end": 23.84,
+      "matched": true
+    },
+    {
+      "text": "how",
+      "start": 24.08,
+      "end": 24.18,
+      "matched": true
+    },
+    {
+      "text": "I",
+      "start": 24.18,
+      "end": 24.36,
+      "matched": true
+    },
+    {
+      "text": "work,",
+      "start": 24.36,
+      "end": 24.62,
+      "matched": true
+    },
+    {
+      "text": "and",
+      "start": 24.62,
+      "end": 24.86,
+      "matched": true
+    },
+    {
+      "text": "what",
+      "start": 24.86,
+      "end": 25.02,
+      "matched": true
+    },
+    {
+      "text": "it",
+      "start": 25.02,
+      "end": 25.12,
+      "matched": true
+    },
+    {
+      "text": "changes",
+      "start": 25.12,
+      "end": 25.44,
+      "matched": true
+    },
+    {
+      "text": "for",
+      "start": 25.44,
+      "end": 25.72,
+      "matched": true
+    },
+    {
+      "text": "us.",
+      "start": 25.72,
+      "end": 25.9,
+      "matched": true
+    }
+  ]
+}

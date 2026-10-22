@@ -26,7 +26,7 @@
     <pre data-mermaid>flowchart LR
   S[Slices] --> G1{Gate 1}
   G1 -->|approved| C[Code]</pre>
-    <figcaption>I approve the spec before any code</figcaption>
+    <figcaption>I approve the spec first</figcaption>
   </figure>
 </section>
 
@@ -34,9 +34,9 @@
   <div data-block="list">
     <h3 class="heading">Only three gates ask me</h3>
     <ol>
-      <li>The spec, before any code</li>
-      <li>User-challenge decisions</li>
-      <li>Merge, tag and publish</li>
+      <li data-cue="gate-spec">The spec</li>
+      <li data-cue="gate-user">User-challenge decisions</li>
+      <li data-cue="gate-human">Merge, tag and publish</li>
     </ol>
   </div>
 </section>

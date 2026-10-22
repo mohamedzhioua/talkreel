@@ -10,7 +10,7 @@
 <section data-beat="workflow" data-cue="workflow">
   <div data-block="definition" data-source="s:s5">
     <p class="term">Workflow</p>
-    <p class="text">The model and its tools follow code paths you wrote in advance.</p>
+    <p class="text">Code paths you wrote in advance.</p>
   </div>
 </section>
 
@@ -79,8 +79,8 @@
     <h3 class="heading">Every run-until-done loop carries</h3>
     <ul>
       <li>A wall-clock cap</li>
-      <li>A receipt per tick</li>
-      <li>An explicit stop reason</li>
+      <li data-cue="receipt">A receipt per tick</li>
+      <li data-cue="stop-reason">An explicit stop reason</li>
     </ul>
   </div>
 </section>
@@ -91,7 +91,7 @@
       <h3>No cap</h3>
       <p>A bill.</p>
     </div>
-    <div class="col">
+    <div class="col" data-cue="no-stop">
       <h3>No stop reason</h3>
       <p>A mystery.</p>
     </div>
