@@ -223,14 +223,20 @@ flowchart LR
 All six are cued, so none of them lights early with the block.
 
 **T4b**: title "render · build session". Source: build session.
-- Line 03 is the real fix commit's subject, not a diff: the inventory holds no diff lines for this fix.
+- Line 03 is the real fix commit's subject (talkreel commit 0f0086e).
+- Lines 04–08 are that commit's real diff, from talkreel's public history: `isProcessCrash` in `src/compose-hyperframes.ts` and the changed call in `src/commands/render.ts`. Line 08 is cut with `…`.
 - It happened once in each of two full renders. The narration says so.
 
 ```
 01  out            err     cue:crash    | en/01: hyperframes check failed (exit 3221226505):
 02  out            err     chain        | render failed for 1 chapter(s); concat not run
 03  out            accent  cue:retry    | fix(render): retry hyperframes once after a process crash
-04  out            ok      cue:green    | Tests  122 passed (122)
+04  diff-add       -       chain        | export function isProcessCrash(code: number): boolean {
+05  diff-add       -       chain        |   return code >= 0xc0000000;
+06  diff-add       -       chain        | }
+07  diff-del       -       chain        |   const chk = await hfCheck(dir, composed.duration, { telemetry });
+08  diff-add       -       chain        |   const chk = await retryOnCrash(() => hfCheck(…), retryNote("check"));
+09  out            ok      cue:green    |      Tests  122 passed (122)
 ```
 
 ---
@@ -315,9 +321,9 @@ All six are cued, so none of them lights early with the block.
 | cue | spoken from | on screen |
 |---|---|---|
 | (start) | "Then the evidence…" | Terminal T6, all four lines |
-| frames | "An AI also reviewed the rendered frames…" | `split`: col 1 h3 "Frame review", p "I tested a crossfade between beats; the two beats' text overlapped." (build session) |
+| frames | "An AI also reviewed the rendered frames…" | `split`: col 1 h3 "Frame review", p "“I tested a crossfade between beats; the two beats' text overlapped.”" (build session; the reviewer agent's own words, so in quotes) |
 | frame-fix | "So the contract changed…" | col 2 (`data-cue="frame-fix"`): h3 "The fix", p "The contract now delays the incoming beat until the old one has faded." (build session) |
-| bite | "Then I proved the tests bite…" | `definition`: term "Mutation proof", text "I removed the 0.3 s floor and 4 tests failed; I put it back." (build session) |
+| bite | "Then the tests had to prove they bite…" | `definition`: term "Mutation proof", text "“I removed the 0.3 s floor and 4 tests failed; I put it back.”" (build session; an implementer agent's own words, so in quotes) |
 | gap | "One reviewer even admitted…" | Terminal T6b, plus the beat `<p>`: "Images for chapters 1–5 · re-reviewed by fresh agents" (build session) |
 | pr | "Then I ship it as one PR…" | Terminal T6c, lines 01–02 |
 | ci | "On the PR, CI ran the tests…" | T6c line 03 |
