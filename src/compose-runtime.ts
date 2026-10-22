@@ -156,7 +156,13 @@ export const TIMELINE_RUNTIME = `(function () {
       tl.fromTo("#tr-blob-a", { x: 0, y: 0, scale: 1 }, { x: -260, y: 140, scale: 1.15, duration: P.D, ease: "none" }, 0);
       tl.fromTo("#tr-blob-b", { x: 0, y: 0, scale: 1 }, { x: 240, y: -100, scale: 1.1, duration: P.D, ease: "none" }, 0);
       tl.fromTo("#tr-grid", { y: 0 }, { y: -Math.min(120, 4 * P.D), duration: P.D, ease: "none" }, 0);
-      tl.fromTo("#tr-tag", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+      // The tag hides while a title beat is on screen (plan.tag, resolved in Node).
+      window.gsap.set("#tr-tag", { opacity: 0 });
+      P.tag.forEach(function (f, i) {
+        var to = f.to === 1 && i === 0 ? { opacity: 1, x: 0 } : { opacity: f.to };
+        var from = f.to === 1 && i === 0 ? { opacity: 0, x: -12 } : { opacity: f.from };
+        tl.fromTo("#tr-tag", from, Object.assign(to, { duration: f.d, ease: "power2.out", immediateRender: false }), f.t);
+      });
     }
 
     tl.set({}, {}, P.D);

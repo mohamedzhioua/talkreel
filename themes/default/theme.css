@@ -171,6 +171,14 @@ section[data-beat] > p {
 
 [data-block] { position: relative; }
 
+/* Prose never ends on a lone word (Chromium balances the last lines). */
+[data-block="split"] > .col > p,
+[data-block="definition"] .text,
+[data-block="list"] li,
+[data-block="quote"] blockquote,
+[data-block="title"] .subtitle,
+[data-block="stat"] .label { text-wrap: pretty; }
+
 /* Appended by the composer from sources.json; never written by hand. */
 .tr-source {
   margin-top: 28px;
