@@ -7,6 +7,20 @@
 
 import { GEOMETRY, type Geometry, type Resolution } from "./geometry.js";
 
+const LANGUAGE_DIRECTIONS: Readonly<Record<string, "rtl" | "ltr">> = { ar: "rtl" };
+
+export function languageDirection(lang: string): "rtl" | "ltr" {
+  return LANGUAGE_DIRECTIONS[lang] === "rtl" ? "rtl" : "ltr";
+}
+
+/** Terminal and code blocks keep their LTR reveal and reading order on RTL pages. */
+export function isLtrIsland(el: HtmlElement): boolean {
+  for (let p: HtmlElement | null = el; p; p = p.parent) {
+    if (["terminal", "code"].includes(getAttr(p, "data-block") ?? "")) return true;
+  }
+  return false;
+}
+
 /** Layout context on the fragment root; never serialized as scene markup. */
 export function geometryFor(el: HtmlElement): Geometry {
   while (el.parent) el = el.parent;

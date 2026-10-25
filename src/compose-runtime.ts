@@ -5,6 +5,13 @@
 //
 // Plain ES5-style JavaScript in a string, so it runs as a classic script and is written to the
 // build directory verbatim.
+/** Only RTL pages receive the mirrored runtime; LTR output remains byte-identical. */
+export function mirrorSlides(runtime: string): string {
+  return runtime
+    .replace("{ opacity: 0, x: 80 }", "{ opacity: 0, x: -80 }")
+    .replace('tween("x", 80, 0,', 'tween("x", -80, 0,');
+}
+
 export const TIMELINE_RUNTIME = `(function () {
   "use strict";
   var P = window.__trPlan;

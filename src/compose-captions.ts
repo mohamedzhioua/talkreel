@@ -21,14 +21,22 @@ export interface CaptionLine {
 }
 
 const CLOSE = `["'”’»)\\]]*$`;
-const SENTENCE_END = new RegExp(`[.?!]${CLOSE}`);
-const CLAUSE_END = new RegExp(`[,;:]${CLOSE}`);
+const SENTENCE_END = new RegExp(`[.?!؟]${CLOSE}`);
+const CLAUSE_END = new RegExp(`[,;:،؛]${CLOSE}`);
 /** A line never ends on one of these (a bare word, no punctuation). */
 export const CAPTION_FUNCTION_WORDS = new Set([
   "a", "an", "the", "to", "of", "and", "or", "toward", "for", "with", "in", "on",
   "this", "that", "its", "it", "what", "while", "their", "our", "your", "my",
   "is", "are", "be", "by", "from", "as", "at", "into", "than",
 ]);
+export const ARABIC_FUNCTION_WORDS = new Set([
+  "في", "من", "على", "إلى", "عن", "مع", "أن", "إن", "لا", "ما", "هذا", "هذه", "التي", "الذي",
+]);
+
+/** Display only: NFC keeps hamza/madda letters intact while removing Arabic vowel marks. */
+export function captionDisplay(text: string, lang: string): string {
+  return lang === "ar" ? text.normalize("NFC").replace(/[\u064B-\u065F\u0670]/g, "") : text;
+}
 /** A line this short inside a multi-line segment is a fragment ("My rule:"). */
 const FRAGMENT_CHARS = 14;
 
@@ -48,14 +56,16 @@ const COST = { line: 20, slack: 100, clause: 0.35, functionWord: 500, fragment: 
  * fragments and a lone last word. A line may reach 54 characters only when that is the cheapest
  * way to avoid a lone word.
  */
-export function captionLines(words: CaptionWord[], duration: number, resolution: Resolution = "landscape"): CaptionLine[] {
+export function captionLines(words: CaptionWord[], duration: number, resolution: Resolution = "landscape", lang = "en"): CaptionLine[] {
+  if (lang === "ar") words = words.map((w) => ({ ...w, text: captionDisplay(w.text, lang) }));
+  const functionWords = lang === "ar" ? ARABIC_FUNCTION_WORDS : undefined;
   const limits = GEOMETRY[resolution].caption;
   const groups: number[][] = [];
   let seg = 0;
   words.forEach((w, i) => {
     const next = words[i + 1];
-    if (!next || SENTENCE_END.test(w.text) || next.start - w.end > CAPTION_GAP_BREAK) {
-      groups.push(...breakSegment(words, seg, i + 1, limits));
+    if (!next || (!functionWords?.has(w.text) && (SENTENCE_END.test(w.text) || next.start - w.end > CAPTION_GAP_BREAK))) {
+      groups.push(...breakSegment(words, seg, i + 1, limits, functionWords));
       seg = i + 1;
     }
   });
@@ -73,17 +83,19 @@ export function captionLines(words: CaptionWord[], duration: number, resolution:
 }
 
 /** Cheapest breaks for words[from, to), by deterministic dynamic programming. */
-function breakSegment(words: CaptionWord[], from: number, to: number, limits: Geometry["caption"]): number[][] {
+function breakSegment(words: CaptionWord[], from: number, to: number, limits: Geometry["caption"], functionWords?: ReadonlySet<string>): number[][] {
   const n = to - from;
   const best: number[] = new Array<number>(n + 1).fill(Infinity);
   const prev: number[] = new Array<number>(n + 1).fill(-1);
   best[0] = 0;
   for (let j = 1; j <= n; j++) {
+    // Arabic function words stay with the word after them, even across a pause.
+    if (j < n && functionWords?.has(words[from + j - 1]!.text)) continue;
     let len = -1;
     for (let i = j - 1; i >= 0; i--) {
       len += 1 + words[from + i]!.text.length;
-      // A single word longer than the cap still gets its own line.
-      if (len > limits.absorbMaxChars && i < j - 1) break;
+      // An overlong word (with any preceding Arabic function words) is indivisible.
+      if (len > limits.absorbMaxChars && i < j - 1 && !functionWords?.has(words[from + i]!.text)) break;
       const c = best[i]! + lineCost(words, from + i, from + j, len, i === 0 && j === n, j === n, limits);
       if (c < best[j]!) {
         best[j] = c;

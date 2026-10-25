@@ -17,7 +17,7 @@ Guide for AI agents working on talkreel itself. Using talkreel to make a talk is
 ## Invariants
 
 - Scenes are timed only by cues, never by seconds. The composer owns the timeline, duration, audio and captions.
-- Captions use the script's spelling; Whisper supplies timing only.
+- Caption letters use the script's spelling; Arabic vowel marks (harakat) are not shown. Whisper supplies timing only.
 - Never bundle or vendor GPL code. The Python helper stays behind a process boundary.
 - Renders work offline: GSAP, fonts and Mermaid are copied into `build/`.
 - HyperFrames is pinned at 0.8.185. Telemetry is off by default (`--telemetry` opts in).

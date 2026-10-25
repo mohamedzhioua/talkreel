@@ -3,7 +3,7 @@
 // talk directory is supplied; the structure and timeline need no browser or filesystem.
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve, win32 } from "node:path";
-import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
+import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, isLtrIsland, languageDirection, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
 import { GEOMETRY, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
@@ -54,6 +54,7 @@ export type RuleId =
   | "E_UNKNOWN_CUE"
   | "E_CUE_BEFORE_BEAT"
   | "E_BAD_ANIM"
+  | "E_RTL_TYPE"
   | "E_STEP_UNKNOWN"
   | "E_SOURCE_MISSING"
   | "E_SOURCE_PLACE"
@@ -286,6 +287,7 @@ function pipelineIssues(block: HtmlElement): SceneIssue[] {
 
 export interface StaticCheckOptions {
   resolution: Resolution;
+  lang?: string;
   /** Omit for structure-only validation (e.g. resolving an already-rendered frame timeline). */
   talkDir?: string;
   /** Source ids from sources.json. */
@@ -345,6 +347,9 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
   for (const el of all) {
     const anim = getAttr(el, "data-anim");
     if (anim !== undefined && !(ANIMS as readonly string[]).includes(anim ?? "")) out.push(issue("E_BAD_ANIM", el, `data-anim must be one of ${ANIMS.join(", ")}`));
+    if (anim === "type" && languageDirection(opts.lang ?? "en") === "rtl" && !isLtrIsland(el)) {
+      out.push(issue("E_RTL_TYPE", el, "type is not supported on RTL text; use fade, fade-up or pop"));
+    }
     if (opts.cues && hasAttr(el, "data-cue")) {
       const cue = getAttr(el, "data-cue") ?? "";
       if (!opts.cues.has(cue)) out.push(issue("E_UNKNOWN_CUE", el, `cue "${cue}" has no {#${cue}} marker in the script`));

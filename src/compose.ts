@@ -5,11 +5,11 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildBlocks, isTerminalPrompt, wrapTyped, type BlocksPlan } from "./compose-blocks.js";
-import { applyDisplays, captionLines, type CaptionLine } from "./compose-captions.js";
-import { FIGURE_TIMELINE_RUNTIME, TIMELINE_RUNTIME } from "./compose-runtime.js";
+import { applyDisplays, captionDisplay, captionLines, type CaptionLine } from "./compose-captions.js";
+import { FIGURE_TIMELINE_RUNTIME, mirrorSlides, TIMELINE_RUNTIME } from "./compose-runtime.js";
 import { resolveCues } from "./cues.js";
 import { hashJson, sha256, sha256File } from "./hash.js";
-import { classList, descendants, escapeText, geometryStyle, getAttr, hasAttr, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
+import { classList, descendants, escapeText, geometryStyle, getAttr, hasAttr, languageDirection, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
 import { GEOMETRY, type Resolution } from "./geometry.js";
 import { captionsProblems, type CaptionsFile, type Source } from "./schema.js";
 import { parseScene, resolveTimeline, sceneAssets, SceneError, tagFades, usedCues, validateScene, type ResolvedTimeline, type TagFade, type Scene, type SceneIssue, type SceneWarning } from "./compose-scene.js";
@@ -52,6 +52,7 @@ export function themeDir(talk: Talk): string {
 export const FONT_FILES = [
   ["@fontsource/inter", ["400", "600", "800"].flatMap((w) => [`inter-latin-${w}-normal.woff2`, `inter-latin-ext-${w}-normal.woff2`])],
   ["@fontsource/jetbrains-mono", ["400", "600"].flatMap((w) => [`jetbrains-mono-latin-${w}-normal.woff2`, `jetbrains-mono-latin-ext-${w}-normal.woff2`])],
+  ["@fontsource/ibm-plex-sans-arabic", ["400", "600", "700"].map((w) => `ibm-plex-sans-arabic-arabic-${w}-normal.woff2`)],
 ] as const;
 
 export const buildPaths = {
@@ -104,6 +105,8 @@ export interface PageInput {
 }
 
 export interface Plan {
+  /** Omitted on LTR pages to preserve their generated timeline bytes. */
+  rtl?: true;
   D: number;
   diagrams: { renderId: string; host: string }[];
   beats: { id: string; start: number; unmount: number; fadeAt: number | null; camera: string }[];
@@ -137,6 +140,7 @@ export function buildPage(input: PageInput): Page {
   const resolution = input.resolution ?? scene.root.resolution ?? "landscape";
   scene.root.resolution = resolution;
   const geometry = GEOMETRY[resolution];
+  const rtl = languageDirection(input.lang) === "rtl";
   const captions = { ...input.captions, words: applyDisplays(input.captions.words, input.displays ?? []) };
   const D = tl.duration;
   const usedIds = new Set<string>();
@@ -169,6 +173,9 @@ export function buildPage(input: PageInput): Page {
     return [o];
   });
   const blocks = buildBlocks(tl, idFor);
+  if (rtl) for (const el of descendants(scene.root)) {
+    if (["terminal", "code"].includes(getAttr(el, "data-block") ?? "")) setAttr(el, "dir", "ltr");
+  }
 
   const hostOf = new Map<HtmlElement, string>();
   const diagrams = tl.diagrams.map((d) => {
@@ -193,17 +200,17 @@ export function buildPage(input: PageInput): Page {
   };
   walk(scene.root);
 
-  const lines = captionLines(captions.words, D, resolution);
+  const lines = captionLines(captions.words, D, resolution, input.lang);
   // Every word starts with an explicit data-state: GSAP records it as the start value, so seeking
   // back before a word reverts it to "upcoming" (a missing attribute cannot be restored).
   const lineHtml = lines
-    .map((l, j) => `      <div class="tr-cap-line" id="tr-cap-${j}">${l.words.map((k) => `<span class="tr-word" id="tr-w-${k}" data-state="upcoming">${escapeText(typographic(captions.words[k]!.text))}</span>`).join(" ")}</div>`)
+    .map((l, j) => `      <div class="tr-cap-line" id="tr-cap-${j}">${l.words.map((k) => `<span class="tr-word" id="tr-w-${k}" data-state="upcoming">${escapeText(typographic(captionDisplay(captions.words[k]!.text, input.lang)))}</span>`).join(" ")}</div>`)
     .join("\n");
 
   const beatsHtml = scene.beats.map((b) => "      " + serialize(b.el)).join("\n");
   const hasDiagram = diagrams.length > 0;
   const html = `<!doctype html>
-<html lang="${input.lang}" data-resolution="${resolution}">
+<html lang="${input.lang}"${rtl ? ' dir="rtl"' : ""} data-resolution="${resolution}">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=${geometry.width}, height=${geometry.height}">
   <link rel="stylesheet" href="theme.css">
@@ -231,6 +238,7 @@ ${lineHtml}
 
   const round = (n: number) => Math.round(n * 1000) / 1000;
   const plan: Plan = {
+    ...(rtl ? { rtl: true as const } : {}),
     D: round(D),
     diagrams,
     beats: tl.beats.map((b) => ({ id: b.domId, start: round(b.start), unmount: round(b.unmount), fadeAt: b.fadeAt === null ? null : round(b.fadeAt), camera: b.camera })),
@@ -246,7 +254,8 @@ ${lineHtml}
 }
 
 export function timelineScript(plan: Plan): string {
-  return `// Generated by talkreel ${COMPOSE_VERSION}. Do not edit: run "talkreel render".\nwindow.__hfTimelinesBuilding = true;\nwindow.__trPlan = ${JSON.stringify(plan)};\n${plan.figures?.length ? FIGURE_TIMELINE_RUNTIME : TIMELINE_RUNTIME}`;
+  const runtime = plan.figures?.length ? FIGURE_TIMELINE_RUNTIME : TIMELINE_RUNTIME;
+  return `// Generated by talkreel ${COMPOSE_VERSION}. Do not edit: run "talkreel render".\nwindow.__hfTimelinesBuilding = true;\nwindow.__trPlan = ${JSON.stringify(plan)};\n${plan.rtl ? mirrorSlides(runtime) : runtime}`;
 }
 
 function dedupe(issues: SceneIssue[]): SceneIssue[] {
@@ -269,9 +278,10 @@ export function prepareScene(
   sourceIds: ReadonlySet<string>,
   resolution: Resolution = "landscape",
   talkDir?: string,
+  lang = captions.lang,
 ): { scene: Scene; timeline: ResolvedTimeline; warnings: SceneWarning[] } {
   const scene = parseScene(source);
-  const issues = validateScene(scene, { sources: sourceIds, cues: new Set(chapter.cues.map((c) => c.id)), resolution, talkDir });
+  const issues = validateScene(scene, { sources: sourceIds, cues: new Set(chapter.cues.map((c) => c.id)), resolution, talkDir, lang });
   const seen = new Set<string>();
   for (const c of chapter.cues) {
     if (seen.has(c.id)) issues.push({ rule: "E_DUP_CUE", line: c.line, element: `{#${c.id}}`, message: `cue {#${c.id}} appears twice in the script` });
@@ -322,7 +332,7 @@ export function composeChapter(talk: Talk, ch: ChapterFile): ComposeResult {
   const A = readWavInfo(wav).duration;
   const sources = new Map(loadSources(talk).sources.map((s) => [s.id, s]));
   const rel = `scenes/${ch.chapter}-${ch.name}.html`;
-  const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()), talk.config.resolution, talk.dir);
+  const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()), talk.config.resolution, talk.dir, ch.lang);
   if (talk.config.ambient && chapter.tag.length > TAG_MAX_CHARS) warnings.push({ message: `chapter tag "${chapter.tag}" is ${chapter.tag.length} characters; keep it at most ${TAG_MAX_CHARS} (# Title {tag: X})` });
   const ambient = talk.config.ambient ? { tag: `${ch.chapter} · ${chapter.tag}` } : undefined;
   const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays, ambient, resolution: talk.config.resolution });
