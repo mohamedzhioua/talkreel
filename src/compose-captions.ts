@@ -1,10 +1,11 @@
 // Caption lines for the composed page (scenes.md section 10, "Captions").
 import type { CaptionWord } from "./schema.js";
 import type { DisplayForm } from "./script.js";
+import { GEOMETRY, type Geometry, type Resolution } from "./geometry.js";
 
-export const CAPTION_MAX_CHARS = 48;
+export const CAPTION_MAX_CHARS = GEOMETRY.landscape.caption.maxChars;
 /** Hard cap for a line that absorbs a lone word it could not be balanced with (theme.css: 1600 px at 52 px). */
-export const CAPTION_ABSORB_MAX_CHARS = 54;
+export const CAPTION_ABSORB_MAX_CHARS = GEOMETRY.landscape.caption.absorbMaxChars;
 export const CAPTION_GAP_BREAK = 0.6;
 /** The runtime's line fade-out duration (src/compose-runtime.ts). */
 export const CAPTION_HIDE_FADE = 0.08;
@@ -47,13 +48,14 @@ const COST = { line: 20, slack: 100, clause: 0.35, functionWord: 500, fragment: 
  * fragments and a lone last word. A line may reach 54 characters only when that is the cheapest
  * way to avoid a lone word.
  */
-export function captionLines(words: CaptionWord[], duration: number): CaptionLine[] {
+export function captionLines(words: CaptionWord[], duration: number, resolution: Resolution = "landscape"): CaptionLine[] {
+  const limits = GEOMETRY[resolution].caption;
   const groups: number[][] = [];
   let seg = 0;
   words.forEach((w, i) => {
     const next = words[i + 1];
     if (!next || SENTENCE_END.test(w.text) || next.start - w.end > CAPTION_GAP_BREAK) {
-      groups.push(...breakSegment(words, seg, i + 1));
+      groups.push(...breakSegment(words, seg, i + 1, limits));
       seg = i + 1;
     }
   });
@@ -71,7 +73,7 @@ export function captionLines(words: CaptionWord[], duration: number): CaptionLin
 }
 
 /** Cheapest breaks for words[from, to), by deterministic dynamic programming. */
-function breakSegment(words: CaptionWord[], from: number, to: number): number[][] {
+function breakSegment(words: CaptionWord[], from: number, to: number, limits: Geometry["caption"]): number[][] {
   const n = to - from;
   const best: number[] = new Array<number>(n + 1).fill(Infinity);
   const prev: number[] = new Array<number>(n + 1).fill(-1);
@@ -81,8 +83,8 @@ function breakSegment(words: CaptionWord[], from: number, to: number): number[][
     for (let i = j - 1; i >= 0; i--) {
       len += 1 + words[from + i]!.text.length;
       // A single word longer than the cap still gets its own line.
-      if (len > CAPTION_ABSORB_MAX_CHARS && i < j - 1) break;
-      const c = best[i]! + lineCost(words, from + i, from + j, len, i === 0 && j === n, j === n);
+      if (len > limits.absorbMaxChars && i < j - 1) break;
+      const c = best[i]! + lineCost(words, from + i, from + j, len, i === 0 && j === n, j === n, limits);
       if (c < best[j]!) {
         best[j] = c;
         prev[j] = i;
@@ -98,13 +100,13 @@ function breakSegment(words: CaptionWord[], from: number, to: number): number[][
   return out;
 }
 
-function lineCost(words: CaptionWord[], a: number, b: number, len: number, whole: boolean, lastLine: boolean): number {
-  if (whole) return len > CAPTION_MAX_CHARS ? COST.overflow : 0;
+function lineCost(words: CaptionWord[], a: number, b: number, len: number, whole: boolean, lastLine: boolean, limits: Geometry["caption"]): number {
+  if (whole) return len > limits.maxChars ? COST.overflow : 0;
   const end = words[b - 1]!.text;
   let c = COST.line;
-  if (len > CAPTION_MAX_CHARS) c += COST.overflow;
+  if (len > limits.maxChars) c += COST.overflow;
   if (!lastLine) {
-    const slack = Math.max(0, CAPTION_MAX_CHARS - len) / CAPTION_MAX_CHARS;
+    const slack = Math.max(0, limits.maxChars - len) / limits.maxChars;
     c += COST.slack * slack * slack * (CLAUSE_END.test(end) ? COST.clause : 1);
     if (CAPTION_FUNCTION_WORDS.has(end.toLowerCase())) c += COST.functionWord;
     if (COMPOUND_OPEN.test(end) || COMPOUND_CLOSE.test(words[b]?.text ?? "")) c += COST.compound;

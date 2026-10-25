@@ -1,7 +1,8 @@
 // Scene files: parsing, the validation rules and the timeline resolution of
 // skills/talkreel/references/scenes.md (sections 1-9). Pure functions, no I/O, so the rules are
 // unit-testable without a browser.
-import { classList, describe, descendants, elementChildren, getAttr, hasAttr, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
+import { classList, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
+import { GEOMETRY, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
 export const STAGGER = 0.12;
@@ -11,16 +12,16 @@ export const ANIMS = ["fade-up", "fade", "pop", "type", "draw", "stream", "slide
 
 // Terminal geometry and pacing (scenes.md section 5a). Rows are fixed height and never wrap, so
 // the scroll offsets are computed here instead of measured in the browser.
-export const TERM_ROWS = 13;
+export const TERM_ROWS = GEOMETRY.landscape.terminal.maxRows;
 export const TERM_MIN_ROWS = 1;
 
 /** Visible rows of a terminal: data-rows (1..13), else 13. */
 export function terminalRows(block: HtmlElement): number {
   const n = Number(getAttr(block, "data-rows"));
-  return Number.isInteger(n) && n >= TERM_MIN_ROWS && n <= TERM_ROWS ? n : TERM_ROWS;
+  const max = geometryFor(block).terminal.maxRows;
+  return Number.isInteger(n) && n >= TERM_MIN_ROWS && n <= max ? n : max;
 }
-export const TERM_ROW_PX = 40;
-export const TERM_MAX_CHARS = 72;
+export const TERM_MAX_CHARS = GEOMETRY.landscape.terminal.maxChars;
 /** First line after the window appears. */
 export const TERM_OPEN = 0.3;
 /** An output line after the previous output line starts. */
@@ -141,11 +142,12 @@ export function isPrompt(p: HtmlElement): boolean {
 }
 
 function terminalIssues(block: HtmlElement): SceneIssue[] {
+  const limits = geometryFor(block).terminal;
   const out: SceneIssue[] = [];
   const lines = elementChildren(block);
   if (!lines.length) out.push(issue("E_TERM_LINE", block, "a terminal needs at least one <p> line"));
   const rows = getAttr(block, "data-rows");
-  if (rows !== undefined && terminalRows(block) !== Number(rows)) out.push(issue("E_TERM_LINE", block, `data-rows must be a whole number from ${TERM_MIN_ROWS} to ${TERM_ROWS}`));
+  if (rows !== undefined && terminalRows(block) !== Number(rows)) out.push(issue("E_TERM_LINE", block, `data-rows must be a whole number from ${TERM_MIN_ROWS} to ${limits.maxRows}`));
   for (const p of lines) {
     if (p.tag !== "p") {
       out.push(issue("E_TERM_LINE", p, "a terminal holds only <p> lines"));
@@ -161,7 +163,7 @@ function terminalIssues(block: HtmlElement): SceneIssue[] {
     if (tone !== undefined && !(TERM_TONES as readonly string[]).includes(tone ?? "")) out.push(issue("E_TERM_LINE", p, `data-tone must be one of ${TERM_TONES.join(", ")}`));
     if (elementChildren(p).length) out.push(issue("E_TERM_LINE", p, "a terminal line holds plain text only"));
     const n = textContent(p).trim().length;
-    if (n > TERM_MAX_CHARS) out.push(issue("E_TERM_LINE", p, `${n} characters; a terminal line holds at most ${TERM_MAX_CHARS}`));
+    if (n > limits.maxChars) out.push(issue("E_TERM_LINE", p, `${n} characters; a terminal line holds at most ${limits.maxChars}`));
   }
   return out;
 }
@@ -184,6 +186,7 @@ function pipelineIssues(block: HtmlElement): SceneIssue[] {
 }
 
 export interface StaticCheckOptions {
+  resolution: Resolution;
   /** Source ids from sources.json. */
   sources: ReadonlySet<string>;
   /** Cue names from the matching script; omit to skip E_UNKNOWN_CUE. */
@@ -195,6 +198,7 @@ export interface StaticCheckOptions {
  * steps, sources and (when `cues` is given) unknown cue names.
  */
 export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssue[] {
+  scene.root.resolution = opts.resolution;
   const out: SceneIssue[] = [];
   const { root, beats } = scene;
 
@@ -472,7 +476,8 @@ export function tagFades(scene: Scene, beats: ResolvedBeat[]): TagFade[] {
   return out;
 }
 
-export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, audioDuration: number): ResolvedTimeline {
+export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, audioDuration: number, resolution?: Resolution): ResolvedTimeline {
+  if (resolution) scene.root.resolution = resolution;
   const D = audioDuration + PADDING;
   const issues: SceneIssue[] = [];
   const warnings: SceneWarning[] = [];
@@ -561,7 +566,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       }
       const row = st.rows++;
       const rows = terminalRows(block);
-      if (row >= rows) scrolls.push({ block, t, y: -(row - (rows - 1)) * TERM_ROW_PX });
+      if (row >= rows) scrolls.push({ block, t, y: -(row - (rows - 1)) * geometryFor(block).terminal.rowHeight });
       // Grow just before the row fades in, never before the row above it entered.
       else if (row > 0) grows.push({ block, t: Math.max(st.prev?.t ?? t, t - TERM_GROW_LEAD), rows: row + 1 });
       if (st.cursor) st.cursor.hide = t;

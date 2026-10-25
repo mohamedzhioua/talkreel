@@ -9,7 +9,8 @@ import { applyDisplays, captionLines, type CaptionLine } from "./compose-caption
 import { TIMELINE_RUNTIME } from "./compose-runtime.js";
 import { resolveCues } from "./cues.js";
 import { hashJson, sha256, sha256File } from "./hash.js";
-import { classList, escapeText, getAttr, hasAttr, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
+import { classList, escapeText, geometryStyle, getAttr, hasAttr, setAttr, serialize, type HtmlElement, type HtmlText } from "./compose-html.js";
+import { GEOMETRY, type Resolution } from "./geometry.js";
 import { captionsProblems, type CaptionsFile, type Source } from "./schema.js";
 import { parseScene, resolveTimeline, SceneError, tagFades, usedCues, validateScene, type ResolvedTimeline, type TagFade, type Scene, type SceneIssue, type SceneWarning } from "./compose-scene.js";
 import { parseScriptFile, type DisplayForm, type ParsedChapter } from "./script.js";
@@ -89,6 +90,7 @@ function rawNode(parent: HtmlElement, raw: string): HtmlText {
 }
 
 export interface PageInput {
+  resolution?: Resolution;
   lang: string;
   scene: Scene;
   timeline: ResolvedTimeline;
@@ -131,6 +133,9 @@ export interface Page {
  */
 export function buildPage(input: PageInput): Page {
   const { scene, timeline: tl } = input;
+  const resolution = input.resolution ?? scene.root.resolution ?? "landscape";
+  scene.root.resolution = resolution;
+  const geometry = GEOMETRY[resolution];
   const captions = { ...input.captions, words: applyDisplays(input.captions.words, input.displays ?? []) };
   const D = tl.duration;
   const usedIds = new Set<string>();
@@ -187,7 +192,7 @@ export function buildPage(input: PageInput): Page {
   };
   walk(scene.root);
 
-  const lines = captionLines(captions.words, D);
+  const lines = captionLines(captions.words, D, resolution);
   // Every word starts with an explicit data-state: GSAP records it as the start value, so seeking
   // back before a word reverts it to "upcoming" (a missing attribute cannot be restored).
   const lineHtml = lines
@@ -197,15 +202,15 @@ export function buildPage(input: PageInput): Page {
   const beatsHtml = scene.beats.map((b) => "      " + serialize(b.el)).join("\n");
   const hasDiagram = diagrams.length > 0;
   const html = `<!doctype html>
-<html lang="${input.lang}" data-resolution="landscape">
+<html lang="${input.lang}" data-resolution="${resolution}">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=1920, height=1080">
+  <meta charset="UTF-8"><meta name="viewport" content="width=${geometry.width}, height=${geometry.height}">
   <link rel="stylesheet" href="theme.css">
-  <script src="vendor/gsap.min.js"></script>
+${geometryStyle(resolution)}  <script src="vendor/gsap.min.js"></script>
 ${hasDiagram ? '  <script src="vendor/mermaid.min.js"></script>\n' : ""}</head>
 <body>
   <div id="tr-root" class="tr-root" data-composition-id="main"
-       data-start="0" data-duration="${r3(D)}" data-width="1920" data-height="1080">
+       data-start="0" data-duration="${r3(D)}" data-width="${geometry.width}" data-height="${geometry.height}">
 ${input.ambient ? `    <div class="tr-ambient" aria-hidden="true"><i class="tr-blob tr-blob-a" id="tr-blob-a"></i><i class="tr-blob tr-blob-b" id="tr-blob-b"></i><i class="tr-grid" id="tr-grid"></i></div>
     <p class="tr-tag" id="tr-tag">${escapeText(input.ambient.tag)}</p>
 ` : ""}    <div class="tr-stage">
@@ -261,9 +266,10 @@ export function prepareScene(
   captions: CaptionsFile,
   audioDuration: number,
   sourceIds: ReadonlySet<string>,
+  resolution: Resolution = "landscape",
 ): { scene: Scene; timeline: ResolvedTimeline; warnings: SceneWarning[] } {
   const scene = parseScene(source);
-  const issues = validateScene(scene, { sources: sourceIds, cues: new Set(chapter.cues.map((c) => c.id)) });
+  const issues = validateScene(scene, { sources: sourceIds, cues: new Set(chapter.cues.map((c) => c.id)), resolution });
   const seen = new Set<string>();
   for (const c of chapter.cues) {
     if (seen.has(c.id)) issues.push({ rule: "E_DUP_CUE", line: c.line, element: `{#${c.id}}`, message: `cue {#${c.id}} appears twice in the script` });
@@ -303,7 +309,6 @@ export interface ComposeResult {
 
 /** Write build/<lang>/NN/ for one chapter. Throws SceneError on a contract violation. */
 export function composeChapter(talk: Talk, ch: ChapterFile): ComposeResult {
-  if (talk.config.resolution !== "landscape") throw new Error(`resolution "${talk.config.resolution}" is not supported yet; the default theme is 1920x1080 landscape`);
   const scenePath = sceneFile(talk, ch);
   if (!existsSync(scenePath)) throw new Error(`no scene file scenes/${ch.chapter}-${ch.name}.html for ${ch.file}`);
   const wav = paths.narrationWav(talk, ch.lang, ch.chapter);
@@ -315,10 +320,10 @@ export function composeChapter(talk: Talk, ch: ChapterFile): ComposeResult {
   const A = readWavInfo(wav).duration;
   const sources = new Map(loadSources(talk).sources.map((s) => [s.id, s]));
   const rel = `scenes/${ch.chapter}-${ch.name}.html`;
-  const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()));
+  const { scene, timeline, warnings } = prepareScene(rel, readFileSync(scenePath, "utf8"), chapter, captions, A, new Set(sources.keys()), talk.config.resolution);
   if (talk.config.ambient && chapter.tag.length > TAG_MAX_CHARS) warnings.push({ message: `chapter tag "${chapter.tag}" is ${chapter.tag.length} characters; keep it at most ${TAG_MAX_CHARS} (# Title {tag: X})` });
   const ambient = talk.config.ambient ? { tag: `${ch.chapter} · ${chapter.tag}` } : undefined;
-  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays, ambient });
+  const page = buildPage({ lang: ch.lang, scene, timeline, captions, audioDuration: A, sources, displays: chapter.displays, ambient, resolution: talk.config.resolution });
 
   const dir = buildPaths.dir(talk, ch.lang, ch.chapter);
   mkdirSync(dir, { recursive: true });

@@ -22,7 +22,7 @@ commands:
   voice [--lang en] [--chapter NN] synthesize (or normalise own) narration
   align [--lang en] [--chapter NN] word-timed captions from the narration
   render [--lang en] [--chapter NN] [--quality standard|draft] [--telemetry]
-  frames [--lang en] [--chapter NN]
+  frames [--lang en] [--chapter NN] [--safe-zones]
 
 common options:
   --talk <path>                    talk folder (default: current directory)`;
@@ -46,7 +46,7 @@ const OPTIONS = {
   voice: chapterOpts,
   align: chapterOpts,
   render: { ...chapterOpts, quality: { type: "string" }, telemetry: { type: "boolean" } },
-  frames: chapterOpts,
+  frames: { ...chapterOpts, "safe-zones": { type: "boolean" } },
 } satisfies Record<string, ParseArgsConfig["options"]>;
 
 type Command = keyof typeof OPTIONS;
@@ -91,7 +91,7 @@ async function main(argv: string[]): Promise<number> {
     case "render":
       return cmdRender(talk, { lang, chapter: str("chapter"), quality: str("quality") ?? "standard", telemetry: values.telemetry === true });
     case "frames":
-      return cmdFrames(talk, { lang, chapter: str("chapter") });
+      return cmdFrames(talk, { lang, chapter: str("chapter"), safeZones: values["safe-zones"] === true });
   }
 }
 

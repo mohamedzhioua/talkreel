@@ -649,3 +649,51 @@ section[data-beat] > p {
   letter-spacing: 0.06em;
   color: var(--tr-muted);
 }
+
+/* ---------- portrait and square ---------- */
+/* Pixel geometry comes from geometry.ts via the composer-owned root variables. */
+html[data-resolution="portrait"],
+html[data-resolution="square"],
+[data-resolution="portrait"] body,
+[data-resolution="square"] body,
+[data-resolution="portrait"] .tr-root,
+[data-resolution="square"] .tr-root {
+  width: var(--tr-canvas-width);
+  height: var(--tr-canvas-height);
+}
+[data-resolution="portrait"], [data-resolution="square"] { --tr-k: 0.65; }
+[data-resolution="portrait"] .tr-stage > section[data-beat],
+[data-resolution="square"] .tr-stage > section[data-beat] { gap: 32px; }
+[data-resolution="portrait"] .tr-captions,
+[data-resolution="square"] .tr-captions { bottom: var(--tr-caption-bottom); }
+[data-resolution="portrait"] .tr-cap-line,
+[data-resolution="square"] .tr-cap-line {
+  left: calc((100% - var(--tr-caption-width)) / 2);
+  right: calc((100% - var(--tr-caption-width)) / 2);
+  font-size: var(--tr-caption-font);
+}
+[data-resolution="portrait"] [data-block="terminal"],
+[data-resolution="square"] [data-block="terminal"] { height: calc(var(--rows) * var(--tr-term-row) + 48px + 68px); }
+[data-resolution="portrait"] .tr-term-vp,
+[data-resolution="square"] .tr-term-vp { height: calc(var(--rows) * var(--tr-term-row) + 48px); }
+[data-resolution="portrait"] .tr-term-track > p,
+[data-resolution="square"] .tr-term-track > p { height: var(--tr-term-row); line-height: var(--tr-term-row); }
+[data-resolution="portrait"] [data-block="split"],
+[data-resolution="square"] [data-block="split"] { grid-template-columns: 1fr; gap: 32px; }
+[data-resolution="portrait"] [data-block="chapter-card"],
+[data-resolution="square"] [data-block="chapter-card"] { gap: 28px; }
+[data-resolution="portrait"] [data-block="chapter-card"] .number,
+[data-resolution="square"] [data-block="chapter-card"] .number { padding-right: 28px; }
+[data-resolution="portrait"] [data-block="pipeline"],
+[data-resolution="square"] [data-block="pipeline"] { --gap: 12px; }
+[data-resolution="portrait"] [data-block="pipeline"] li,
+[data-resolution="square"] [data-block="pipeline"] li { font-size: 24px; }
+/* Keep the chapter tag below the top UI zone, with room before the stage starts. */
+[data-resolution="portrait"] .tr-tag { top: calc(var(--tr-safe-top) - 56px); }
+[data-resolution="square"] .tr-tag { top: 32px; }
+[data-resolution="portrait"] .tr-blob-a,
+[data-resolution="square"] .tr-blob-a { left: 400px; top: -400px; }
+[data-resolution="portrait"] .tr-blob-b { left: -540px; top: 1000px; }
+[data-resolution="square"] .tr-blob-b { left: -540px; top: 420px; }
+[data-resolution="portrait"] .tr-grid,
+[data-resolution="square"] .tr-grid { height: calc(var(--tr-canvas-height) + 160px); }

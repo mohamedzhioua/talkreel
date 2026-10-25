@@ -13,7 +13,7 @@ import { makeTalk } from "./helpers.js";
 const SOURCES = new Set(["example-survey", "fowler-context", "example-quote"]);
 
 function rules(html: string, cues?: string[]): RuleId[] {
-  return validateScene(parseScene(html), { sources: SOURCES, cues: cues ? new Set(cues) : undefined }).map((i) => i.rule);
+  return validateScene(parseScene(html), { sources: SOURCES, cues: cues ? new Set(cues) : undefined, resolution: "landscape" }).map((i) => i.rule);
 }
 
 const ok = `<section data-beat="a"><p>Hello</p></section>`;
@@ -24,7 +24,7 @@ describe("scene validator", () => {
     for (const f of readdirSync(dir)) {
       const html = readFileSync(join(dir, f), "utf8");
       // Examples are single beats that may carry a cue; validate them as a later beat.
-      const issues = validateScene(parseScene(`${ok}\n${html.replace(/<section data-beat="(\w+)"(?! data-cue)/, '<section data-beat="$1" data-cue="x"')}`), { sources: SOURCES });
+      const issues = validateScene(parseScene(`${ok}\n${html.replace(/<section data-beat="(\w+)"(?! data-cue)/, '<section data-beat="$1" data-cue="x"')}`), { sources: SOURCES, resolution: "landscape" });
       expect([f, issues]).toEqual([f, []]);
     }
   });

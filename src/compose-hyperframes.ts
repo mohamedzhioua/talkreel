@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { envWithFfmpeg, findTool } from "./ffmpeg.js";
 import { run, type RunResult } from "./proc.js";
 import { packageDir, packageVersion } from "./compose.js";
+import { GEOMETRY, type Resolution } from "./geometry.js";
 
 export const HYPERFRAMES_VERSION = "0.8.185";
 
@@ -71,12 +72,13 @@ export function renderWorkers(logicalCpus: number): number {
   return Math.max(1, Math.min(4, Math.floor(logicalCpus / 2) - 1));
 }
 
-export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number): string[] {
-  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", "landscape", "--quality", QUALITIES[quality], "--workers", String(workers)];
+export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number, resolution: Resolution = "landscape"): string[] {
+  if (!Object.hasOwn(GEOMETRY, resolution)) throw new Error(`unknown resolution: ${resolution}`);
+  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", resolution, "--quality", QUALITIES[quality], "--workers", String(workers)];
 }
 
-export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions): Promise<RunResult> {
-  return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism())), dir, opts);
+export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions, resolution: Resolution = "landscape"): Promise<RunResult> {
+  return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism()), resolution), dir, opts);
 }
 
 /**

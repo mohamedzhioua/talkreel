@@ -1,8 +1,8 @@
 // Page structure for the terminal and pipeline blocks (scenes.md section 5a). The composer adds
 // the window chrome, the scroll track, the cursors, the rail and the lit chip layers; every time
 // was already resolved in compose-scene.ts, so this only writes nodes and plan entries.
-import { escapeText, getAttr, hasAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
-import { TERM_ROW_PX, terminalRows, type ResolvedTimeline } from "./compose-scene.js";
+import { escapeText, geometryFor, getAttr, hasAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
+import { terminalRows, type ResolvedTimeline } from "./compose-scene.js";
 
 /** Viewport padding above and below the rows (theme.css .tr-term-vp). */
 const TERM_PAD_PX = 24;
@@ -69,8 +69,10 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
     block.children = [win];
   }
   for (const s of tl.scrolls) plan.scrolls.push({ id: trackOf.get(s.block)!, t: r3(s.t), y: s.y });
-  const vpHeight = (rows: number) => rows * TERM_ROW_PX + 2 * TERM_PAD_PX;
-  for (const g of tl.grows) plan.grows.push({ id: vpOf.get(g.block)!, t: r3(g.t), h: vpHeight(g.rows), h0: vpHeight(1) });
+  for (const g of tl.grows) {
+    const rowHeight = geometryFor(g.block).terminal.rowHeight;
+    plan.grows.push({ id: vpOf.get(g.block)!, t: r3(g.t), h: g.rows * rowHeight + 2 * TERM_PAD_PX, h0: rowHeight + 2 * TERM_PAD_PX });
+  }
   for (const c of tl.cursors) {
     const cursor = el("span", { class: "tr-cursor" }, c.line);
     c.line.children.push(cursor);
