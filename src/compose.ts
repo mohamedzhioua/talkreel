@@ -63,6 +63,8 @@ export const buildPaths = {
   renderInfo: (talk: Talk, lang: string, nn: string) => join(talk.dir, "build", lang, nn, "render.json"),
   framesDir: (talk: Talk, lang: string, nn: string) => join(talk.dir, "build", "frames", lang, nn),
   concatList: (talk: Talk, lang: string) => join(talk.dir, "build", lang, "concat.txt"),
+  /** The joined video before the mix stage; used only when talk.json has `music`. */
+  concatMp4: (talk: Talk, lang: string) => join(talk.dir, "build", lang, "concat.mp4"),
 };
 
 export function sceneFile(talk: Talk, ch: ChapterFile): string {

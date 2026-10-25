@@ -1,11 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, relative } from "node:path";
 import { buildPaths, composeChapter, sceneFile } from "../compose.js";
-import { chaptersTxt, concatMp4, outPaths, probeDuration, transcriptMd } from "../compose-concat.js";
+import { chaptersTxt, concatMp4, concatOutput, concatOutputs, outPaths, probeDuration, transcriptMd } from "../compose-concat.js";
 import { hfCheck, hfRender, HYPERFRAMES_VERSION, installedHyperframesVersion, isQuality, retryOnCrash, type Quality } from "../compose-hyperframes.js";
+import { MIX_PARAMS, mixAudio, mixOutputs, talkBed, writeCredits } from "../compose-mix.js";
 import { parseScene, sceneAssets, SceneError } from "../compose-scene.js";
 import { parseScriptFile } from "../script.js";
-import { chapterStatus, currentConcatHash, currentRenderHash, lastRenderQuality } from "../stages.js";
+import { chapterStatus, currentConcatHash, currentMixHash, currentRenderHash, lastRenderQuality } from "../stages.js";
 import { chapterKey, readState, recordStage, stageStatus, writeState } from "../state.js";
 import { listChapters, paths, selectChapters, type ChapterFile, type Talk } from "../talk.js";
 import type { TalkState } from "../schema.js";
@@ -89,23 +90,25 @@ export function qualityMixProblem(qualities: Map<string, string>): string | null
   return `refusing to join draft and standard renders (${list}); re-render with one --quality`;
 }
 
-async function concatLanguage(talk: Talk, lang: string, state: TalkState): Promise<number> {
+/** `ready` is true when the joined video is current (just written or fresh). */
+async function concatLanguage(talk: Talk, lang: string, state: TalkState): Promise<{ code: number; ready: boolean }> {
   const all = listChapters(talk, lang);
   const stale = await staleRenders(talk, state, all);
   if (stale.length) {
     for (const s of stale) console.log(`${lang}: concat skipped, ${chapterKey(lang, s.ch.chapter)} render is stale (${s.reason})`);
-    return 0;
+    return { code: 0, ready: false };
   }
   const mix = qualityMixProblem(new Map(all.map((ch) => [ch.chapter, lastRenderQuality(talk, ch) ?? "standard"])));
   if (mix) {
     console.error(`${lang}: ${mix}`);
-    return 1;
+    return { code: 1, ready: false };
   }
   const out = outPaths(talk, lang);
+  const video = concatOutput(talk, lang);
   const hash = await currentConcatHash(talk, lang);
-  if (stageStatus(state, "concat", lang, hash, [out.video, out.chapters, out.transcript]).status === "fresh") {
+  if (stageStatus(state, "concat", lang, hash, concatOutputs(talk, lang)).status === "fresh") {
     console.log(`${lang}: concat fresh, skipped`);
-    return 0;
+    return { code: 0, ready: true };
   }
   const entries = [];
   for (const ch of all) {
@@ -113,13 +116,46 @@ async function concatLanguage(talk: Talk, lang: string, state: TalkState): Promi
     entries.push({ title: parsed.title, duration: await probeDuration(buildPaths.mp4(talk, lang, ch.chapter)), text: parsed.spokenText });
   }
   console.log(`${lang}: joining ${all.length} chapter(s)`);
-  await concatMp4(buildPaths.concatList(talk, lang), all.map((ch) => buildPaths.mp4(talk, lang, ch.chapter)), out.video);
+  await concatMp4(buildPaths.concatList(talk, lang), all.map((ch) => buildPaths.mp4(talk, lang, ch.chapter)), video);
   writeText(out.chapters, chaptersTxt(entries));
   writeText(out.transcript, transcriptMd(talk.config.title, entries));
   recordStage(state, "concat", lang, hash!);
+  // Without music the unmixed join now sits in out/, so a recorded mix no longer describes it.
+  if (!talk.config.music) delete state.stages.mix[lang];
+  writeState(paths.state(talk), state);
+  const total = await probeDuration(video);
+  console.log(`${lang}: wrote ${relative(talk.dir, video)} (${total.toFixed(2)} s), ${relative(talk.dir, out.chapters)}, ${relative(talk.dir, out.transcript)}`);
+  return { code: 0, ready: true };
+}
+
+/** Music bed, ducking and loudness: build/<lang>/concat.mp4 -> out/<slug>-<lang>.mp4, plus out/credits.txt. */
+async function mixLanguage(talk: Talk, lang: string, state: TalkState): Promise<number> {
+  const out = outPaths(talk, lang);
+  const hash = await currentMixHash(talk, lang);
+  if (hash === null) {
+    console.error(`${lang}: mix inputs missing; expected ${relative(talk.dir, buildPaths.concatMp4(talk, lang))} and ${talk.config.music?.file ?? "the music file"}`);
+    return 1;
+  }
+  if (stageStatus(state, "mix", lang, hash, mixOutputs(talk, lang)).status === "fresh") {
+    writeCredits(talk);
+    console.log(`${lang}: mix fresh, skipped`);
+    return 0;
+  }
+  const bed = talkBed(talk);
+  // A failed mix must not leave a partial video that a later identical hash would call fresh.
+  rmSync(out.video, { force: true });
+  console.log(`${lang}: mixing${bed ? ` ${talk.config.music!.file} at ${bed.gainDb} dB, ducked under the narration,` : ""} to ${MIX_PARAMS.loudness.I} LUFS`);
+  try {
+    await mixAudio(buildPaths.concatMp4(talk, lang), out.video, bed);
+  } catch (e) {
+    console.error(`${lang}: ${(e as Error).message}`);
+    return 1;
+  }
+  const credits = writeCredits(talk);
+  recordStage(state, "mix", lang, hash);
   writeState(paths.state(talk), state);
   const total = await probeDuration(out.video);
-  console.log(`${lang}: wrote ${relative(talk.dir, out.video)} (${total.toFixed(2)} s), ${relative(talk.dir, out.chapters)}, ${relative(talk.dir, out.transcript)}`);
+  console.log(`${lang}: wrote ${relative(talk.dir, out.video)} (${total.toFixed(2)} s), ${relative(talk.dir, credits)}`);
   return 0;
 }
 
@@ -169,5 +205,11 @@ export async function cmdRender(talk: Talk, opts: RenderOptions): Promise<number
     console.error(`render failed for ${failed} chapter(s); concat not run`);
     return 1;
   }
-  return concatLanguage(talk, opts.lang, state);
+  const concat = await concatLanguage(talk, opts.lang, state);
+  if (!talk.config.music || concat.code !== 0) return concat.code;
+  if (!concat.ready) {
+    console.log(`${opts.lang}: mix skipped, concat has not run`);
+    return 0;
+  }
+  return mixLanguage(talk, opts.lang, state);
 }

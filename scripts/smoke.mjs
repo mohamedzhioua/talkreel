@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Local end-to-end smoke test (never in CI): a 2-chapter talk under .spike/smoke/talk built from
-// the default theme's example scenes, through voice, align, render --quality draft, ffprobe and
-// frames. Needs FFmpeg, uv and the models (see `talkreel doctor`). Exits non-zero on failure.
+// the default theme's example scenes, through voice, align, render --quality draft, ffprobe, a
+// music-bed mix measured with ebur128, and frames. Needs FFmpeg, uv and the models (see
+// `talkreel doctor`). Exits non-zero on failure.
 //
 //   npm run smoke              reuse what is fresh (only stale stages run)
 //   npm run smoke -- --clean   start from an empty talk folder
@@ -52,7 +53,9 @@ if (!existsSync(CLI)) fail(`${CLI} is missing; run "npm run build"`);
 if (process.argv.includes("--clean")) rmSync(TALK, { recursive: true, force: true });
 
 step("fixture talk");
-put("talk.json", JSON.stringify({ slug: "smoke", title: "talkreel smoke test", languages: ["en"], voice: { mode: "ai", en: "af_heart", fr: "ff_siwis" }, theme: "default", fps: 30, resolution: "landscape" }, null, 2) + "\n");
+// Without music first (the M2 path: concat writes out/ directly); the music step below adds it.
+const CONFIG = { slug: "smoke", title: "talkreel smoke test", languages: ["en"], voice: { mode: "ai", en: "af_heart", fr: "ff_siwis" }, theme: "default", fps: 30, resolution: "landscape" };
+put("talk.json", JSON.stringify(CONFIG, null, 2) + "\n");
 put(
   "sources.json",
   JSON.stringify(
@@ -110,7 +113,7 @@ step("ffprobe");
 const ffprobe = findTool("ffprobe");
 if (!ffprobe) fail("ffprobe not found");
 function probe(file) {
-  const r = spawnSync(ffprobe, ["-v", "error", "-show_entries", "format=duration:stream=codec_type,codec_name", "-of", "json", file], { encoding: "utf8", shell: false, windowsHide: true });
+  const r = spawnSync(ffprobe, ["-v", "error", "-show_entries", "format=duration:stream=codec_type,codec_name,sample_rate", "-of", "json", file], { encoding: "utf8", shell: false, windowsHide: true });
   if (r.status !== 0) fail(`ffprobe failed on ${file}: ${r.stderr}`);
   return JSON.parse(r.stdout);
 }
@@ -127,6 +130,60 @@ if (!codecs.includes("video:h264")) fail("no h264 video stream");
 if (!codecs.includes("audio:aac")) fail("no aac audio stream");
 for (const f of ["chapters.txt", "transcript.md"]) if (!existsSync(join(TALK, "out", f))) fail(`out/${f} was not written`);
 console.log(readFileSync(join(TALK, "out", "chapters.txt"), "utf8").trim());
+
+step("music bed: mix, ducking, loudness");
+const ffmpeg = findTool("ffmpeg");
+if (!ffmpeg) fail("ffmpeg not found");
+const BED = "assets/music/bed.wav";
+const bedFile = join(TALK, BED);
+if (!existsSync(bedFile)) {
+  // 4 s of seeded pink noise over a 220 Hz tone: shorter than the talk, so the mix must loop it.
+  mkdirSync(dirname(bedFile), { recursive: true });
+  const g = spawnSync(ffmpeg, [
+    "-hide_banner", "-loglevel", "error", "-y",
+    "-f", "lavfi", "-i", "anoisesrc=color=pink:amplitude=0.3:seed=7:duration=4:sample_rate=44100",
+    "-f", "lavfi", "-i", "sine=frequency=220:sample_rate=44100:duration=4",
+    "-filter_complex", "[0:a][1:a]amix=inputs=2:normalize=0,aformat=channel_layouts=stereo",
+    "-c:a", "pcm_s16le", bedFile,
+  ], { encoding: "utf8", shell: false, windowsHide: true });
+  if (g.status !== 0) fail(`could not generate the music bed: ${g.stderr}`);
+}
+const MUSIC = { file: BED, credit: "Generated pink noise and a 220 Hz tone (smoke fixture)", license: "CC0-1.0" };
+put("talk.json", JSON.stringify({ ...CONFIG, music: MUSIC }, null, 2) + "\n");
+{
+  const t0 = Date.now();
+  if (cli(["render", "--quality", "draft"]).code !== 0) fail("talkreel render with music failed");
+  console.log(`(${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+}
+const joined = join(TALK, "build", "en", "concat.mp4");
+if (!existsSync(joined)) fail(`${joined} was not written`);
+const mixed = probe(out);
+const mixedAudio = mixed.streams.find((s) => s.codec_type === "audio");
+const mixedTotal = Number(mixed.format.duration);
+const joinedTotal = Number(probe(joined).format.duration);
+console.log(`mixed ${mixedTotal.toFixed(3)} s (joined ${joinedTotal.toFixed(3)} s); streams ${mixed.streams.map((s) => `${s.codec_type}:${s.codec_name}${s.sample_rate ? `@${s.sample_rate}` : ""}`).join(", ")}`);
+if (!mixed.streams.some((s) => s.codec_type === "video" && s.codec_name === "h264")) fail("mixed output has no h264 video stream");
+if (mixedAudio?.codec_name !== "aac" || mixedAudio.sample_rate !== "48000") fail("mixed output audio is not AAC at 48 kHz");
+if (Math.abs(mixedTotal - joinedTotal) > 0.05) fail(`mixed duration ${mixedTotal} differs from the joined ${joinedTotal} by more than 0.05 s`);
+/** MD5 of the video packets only: equal before and after the mix when the stream was copied. */
+function videoMd5(file) {
+  const r = spawnSync(ffmpeg, ["-hide_banner", "-loglevel", "error", "-i", file, "-map", "0:v:0", "-c", "copy", "-f", "md5", "-"], { encoding: "utf8", shell: false, windowsHide: true });
+  if (r.status !== 0) fail(`ffmpeg md5 failed on ${file}: ${r.stderr}`);
+  return r.stdout.trim();
+}
+if (videoMd5(joined) !== videoMd5(out)) fail("the mix re-encoded the video stream (expected -c:v copy)");
+console.log("video stream copied unchanged");
+const credits = join(TALK, "out", "credits.txt");
+if (!existsSync(credits)) fail("out/credits.txt was not written");
+const creditsText = readFileSync(credits, "utf8");
+for (const want of [BED, MUSIC.credit, MUSIC.license, "Kokoro", "Watermark:", "Inter"]) if (!creditsText.includes(want)) fail(`out/credits.txt does not mention "${want}"`);
+const loud = spawnSync(ffmpeg, ["-hide_banner", "-nostats", "-i", out, "-map", "0:a:0", "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8", shell: false, windowsHide: true });
+if (loud.status !== 0) fail(`ebur128 failed: ${loud.stderr}`);
+const integrated = [...loud.stderr.matchAll(/Integrated loudness:\s*I:\s*(-?[\d.]+) LUFS/g)].at(-1)?.[1];
+const truePeak = [...loud.stderr.matchAll(/True peak:\s*Peak:\s*(-?[\d.]+) dBFS/g)].at(-1)?.[1];
+if (integrated === undefined) fail(`ebur128 printed no integrated loudness:\n${loud.stderr.slice(-800)}`);
+console.log(`ebur128: integrated ${integrated} LUFS, true peak ${truePeak ?? "?"} dBFS (target -14 +/- 1 LUFS)`);
+if (Math.abs(Number(integrated) + 14) > 1) fail(`integrated loudness ${integrated} LUFS is outside -14 +/- 1`);
 
 step("frames");
 const fr = cli(["frames"], { capture: true });

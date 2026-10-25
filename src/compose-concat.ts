@@ -1,6 +1,7 @@
 // Joining chapter MP4s: the FFmpeg concat-demuxer list, YouTube chapter markers and the transcript.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { buildPaths } from "./compose.js";
 import { requireTool } from "./ffmpeg.js";
 import { run } from "./proc.js";
 import type { Talk } from "./talk.js";
@@ -64,7 +65,23 @@ export function outPaths(talk: Talk, lang: string) {
     video: join(out, `${talk.config.slug}-${lang}.mp4`),
     chapters: join(out, `chapters${suffix}.txt`),
     transcript: join(out, `transcript${suffix}.md`),
+    /** Shared by every language; written by the mix stage only. */
+    credits: join(out, "credits.txt"),
   };
+}
+
+/**
+ * Where concat writes the joined video: out/<slug>-<lang>.mp4 as in M2, or build/<lang>/concat.mp4
+ * when talk.json has `music` and the mix stage writes the out/ video.
+ */
+export function concatOutput(talk: Talk, lang: string): string {
+  return talk.config.music ? buildPaths.concatMp4(talk, lang) : outPaths(talk, lang).video;
+}
+
+/** Files the concat stage must have produced to be fresh. */
+export function concatOutputs(talk: Talk, lang: string): string[] {
+  const out = outPaths(talk, lang);
+  return [concatOutput(talk, lang), out.chapters, out.transcript];
 }
 
 /** Container duration in seconds, from ffprobe. */

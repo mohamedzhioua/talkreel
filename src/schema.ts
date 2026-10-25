@@ -24,7 +24,22 @@ export interface TalkConfig {
   resolution: "landscape" | "portrait" | "square";
   /** Composer-owned background drift and chapter tag; off unless true. */
   ambient?: boolean;
+  /** Music bed mixed under the narration by the mix stage; absent means no mix (M2 output). */
+  music?: MusicConfig;
 }
+
+export interface MusicConfig {
+  /** Talk-relative path under assets/, e.g. "assets/music/bed.mp3". */
+  file: string;
+  credit: string;
+  license: string;
+  /** Bed level before ducking, in dB (default MUSIC_GAIN_DB_DEFAULT). */
+  gainDb?: number;
+}
+
+export const MUSIC_GAIN_DB_DEFAULT = -18;
+export const MUSIC_GAIN_DB_MIN = -60;
+export const MUSIC_GAIN_DB_MAX = 0;
 
 export interface Source {
   id: string;
@@ -71,11 +86,11 @@ export interface StageRecord {
   updated: string;
 }
 
-export type StageName = "voice" | "align" | "render" | "concat";
+export type StageName = "voice" | "align" | "render" | "concat" | "mix";
 
 export interface TalkState {
   version: 1;
-  /** Keyed by stage, then by "<lang>/<NN>" for chapter stages or "<lang>" for concat. */
+  /** Keyed by stage, then by "<lang>/<NN>" for chapter stages or "<lang>" for concat and mix. */
   stages: Record<StageName, Record<string, StageRecord>>;
 }
 
@@ -94,6 +109,29 @@ function isNonEmptyString(v: unknown): v is string {
 
 function isFiniteNumber(v: unknown): v is number {
   return typeof v === "number" && Number.isFinite(v);
+}
+
+/**
+ * A talk-relative music path must stay lexically inside assets/: no absolute path, drive letter,
+ * backslash, control character or empty, "." or ".." segment. loadTalk checks the file itself.
+ */
+export function musicPathProblem(file: unknown): string | null {
+  const ok = typeof file === "string" && file.startsWith("assets/") && !/[\\\u0000-\u001f\u007f]/.test(file) &&
+    file.split("/").every((part) => part !== "" && part !== "." && part !== "..");
+  return ok ? null : "talk.json: music.file must be a relative path under assets/ (no absolute path, backslash, or . or .. segments)";
+}
+
+function musicProblems(m: unknown): Problems {
+  if (!isObject(m)) return ["talk.json: music must be an object {file, credit, license, gainDb?}"];
+  const p: Problems = [];
+  const path = musicPathProblem(m.file);
+  if (path) p.push(path);
+  if (!isNonEmptyString(m.credit)) p.push("talk.json: music.credit must be a non-empty string");
+  if (!isNonEmptyString(m.license)) p.push("talk.json: music.license must be a non-empty string");
+  if (m.gainDb !== undefined && (!isFiniteNumber(m.gainDb) || m.gainDb < MUSIC_GAIN_DB_MIN || m.gainDb > MUSIC_GAIN_DB_MAX)) {
+    p.push(`talk.json: music.gainDb must be a number from ${MUSIC_GAIN_DB_MIN} to ${MUSIC_GAIN_DB_MAX} (dB)`);
+  }
+  return p;
 }
 
 export function talkConfigProblems(v: unknown): Problems {
@@ -121,6 +159,7 @@ export function talkConfigProblems(v: unknown): Problems {
   }
   if (!isNonEmptyString(v.theme)) p.push("talk.json: theme must be a non-empty string");
   if (v.ambient !== undefined && typeof v.ambient !== "boolean") p.push("talk.json: ambient must be true or false");
+  if (v.music !== undefined) p.push(...musicProblems(v.music));
   if (!isFiniteNumber(v.fps) || v.fps <= 0 || !Number.isInteger(v.fps)) p.push("talk.json: fps must be a positive integer");
   if (typeof v.resolution !== "string" || !(RESOLUTIONS as readonly string[]).includes(v.resolution)) {
     p.push("talk.json: resolution must be one of " + RESOLUTIONS.join(", "));
@@ -183,7 +222,7 @@ export function isWhisperResult(v: unknown): v is WhisperResult {
   return v.words.every((w) => isObject(w) && typeof w.word === "string" && isFiniteNumber(w.start) && isFiniteNumber(w.end));
 }
 
-const STAGES: StageName[] = ["voice", "align", "render", "concat"];
+const STAGES: StageName[] = ["voice", "align", "render", "concat", "mix"];
 
 export function isTalkState(v: unknown): v is TalkState {
   if (!isObject(v) || v.version !== 1 || !isObject(v.stages)) return false;
@@ -197,5 +236,5 @@ export function isTalkState(v: unknown): v is TalkState {
 }
 
 export function emptyState(): TalkState {
-  return { version: 1, stages: { voice: {}, align: {}, render: {}, concat: {} } };
+  return { version: 1, stages: { voice: {}, align: {}, render: {}, concat: {}, mix: {} } };
 }

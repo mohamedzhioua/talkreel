@@ -4,8 +4,9 @@ import { sha256File } from "./hash.js";
 import { alignmentModel } from "./audio-helper.js";
 import { CANONICAL_AUDIO_ID } from "./ffmpeg.js";
 import { buildPaths, COMPOSE_VERSION, packageVersion, sceneFile, sceneInputHash, themeHash } from "./compose.js";
+import { MIX_PARAMS, talkBed } from "./compose-mix.js";
 import { parseScriptFile, spokenHash, type ParsedChapter } from "./script.js";
-import { alignInputHash, chapterKey, concatInputHash, CTC_MODEL, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, WHISPER_MODEL, type StageStatus } from "./state.js";
+import { alignInputHash, chapterKey, concatInputHash, CTC_MODEL, mixInputHash, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, WHISPER_MODEL, type StageStatus } from "./state.js";
 import { listChapters, loadSources, paths, type ChapterFile, type Talk } from "./talk.js";
 import type { Source, TalkState } from "./schema.js";
 
@@ -125,7 +126,22 @@ export async function currentConcatHash(talk: Talk, lang: string): Promise<strin
     if (!existsSync(mp4)) return null;
     hashes.push(await sha256File(mp4));
   }
-  return concatInputHash(hashes);
+  return concatInputHash(hashes, !!talk.config.music);
+}
+
+/**
+ * Current mix input hash for a language (mixInputHash in state.ts), or null when the joined
+ * video or the music file is missing. No chapter input: a music change never re-renders.
+ */
+export async function currentMixHash(talk: Talk, lang: string): Promise<string | null> {
+  const concat = buildPaths.concatMp4(talk, lang);
+  const bed = talkBed(talk);
+  if (!existsSync(concat) || (bed && !existsSync(bed.file))) return null;
+  return mixInputHash({
+    concatHash: await sha256File(concat),
+    ...(bed ? { music: { sha256: await sha256File(bed.file), gainDb: bed.gainDb } } : {}),
+    params: MIX_PARAMS,
+  });
 }
 
 export interface ChapterStatus {

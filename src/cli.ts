@@ -22,6 +22,7 @@ commands:
   voice [--lang en] [--chapter NN] synthesize (or normalise own) narration
   align [--lang en] [--chapter NN] word-timed captions from the narration
   render [--lang en] [--chapter NN] [--quality standard|draft] [--telemetry]
+                                   render, join, and mix the music bed when talk.json has music
   frames [--lang en] [--chapter NN] [--safe-zones]
 
 common options:
