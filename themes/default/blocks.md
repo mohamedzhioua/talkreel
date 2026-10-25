@@ -1,6 +1,6 @@
 # Default theme: building blocks
 
-Scenes are built from the eleven blocks below. Each block is an HTML fragment
+Scenes are built from the twelve blocks below. Each block is an HTML fragment
 with `data-block="<name>"`, placed inside a `<section data-beat>` (see
 `skills/talkreel/references/scenes.md` for beats, cues and timing). The look
 lives in `theme.css`; scene files never carry styles.
@@ -108,6 +108,29 @@ reveals.
 - Node ids: letters and digits only (`[A-Za-z0-9]+`), so `FROM-TO` stays
   unambiguous.
 - Do not write `.tr-mermaid`; the composer inserts it.
+
+### `figure`
+
+A single local image, optionally captioned. The image keeps its aspect ratio and
+fits the safe area in landscape, portrait and square.
+
+```html
+<figure data-block="figure">
+  <img src="assets/screens/product.png" alt="The product's chapter dashboard">
+  <figcaption>One place for every chapter</figcaption> <!-- optional, <= 60 chars -->
+</figure>
+```
+
+- Exactly one direct `<img>` child; its `alt` must contain meaningful text.
+- Paths resolve from the talk folder. Use `assets/<path>` with png, jpg, jpeg,
+  webp or svg (case-insensitive). No URLs, schemes, absolute paths, dot segments,
+  URL escapes, query strings, fragments or alternate `srcset` images.
+- SVGs load through `<img>` only. They must be standalone: no external references,
+  embedded images, scripts or foreignObject. Internal `#id` references are allowed.
+- Default entrance `fade`; a cue or `data-anim` on the block uses the existing
+  cue timeline. Images add no independent clock or camera motion.
+- Copy the image named in `examples/figure.html` into the talk's `assets/` before
+  using that example. Compose copies referenced assets into the chapter build.
 
 ### `code`
 

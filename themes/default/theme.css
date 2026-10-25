@@ -618,6 +618,29 @@ section[data-beat] > p {
   transform: scaleX(0);
 }
 
+/* ---------- single-image figure ---------- */
+
+[data-block="figure"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 24px;
+}
+[data-block="figure"] > img {
+  display: block;
+  width: 100%;
+  height: calc(var(--tr-safe-height) - 200px);
+  object-fit: contain;
+  border-radius: 16px;
+}
+[data-block="figure"] > figcaption {
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--tr-muted);
+  text-align: center;
+}
+
 /* ---------- ambient layer (talk.json "ambient": true) ---------- */
 
 .tr-ambient { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
@@ -688,6 +711,10 @@ html[data-resolution="square"],
 [data-resolution="square"] [data-block="pipeline"] { --gap: 12px; }
 [data-resolution="portrait"] [data-block="pipeline"] li,
 [data-resolution="square"] [data-block="pipeline"] li { font-size: 24px; }
+[data-resolution="portrait"] [data-block="figure"],
+[data-resolution="square"] [data-block="figure"] { gap: 20px; }
+[data-resolution="portrait"] [data-block="figure"] > img,
+[data-resolution="square"] [data-block="figure"] > img { height: calc(var(--tr-safe-height) - 140px); }
 /* Keep the chapter tag below the top UI zone, with room before the stage starts. */
 [data-resolution="portrait"] .tr-tag { top: calc(var(--tr-safe-top) - 56px); }
 [data-resolution="square"] .tr-tag { top: 32px; }

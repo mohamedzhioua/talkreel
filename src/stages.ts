@@ -73,8 +73,14 @@ export async function currentRenderHash(talk: Talk, ch: ChapterFile, quality?: s
   } catch {
     return null;
   }
+  let sceneHash: string;
+  try {
+    sceneHash = sceneInputHash(readFileSync(scene, "utf8"), parsed, sources, talk.dir);
+  } catch {
+    return null; // invalid or missing assets cannot produce a fresh render
+  }
   return renderInputHash({
-    sceneHash: sceneInputHash(readFileSync(scene, "utf8"), parsed, sources),
+    sceneHash,
     captionsHash: await sha256File(caps),
     wavHash: await sha256File(wav),
     themeHash: await themeHash(talk),

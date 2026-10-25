@@ -35,7 +35,7 @@ export function checkSceneSources(ctx: CheckContext): CheckIssue[] {
     const file = `scenes/${f}`;
     const scene = parseScene(readFileSync(join(dir, f), "utf8"));
     const toIssue = (i: SceneIssue, lang?: string): CheckIssue => ({ file, line: i.line, message: `${i.rule} ${i.element}: ${i.message}${lang ? ` (script/${lang})` : ""}` });
-    issues.push(...validateScene(scene, { sources: ids, resolution: ctx.talk.config.resolution }).map((i) => toIssue(i)));
+    issues.push(...validateScene(scene, { sources: ids, resolution: ctx.talk.config.resolution, talkDir: ctx.talk.dir }).map((i) => toIssue(i)));
     for (const lang of ctx.talk.config.languages) {
       const ch = listChapters(ctx.talk, lang).find((c) => `${c.chapter}-${c.name}.html` === f);
       if (!ch) continue;
@@ -45,7 +45,7 @@ export function checkSceneSources(ctx: CheckContext): CheckIssue[] {
       } catch {
         continue; // the script problem is reported by the script checks
       }
-      for (const i of validateScene(scene, { sources: ids, cues, resolution: ctx.talk.config.resolution })) if (i.rule === "E_UNKNOWN_CUE") issues.push(toIssue(i, lang));
+      for (const i of validateScene(scene, { sources: ids, cues, resolution: ctx.talk.config.resolution, talkDir: ctx.talk.dir })) if (i.rule === "E_UNKNOWN_CUE") issues.push(toIssue(i, lang));
     }
   }
   return issues;

@@ -10,6 +10,8 @@ const TERM_PAD_PX = 24;
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 
 export interface BlocksPlan {
+  /** Present only on figure pages, keeping older page plans byte-identical. */
+  figures?: { id: string; anim: string; t: number; d: number; n?: number }[];
   scrolls: { id: string; t: number; y: number }[];
   /** Viewport heights in px: `h0` before the first grow, then `h` from `t`. */
   grows: { id: string; t: number; h: number; h0: number }[];
@@ -45,6 +47,8 @@ export function wrapTyped(p: HtmlElement): HtmlElement {
 /** Add chrome, tracks, cursors, rails and lit layers; returns their plan entries. */
 export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => string): BlocksPlan {
   const plan: BlocksPlan = { scrolls: [], grows: [], cursors: [], chips: [] };
+  const figures = tl.targets.filter((t) => getAttr(t.el, "data-block") === "figure");
+  if (figures.length) plan.figures = figures.map((t) => ({ id: idFor(t.el), anim: t.anim, t: r3(t.t), d: r3(t.duration), ...(t.chars !== undefined ? { n: t.chars } : {}) }));
 
   const trackOf = new Map<HtmlElement, string>();
   const vpOf = new Map<HtmlElement, string>();

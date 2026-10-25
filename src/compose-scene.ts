@@ -1,7 +1,9 @@
 // Scene files: parsing, the validation rules and the timeline resolution of
-// skills/talkreel/references/scenes.md (sections 1-9). Pure functions, no I/O, so the rules are
-// unit-testable without a browser.
-import { classList, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
+// skills/talkreel/references/scenes.md (sections 1-9). Asset file checks run in Node when a
+// talk directory is supplied; the structure and timeline need no browser or filesystem.
+import { readFileSync, realpathSync, statSync } from "node:fs";
+import { extname, isAbsolute, relative, resolve, win32 } from "node:path";
+import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
 import { GEOMETRY, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
@@ -58,6 +60,7 @@ export type RuleId =
   | "E_UNKNOWN_SOURCE"
   | "E_TERM_LINE"
   | "E_PIPELINE"
+  | "E_ASSET"
   | "E_FORBIDDEN";
 
 export interface SceneIssue {
@@ -86,7 +89,10 @@ export class SceneError extends Error {
 }
 
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
-const FORBIDDEN_TAGS = new Set(["script", "style", "link", "iframe", "img", "video", "audio", "object", "embed"]);
+const FORBIDDEN_TAGS = new Set(["script", "style", "link", "iframe", "video", "audio", "object", "embed"]);
+// Add device and cta here when those blocks ship; each has one image slot.
+const IMAGE_SLOTS = new Set(["figure"]);
+const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".svg"]);
 const TIMING_ATTRS = new Set(["data-start", "data-duration", "data-track-index", "data-delay", "data-at"]);
 const SOURCED_BLOCKS = new Set(["stat", "quote", "definition"]);
 const SOURCE_REQUIRED = new Set(["stat", "quote"]);
@@ -103,6 +109,99 @@ export interface Beat {
 export interface Scene {
   root: HtmlElement;
   beats: Beat[];
+}
+
+export interface SceneAsset {
+  /** Talk-relative path, retained verbatim in the generated page. */
+  path: string;
+  file: string;
+}
+
+/** Containment after both lexical normalisation and symlink resolution. */
+function within(dir: string, file: string): boolean {
+  const rel = relative(dir, file);
+  return rel !== ".." && !rel.startsWith("..\\") && !rel.startsWith("../") && !isAbsolute(rel);
+}
+
+/** SVGs are standalone image documents: only local fragment references are allowed. */
+function standaloneSvg(source: string): boolean {
+  // Reject entities and processing instructions rather than expanding arbitrary XML/CSS.
+  const xml = source.replace(/^\uFEFF?\s*<\?xml\s[^?]*\?>/i, "").replace(/<!--[\s\S]*?-->/g, "");
+  if (/<!DOCTYPE|<!ENTITY|<\?|<!\[CDATA\[|<\/?[\w-]+:/i.test(xml)) return false;
+  // CSS escapes/comments can disguise url(), @import, or a reference value.
+  if (/\\|\/\*|@import/i.test(xml)) return false;
+  const root = parseFragment(xml);
+  const elements = descendants(root);
+  if (elementChildren(root).length !== 1 || elementChildren(root)[0]?.tag !== "svg") return false;
+  for (const el of elements) {
+    if (["script", "foreignobject", "image", "feimage", "iframe", "object", "embed", "link", "base", "animate", "animatetransform", "set"].includes(el.tag)) return false;
+    for (const a of el.attrs) {
+      if (/^on/.test(a.name) || a.name === "xml:base") return false;
+      if (/(^|:)(href|src)$/.test(a.name) && !/^#[^\s]+$/.test(a.value ?? "")) return false;
+    }
+  }
+  // Inspect decoded attributes and style text, including entity-encoded url() arguments.
+  const values = elements.flatMap((el) => [...el.attrs.map((a) => a.value ?? ""), ...(el.tag === "style" ? [decodeEntities(textContent(el))] : [])]);
+  for (const value of values) {
+    if (/\\|\/\*|@import|(?:image-set|image|src)\s*\(/i.test(value)) return false;
+    for (const m of value.matchAll(/url\s*\(([^)]*)\)/gi)) {
+      const ref = m[1]!.trim().replace(/^(['"])([\s\S]*)\1$/, "$2");
+      if (!/^#[^\s]+$/.test(ref)) return false;
+    }
+  }
+  return true;
+}
+
+/** Shared by check, compose and hashing. Without talkDir, only markup is checked. */
+export function sceneAssets(scene: Scene, talkDir?: string): { assets: SceneAsset[]; issues: SceneIssue[] } {
+  const assets = new Map<string, SceneAsset>();
+  const issues: SceneIssue[] = [];
+  const all = descendants(scene.root);
+  for (const block of all.filter((el) => getAttr(el, "data-block") === "figure")) {
+    if (elementChildren(block).filter((el) => el.tag === "img").length !== 1 ||
+        elementChildren(block).filter((el) => el.tag === "figcaption").length > 1 ||
+        elementChildren(block).some((el) => el.tag !== "img" && el.tag !== "figcaption")) {
+      issues.push(issue("E_ASSET", block, "a figure holds exactly one <img> and an optional <figcaption>"));
+    }
+  }
+  for (const el of all.filter((el) => el.tag === "img")) {
+    const fail = (message: string) => issues.push(issue("E_ASSET", el, message));
+    if (!IMAGE_SLOTS.has(blockOf(el) ?? "")) {
+      fail("an image needs a block with an image slot");
+      continue;
+    }
+    const src = getAttr(el, "src");
+    if (typeof getAttr(el, "alt") !== "string" || !getAttr(el, "alt")!.trim()) fail("an image needs non-empty alt text");
+    if (el.attrs.some((a) => a.name === "srcset" || a.name === "sizes")) fail("image alternatives are not allowed; use one local src");
+    // Browser URL parsing and filesystem parsing must agree; reject URL metacharacters,
+    // encoded traversal, backslashes, schemes (including drive letters), and dot segments.
+    if (typeof src !== "string" || !src.startsWith("assets/") || isAbsolute(src) || win32.isAbsolute(src) ||
+        /[\\:%?#\s\u0000-\u001f\u007f]/.test(src) || src.split("/").some((part) => !part || part === "." || part === "..")) {
+      fail('src must be a local assets/<path> without a scheme, absolute path or dot segments');
+      continue;
+    }
+    if (!IMAGE_EXTENSIONS.has(extname(src).toLowerCase())) {
+      fail("image extension must be png, jpg, jpeg, webp or svg");
+      continue;
+    }
+    if (!talkDir) continue;
+    try {
+      const dir = realpathSync(talkDir);
+      const file = realpathSync(resolve(talkDir, src));
+      if (!within(dir, file) || !statSync(file).isFile()) {
+        fail("image must be a file inside the talk folder (including symlink targets)");
+        continue;
+      }
+      if (extname(src).toLowerCase() === ".svg" && !standaloneSvg(readFileSync(file, "utf8"))) {
+        fail("SVG must be standalone, with no external references, images, scripts or foreignObject");
+        continue;
+      }
+      assets.set(src, { path: src, file });
+    } catch {
+      fail(`image file is missing or unreadable: ${src}`);
+    }
+  }
+  return { assets: [...assets.values()].sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0), issues };
 }
 
 export function parseScene(source: string): Scene {
@@ -187,6 +286,8 @@ function pipelineIssues(block: HtmlElement): SceneIssue[] {
 
 export interface StaticCheckOptions {
   resolution: Resolution;
+  /** Omit for structure-only validation (e.g. resolving an already-rendered frame timeline). */
+  talkDir?: string;
   /** Source ids from sources.json. */
   sources: ReadonlySet<string>;
   /** Cue names from the matching script; omit to skip E_UNKNOWN_CUE. */
@@ -201,6 +302,7 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
   scene.root.resolution = opts.resolution;
   const out: SceneIssue[] = [];
   const { root, beats } = scene;
+  out.push(...sceneAssets(scene, opts.talkDir).issues);
 
   for (const n of root.children) {
     if (n.type === "comment") continue;
@@ -214,6 +316,7 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
   const all = descendants(root);
   for (const el of all) {
     if (FORBIDDEN_TAGS.has(el.tag)) out.push(issue("E_FORBIDDEN", el, `<${el.tag}> is not allowed in a scene`));
+    if (el.tag === "img" && !IMAGE_SLOTS.has(blockOf(el) ?? "")) out.push(issue("E_FORBIDDEN", el, "<img> is only allowed inside a block with an image slot"));
     for (const a of el.attrs) {
       if (/^on/.test(a.name)) out.push(issue("E_FORBIDDEN", el, `event handler attribute ${a.name} is not allowed`));
       else if (a.name === "style") out.push(issue("E_FORBIDDEN", el, "style attributes are not allowed; the look belongs to the theme"));
@@ -406,6 +509,7 @@ function isPipelineChip(el: HtmlElement): boolean {
 
 function defaultAnim(el: HtmlElement): Anim {
   const block = getAttr(el, "data-block");
+  if (block === "figure") return "fade";
   if (block === "diagram" || block === "terminal" || block === "pipeline") return "fade";
   if (hasAttr(el, "data-line") && codeBlockOf(el)) return "type";
   if (terminalOf(el)) return isPrompt(el) ? "type" : "stream";

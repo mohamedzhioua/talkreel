@@ -178,3 +178,23 @@ export const TIMELINE_RUNTIME = `(function () {
   });
 })();
 `;
+
+// Extend only figure pages: the image-free runtime remains byte-identical to M2.
+// All figure entrance values and times come from the Node plan. Each tween owns one property.
+export const FIGURE_TIMELINE_RUNTIME = TIMELINE_RUNTIME.replace("    P.targets.forEach(function (x) {", `    P.figures.forEach(function (x) {
+      var el = byId(x.id);
+      tl.set(el, { opacity: 0 }, 0);
+      function tween(prop, from, to, ease) {
+        var a = {}, b = { duration: x.d, ease: ease, immediateRender: false };
+        a[prop] = from;
+        b[prop] = to;
+        tl.fromTo(el, a, b, x.t);
+      }
+      tween("opacity", 0, 1, "power1.out");
+      if (x.anim === "fade-up" || x.anim === "stream") tween("y", x.anim === "stream" ? 6 : 40, 0, "power3.out");
+      if (x.anim === "slide") tween("x", 80, 0, "power3.out");
+      if (x.anim === "pop") tween("scale", 0.85, 1, "back.out(1.7)");
+      if (x.anim === "type") tween("clipPath", "inset(0 100% 0 0)", "inset(0 0% 0 0)", "steps(" + x.n + ")");
+    });
+
+    P.targets.forEach(function (x) {`);

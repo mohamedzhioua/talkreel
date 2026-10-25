@@ -1,9 +1,9 @@
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, relative } from "node:path";
-import { buildPaths, composeChapter } from "../compose.js";
+import { buildPaths, composeChapter, sceneFile } from "../compose.js";
 import { chaptersTxt, concatMp4, outPaths, probeDuration, transcriptMd } from "../compose-concat.js";
 import { hfCheck, hfRender, HYPERFRAMES_VERSION, installedHyperframesVersion, isQuality, retryOnCrash, type Quality } from "../compose-hyperframes.js";
-import { SceneError } from "../compose-scene.js";
+import { parseScene, sceneAssets, SceneError } from "../compose-scene.js";
 import { parseScriptFile } from "../script.js";
 import { chapterStatus, currentConcatHash, currentRenderHash, lastRenderQuality } from "../stages.js";
 import { chapterKey, readState, recordStage, stageStatus, writeState } from "../state.js";
@@ -157,7 +157,9 @@ export async function cmdRender(talk: Talk, opts: RenderOptions): Promise<number
       continue;
     }
     if (s.hash === null) {
-      console.error(`${key}: render inputs missing; expected scenes/${ch.chapter}-${ch.name}.html, captions and narration`);
+      const file = sceneFile(talk, ch);
+      const assetIssues = existsSync(file) ? sceneAssets(parseScene(readFileSync(file, "utf8")), talk.dir).issues : [];
+      console.error(assetIssues.length ? new SceneError(`scenes/${ch.chapter}-${ch.name}.html`, assetIssues).message : `${key}: render inputs missing; expected scenes/${ch.chapter}-${ch.name}.html, captions and narration`);
       failed++;
       continue;
     }
