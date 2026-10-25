@@ -5,7 +5,9 @@ Heavy imports stay inside the alignment call; text and frame handling need no to
 
 from __future__ import annotations
 
+import json
 import re
+import sys
 import unicodedata
 import wave
 from pathlib import Path
@@ -18,6 +20,7 @@ MODEL_FILES = (
     "special_tokens_map.json", "vocab.json",
 )
 HARAKAT = re.compile(r"[\u064b-\u065f\u0670]")
+NO_WORDS = "no alignable words: every word has digits or characters outside the Arabic CTC vocabulary"
 
 
 def prepare_text(text: str) -> str:
@@ -36,6 +39,31 @@ def alignment_words(text: str) -> list[str]:
         if word:
             words.append(word)
     return words
+
+
+def read_vocab(snapshot: Path) -> set[str]:
+    """The model's tokens from the snapshot's vocab.json, lower-cased as get_alignments does."""
+    return {token.lower() for token in json.loads((snapshot / "vocab.json").read_text(encoding="utf-8"))}
+
+
+def in_vocabulary(tokens: list[str], texts: list[str], vocab: set[str]) -> tuple[list[str], list[str], list[str]]:
+    """Split preprocess_text's starred lists into the scorable words and the dropped ones.
+
+    A token is the library's normalised word (NFKC, lower case, its Arabic mapping), with its
+    characters joined by spaces. The word is kept only when every character is in the vocabulary.
+    Latin names ("talkreel"), letters such as ڤ پ چ گ and ligatures that expand to several words
+    cannot be scored, so they are dropped like digit tokens and align-map interpolates them.
+    """
+    kept_tokens, kept_texts, dropped = [], [], []
+    for token, text in zip(tokens, texts, strict=True):
+        if token == "<star>":
+            continue
+        if all(c in vocab for c in token.split(" ")):
+            kept_tokens += ["<star>", token]
+            kept_texts += ["<star>", text]
+        else:
+            dropped.append(text)
+    return kept_tokens, kept_texts, dropped
 
 
 def model_snapshot(*, local_files_only: bool = False) -> Path:
@@ -74,7 +102,7 @@ def align_script(wav: Path, text: str, lang: str = "ar") -> dict:
         duration = audio_file.getnframes() / audio_file.getframerate()
     words = alignment_words(text)
     if not words:
-        return {"lang": lang, "model": MODEL, "duration": round(duration, 3), "words": []}
+        raise ValueError(NO_WORDS)
 
     import torch
     from ctc_forced_aligner import (
@@ -84,12 +112,15 @@ def align_script(wav: Path, text: str, lang: str = "ar") -> dict:
 
     # No default model call or fallback: resolve the exact revision before loading.
     snapshot = model_snapshot()
+    # Filter on the vocabulary before loading the weights; stdout stays the one JSON result.
+    tokens, texts, dropped = in_vocabulary(
+        *preprocess_text(" ".join(words), romanize=False, language="ara"), read_vocab(snapshot),
+    )
+    if dropped:
+        print(f"ctc-align: not in the Arabic CTC vocabulary, interpolated instead: {' '.join(dropped)}", file=sys.stderr)
+    if not tokens:
+        raise ValueError(NO_WORDS)
     model, tokenizer = load_alignment_model("cpu", model_path=str(snapshot), dtype=torch.float32)
-    tokens, texts = preprocess_text(" ".join(words), romanize=False, language="ara")
-    vocab = tokenizer.get_vocab()
-    unknown = sorted({c for token in tokens if token != "<star>" for c in token.split() if c not in vocab})
-    if unknown:
-        raise ValueError(f"characters outside the Arabic CTC vocabulary: {unknown}")
     audio = load_audio(str(wav), model.dtype, model.device)
     emissions, stride = generate_emissions(model, audio, batch_size=1)
     segments, _scores, blank = get_alignments(emissions, tokens, tokenizer)

@@ -19,11 +19,10 @@ function helperEnv(): NodeJS.ProcessEnv {
 export async function runHelper(args: string[], opts: { echoStderr?: boolean } = {}): Promise<unknown> {
   const ctc = args[0] === "ctc-align";
   if (ctc && !(await models()).ctc.available) throw new HelperError("install the arabic group for script-level Arabic alignment");
-  // Probing must preserve an installed optional group and must never sync it.
-  // CTC is also no-sync: selecting it cannot install GBs of optional packages.
-  const uvArgs = ["run", "--quiet", "--project", PY_DIR,
-    ...(ctc ? ["--no-sync", "--group", "arabic"] : args[0] === "models" ? ["--no-sync"] : []),
-    "python", "-m", "talkreel_audio", ...args];
+  // `uv run` syncs inexactly: it installs what the default groups lack and keeps an installed
+  // optional group, so every call (the `models` probe and doctor too) can set up the environment.
+  // ctc-align adds --no-sync so that selecting the group never installs its GBs of packages.
+  const uvArgs = ["run", "--quiet", "--project", PY_DIR, ...(ctc ? ["--no-sync", "--group", "arabic"] : []), "python", "-m", "talkreel_audio", ...args];
   const r = await run("uv", uvArgs, { env: helperEnv(), echoStderr: opts.echoStderr ?? true });
   if (r.code === 127) throw new HelperError(`cannot start uv: ${r.stderr.trim()} (run "talkreel doctor")`);
   if (r.code !== 0) throw new HelperError(`audio helper "${args[0]}" failed (exit ${r.code})${opts.echoStderr === false ? `:\n${r.stderr.trim()}` : ""}`);
@@ -72,6 +71,15 @@ export interface ModelsReport {
   ctc: { available: boolean; present: boolean; model: string; revision: string };
 }
 
-export async function models(): Promise<ModelsReport> {
-  return (await runHelper(["models", "--whisper-model", "small"], { echoStderr: false })) as ModelsReport;
+let modelsProbe: Promise<ModelsReport> | undefined;
+
+/** The `models` report, probed once per process: status, align and the ctc-align check share it. */
+export function models(): Promise<ModelsReport> {
+  modelsProbe ??= runHelper(["models", "--whisper-model", "small"], { echoStderr: false }) as Promise<ModelsReport>;
+  return modelsProbe;
+}
+
+/** Forget the memoised probe, so the next models() call runs the helper again (tests). */
+export function resetModelsProbe(): void {
+  modelsProbe = undefined;
 }

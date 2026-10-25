@@ -161,7 +161,7 @@ def report(whisper_model: str) -> dict:
 
 
 def ctc_report() -> dict:
-    """Probe the installed group and pinned cache without importing torch or syncing."""
+    """Probe the installed group and pinned cache without importing torch or downloading."""
     from .ctc_align import MODEL_ID, MODEL_REVISION, model_snapshot
 
     present = False

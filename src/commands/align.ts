@@ -21,7 +21,13 @@ export async function cmdAlign(talk: Talk, lang: string, chapter?: string): Prom
   }
   const stateFile = paths.state(talk);
   const state = readState(stateFile);
-  const model = await helper.alignmentModel(lang);
+  let model: string;
+  try {
+    model = await helper.alignmentModel(lang);
+  } catch (e) {
+    console.error(`cannot probe alignment engine: ${(e as Error).message}`);
+    return 1;
+  }
   if (lang === "ar" && model !== CTC_MODEL) console.error("install the arabic group for script-level Arabic alignment");
   let failed = 0;
   for (const ch of chapters) {
