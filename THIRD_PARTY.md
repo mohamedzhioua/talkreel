@@ -22,6 +22,16 @@ talkreel's own code is MIT-licensed (see `LICENSE`). talkreel does not bundle, v
 
 The talkreel CLI talks to the Python audio helper only through a separate process that exchanges JSON. talkreel never ships the GPL-3.0 components; they arrive only through your own `uv sync`.
 
+## Visual references for product blocks
+
+The HyperFrames registry's `device-frame-stage`, `agent-cursor`,
+`cursor-zoom-follow` and `cta-close` are visual references for the device chrome,
+cursor/click halo and logo–headline–action closing composition in
+`themes/default/theme.css`. These CSS ideas were independently implemented in
+the existing talkreel theme. No registry JavaScript, timing code or assets are
+copied or vendored; Node resolves every motion plan and the local runtime owns
+the paused timeline.
+
 ## Installed by you
 
 | Tool | Licence | Note |

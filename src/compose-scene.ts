@@ -4,7 +4,7 @@
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve, win32 } from "node:path";
 import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, isLtrIsland, languageDirection, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
-import { GEOMETRY, type Resolution } from "./geometry.js";
+import { cursorPath, deviceViewport, deviceZoom, GEOMETRY, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
 export const STAGGER = 0.12;
@@ -62,6 +62,9 @@ export type RuleId =
   | "E_TERM_LINE"
   | "E_PIPELINE"
   | "E_ASSET"
+  | "E_DEVICE"
+  | "E_CLICK_TARGET"
+  | "E_CTA"
   | "E_FORBIDDEN";
 
 export interface SceneIssue {
@@ -91,8 +94,7 @@ export class SceneError extends Error {
 
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
 const FORBIDDEN_TAGS = new Set(["script", "style", "link", "iframe", "video", "audio", "object", "embed"]);
-// Add device and cta here when those blocks ship; each has one image slot.
-const IMAGE_SLOTS = new Set(["figure"]);
+const IMAGE_SLOTS = new Set(["figure", "device", "cta"]);
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".svg"]);
 const TIMING_ATTRS = new Set(["data-start", "data-duration", "data-track-index", "data-delay", "data-at"]);
 const SOURCED_BLOCKS = new Set(["stat", "quote", "definition"]);
@@ -158,6 +160,11 @@ export function sceneAssets(scene: Scene, talkDir?: string): { assets: SceneAsse
   const assets = new Map<string, SceneAsset>();
   const issues: SceneIssue[] = [];
   const all = descendants(scene.root);
+  for (const block of all.filter((el) => ["device", "cta"].includes(getAttr(el, "data-block") ?? ""))) {
+    if (elementChildren(block).filter((el) => el.tag === "img").length !== 1 || descendants(block).filter((el) => el.tag === "img").length !== 1) {
+      issues.push(issue("E_ASSET", block, "a device or cta holds exactly one direct <img> child"));
+    }
+  }
   for (const block of all.filter((el) => getAttr(el, "data-block") === "figure")) {
     if (elementChildren(block).filter((el) => el.tag === "img").length !== 1 ||
         elementChildren(block).filter((el) => el.tag === "figcaption").length > 1 ||
@@ -285,6 +292,57 @@ function pipelineIssues(block: HtmlElement): SceneIssue[] {
   return out;
 }
 
+/** Percentages are authored against the full screenshot, independent of page direction. */
+export function targetRect(el: HtmlElement): [number, number, number, number] {
+  const value = (key: string) => Number((getAttr(el, `data-${key}`) ?? "").replace(/%$/, ""));
+  return [value("x"), value("y"), value("width"), value("height")];
+}
+
+function deviceOf(el: HtmlElement): HtmlElement | null {
+  for (let p = el.parent; p; p = p.parent) if (getAttr(p, "data-block") === "device") return p;
+  return null;
+}
+
+function deviceIssues(block: HtmlElement): SceneIssue[] {
+  const out: SceneIssue[] = [];
+  if (!["phone", "browser"].includes(getAttr(block, "data-frame") ?? "")) out.push(issue("E_DEVICE", block, 'data-frame must be "phone" or "browser"'));
+  const targets = new Set<string>();
+  for (const el of elementChildren(block)) {
+    if (el.tag === "img") continue;
+    if (!hasAttr(el, "data-target") && !hasAttr(el, "data-click")) {
+      out.push(issue("E_DEVICE", el, "a device holds an image, target rectangles and click markers only"));
+    }
+    if (elementChildren(el).length || textContent(el).trim()) out.push(issue("E_DEVICE", el, "device targets and click markers must be empty"));
+    if (hasAttr(el, "data-target")) {
+      const name = getAttr(el, "data-target") ?? "";
+      if (!NAME_RE.test(name) || targets.has(name)) out.push(issue("E_DEVICE", el, "data-target must be a unique name in this device"));
+      targets.add(name);
+      const [x, y, w, h] = targetRect(el);
+      if (!["x", "y", "width", "height"].every((k) => /^\d+(?:\.\d+)?%$/.test(getAttr(el, `data-${k}`) ?? "")) ||
+          x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > 100 || y + h > 100) {
+        out.push(issue("E_DEVICE", el, "target data-x, data-y, data-width and data-height must be percentages defining a rectangle inside the screenshot"));
+      }
+    }
+  }
+  for (const el of elementChildren(block).filter((el) => hasAttr(el, "data-click"))) {
+    if (!targets.has(getAttr(el, "data-click") ?? "")) out.push(issue("E_CLICK_TARGET", el, "data-click must name a target in the same device"));
+  }
+  return out;
+}
+
+function ctaIssues(block: HtmlElement): SceneIssue[] {
+  const kids = elementChildren(block);
+  const headlines = kids.filter((el) => el.tag === "h2");
+  const actions = kids.filter((el) => el.tag === "p" && classList(el).includes("action"));
+  const urls = kids.filter((el) => el.tag === "p" && classList(el).includes("url"));
+  if (headlines.length !== 1 || actions.length !== 1 || urls.length > 1 || actions.some((el) => urls.includes(el)) ||
+      [...headlines, ...actions, ...urls].some((el) => !textContent(el).trim()) ||
+      kids.some((el) => el.tag !== "img" && !headlines.includes(el) && !actions.includes(el) && !urls.includes(el))) {
+    return [issue("E_CTA", block, 'a cta holds a logo <img>, one <h2>, one <p class="action"> and an optional <p class="url">')];
+  }
+  return [];
+}
+
 export interface StaticCheckOptions {
   resolution: Resolution;
   lang?: string;
@@ -345,6 +403,19 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
   }
 
   for (const el of all) {
+    if (hasAttr(el, "data-target") || hasAttr(el, "data-click") || hasAttr(el, "data-zoom")) {
+      const device = deviceOf(el);
+      if (!device || el.parent !== device) out.push(issue("E_DEVICE", el, "device targets and actions must be direct children of a device"));
+      if ((hasAttr(el, "data-click") || hasAttr(el, "data-zoom")) && !getAttr(el, "data-cue")) out.push(issue("E_DEVICE", el, "device actions need data-cue"));
+      if (hasAttr(el, "data-zoom")) {
+        const values = (getAttr(el, "data-zoom") ?? "").split(",").map((v) => v.trim());
+        const [x, y, scale] = values.map(Number) as [number, number, number];
+        if (!hasAttr(el, "data-target") || values.length !== 3 || values.some((v) => !/^\d+(?:\.\d+)?$/.test(v)) ||
+            x < 0 || x > 100 || y < 0 || y > 100 || scale < 1 || scale > 8) {
+          out.push(issue("E_DEVICE", el, "data-zoom on a target is x,y,scale (x/y: 0..100, scale: 1..8)"));
+        }
+      }
+    }
     const anim = getAttr(el, "data-anim");
     if (anim !== undefined && !(ANIMS as readonly string[]).includes(anim ?? "")) out.push(issue("E_BAD_ANIM", el, `data-anim must be one of ${ANIMS.join(", ")}`));
     if (anim === "type" && languageDirection(opts.lang ?? "en") === "rtl" && !isLtrIsland(el)) {
@@ -369,6 +440,8 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
     }
     if (block === "terminal") out.push(...terminalIssues(el));
     if (block === "pipeline") out.push(...pipelineIssues(el));
+    if (block === "device") out.push(...deviceIssues(el));
+    if (block === "cta") out.push(...ctaIssues(el));
     if (block === "diagram") {
       const pre = descendants(el).find((d) => hasAttr(d, "data-mermaid"));
       const source = pre ? textContent(pre) : "";
@@ -480,8 +553,17 @@ export interface ResolvedTimeline {
   grows: ResolvedGrow[];
   cursors: ResolvedCursor[];
   chips: ResolvedChip[];
+  devices?: ResolvedDevice[];
   issues: SceneIssue[];
   warnings: SceneWarning[];
+}
+
+export interface ResolvedDevice {
+  block: HtmlElement;
+  width: number;
+  height: number;
+  zooms: { el: HtmlElement; t: number; d: number; from: { x: number; y: number; scale: number }; to: { x: number; y: number; scale: number } }[];
+  clicks: { el: HtmlElement; target: HtmlElement; t: number; start: number; path: [number, number][] }[];
 }
 
 function isExcluded(el: HtmlElement): boolean {
@@ -514,7 +596,7 @@ function isPipelineChip(el: HtmlElement): boolean {
 
 function defaultAnim(el: HtmlElement): Anim {
   const block = getAttr(el, "data-block");
-  if (block === "figure") return "fade";
+  if (block === "figure" || block === "device" || block === "cta") return "fade";
   if (block === "diagram" || block === "terminal" || block === "pipeline") return "fade";
   if (hasAttr(el, "data-line") && codeBlockOf(el)) return "type";
   if (terminalOf(el)) return isPrompt(el) ? "type" : "stream";
@@ -533,7 +615,7 @@ export function beatTargets(beat: HtmlElement): HtmlElement[] {
   const direct = new Set(elementChildren(beat));
   for (const el of descendants(beat)) {
     // Pipeline chips are always on screen; they light up (ResolvedChip), they do not enter.
-    if (isExcluded(el) || isPipelineChip(el)) continue;
+    if (isExcluded(el) || isPipelineChip(el) || deviceOf(el)) continue;
     let target = direct.has(el) || hasAttr(el, "data-cue") || hasAttr(el, "data-anim");
     if (!target && el.tag === "li" && blockOf(el) === "list") target = true;
     if (!target && hasAttr(el, "data-line") && codeBlockOf(el)) target = true;
@@ -631,6 +713,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
   const grows: ResolvedGrow[] = [];
   const cursors: ResolvedCursor[] = [];
   const chips: ResolvedChip[] = [];
+  const devices: ResolvedDevice[] = [];
 
   scene.beats.forEach((b, bi) => {
     const rb = beats[bi]!;
@@ -745,9 +828,56 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         chips.push({ block: pl, chip, t, fraction, done });
       });
     }
+
+    for (const block of descendants(b.el).filter((d) => getAttr(d, "data-block") === "device")) {
+      const viewport = deviceViewport(geometryFor(block), getAttr(block, "data-frame") ?? "phone");
+      const device: ResolvedDevice = { block, ...viewport, zooms: [], clicks: [] };
+      devices.push(device);
+      const entrance = targets.find((t) => t.el === block);
+      const ready = entrance ? entrance.t + entrance.duration : rb.floor;
+      const actions = elementChildren(block).filter((el) => hasAttr(el, "data-zoom") || hasAttr(el, "data-click"))
+        .map((el) => ({ el, t: resolveBase(el) })).sort((a, b) => a.t - b.t);
+      let camera = { x: 0, y: 0, scale: 1 };
+      let zoomEnd = ready;
+      let previous: [number, number] = [viewport.width * 0.1, viewport.height * 0.85];
+      let cursorReady = ready;
+      for (const { el, t } of actions) {
+        if (t < ready - 1e-9) issues.push(issue("E_DEVICE", el, "device action cue must follow the device entrance"));
+        if (hasAttr(el, "data-zoom")) {
+          const [x, y, scale] = (getAttr(el, "data-zoom") ?? "").split(",").map(Number) as [number, number, number];
+          const anim = getAttr(el, "data-anim") as Anim | undefined;
+          const d = anim === "type" ? typeDuration(1) : ANIM_DURATION[anim ?? "fade"] ?? 0.6;
+          if (t < zoomEnd - 1e-9) issues.push(issue("E_DEVICE", el, "device zooms must not overlap"));
+          const to = deviceZoom(viewport.width, viewport.height, x, y, scale);
+          device.zooms.push({ el, t, d, from: camera, to });
+          camera = to;
+          zoomEnd = t + d;
+        }
+        if (hasAttr(el, "data-click")) {
+          const target = elementChildren(block).find((c) => getAttr(c, "data-target") === getAttr(el, "data-click"));
+          if (!target) {
+            issues.push(issue("E_CLICK_TARGET", el, "data-click must name a target in the same device"));
+            continue;
+          }
+          if (t < cursorReady - 1e-9) issues.push(issue("E_DEVICE", el, "device clicks must follow the preceding pressed state"));
+          const [x, y, w, h] = targetRect(target);
+          const to: [number, number] = [(x + w / 2) / 100 * viewport.width, (y + h / 2) / 100 * viewport.height];
+          const start = Math.min(t, Math.max(cursorReady, t - 0.6));
+          device.clicks.push({ el, target, t, start, path: cursorPath(previous, to) });
+          previous = to;
+          cursorReady = t + 0.24;
+        }
+      }
+    }
+    for (const cta of descendants(b.el).filter((d) => getAttr(d, "data-block") === "cta")) {
+      const members = new Set([cta, ...descendants(cta)]);
+      const visible = Math.max(rb.floor, ...targets.filter((t) => members.has(t.el)).map((t) => t.t + t.duration));
+      const hold = Math.min(D, rb.end) - visible;
+      if (hold < 1.5 - 1e-9) warnings.push({ line: cta.line, message: `cta hold is ${Math.max(0, hold).toFixed(2)} s before the chapter/beat end; allow at least 1.5 s after its entrance` });
+    }
   });
 
-  return { duration: D, beats, targets, steps, diagrams, scrolls, grows, cursors, chips, issues, warnings };
+  return { duration: D, beats, targets, steps, diagrams, scrolls, grows, cursors, chips, ...(devices.length ? { devices } : {}), issues, warnings };
 }
 
 /** Cue names used anywhere in the scene (beats, elements, steps). */

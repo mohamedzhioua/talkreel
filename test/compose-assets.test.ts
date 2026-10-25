@@ -124,8 +124,6 @@ describe("local image validation", () => {
 
   it.each([
     '<div data-block="title">' + img() + '</div>',
-    '<div data-block="device">' + img() + '</div>',
-    '<div data-block="cta">' + img() + '</div>',
     img(),
     figure(""),
     figure(img() + img()),

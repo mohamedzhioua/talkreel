@@ -733,3 +733,90 @@ html[data-resolution="square"],
 [data-resolution="square"] .tr-blob-b { left: -540px; top: 420px; }
 [data-resolution="portrait"] .tr-grid,
 [data-resolution="square"] .tr-grid { height: calc(var(--tr-canvas-height) + 160px); }
+
+/* ---------- device screenshot and CTA ---------- */
+/* Independently implemented frame chrome, cursor halo and closing-card composition;
+   visual reference names are credited in THIRD_PARTY.md. */
+[data-block="device"] {
+  align-self: center;
+  flex-shrink: 0;
+  direction: ltr;
+  border: 12px solid var(--tr-line);
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--tr-surface);
+}
+[data-block="device"][data-frame="browser"] { border-width: 8px; border-radius: 12px; }
+[data-block="device"][data-frame="browser"]::before {
+  content: "";
+  display: block;
+  height: 32px;
+  background:
+    radial-gradient(circle at 14px 16px, #ff5f57 4px, transparent 5px),
+    radial-gradient(circle at 30px 16px, #febc2e 4px, transparent 5px),
+    radial-gradient(circle at 46px 16px, #28c840 4px, transparent 5px),
+    var(--tr-surface-2);
+}
+.tr-device-vp { position: relative; width: var(--tr-device-width); height: var(--tr-device-height); overflow: hidden; }
+.tr-device-camera { position: absolute; inset: 0; transform-origin: 0 0; }
+.tr-device-camera > img { display: block; width: 100%; height: 100%; }
+.tr-device-camera > [data-target] {
+  position: absolute;
+  display: block;
+  background: var(--tr-accent-soft);
+  border: 2px solid var(--tr-accent);
+  border-radius: 6px;
+  opacity: 0;
+}
+.tr-agent-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 32px;
+  background: var(--tr-ink);
+  clip-path: polygon(0 0, 100% 70%, 56% 72%, 40% 100%);
+  filter: drop-shadow(1px 2px 1px #0b0c10);
+  opacity: 0;
+}
+.tr-click-halo {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border: 3px solid var(--tr-accent);
+  border-radius: 50%;
+  opacity: 0;
+}
+[data-block="cta"] { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center; }
+[data-block="cta"] > img { width: 160px; height: 120px; object-fit: contain; }
+[data-block="cta"] > h2 { max-width: 22ch; font-size: calc(var(--tr-k) * 88px); line-height: 1.15; letter-spacing: -0.03em; text-wrap: balance; }
+[data-block="cta"] > .action { max-width: 30ch; font-size: calc(var(--tr-k) * 48px); line-height: 1.35; font-weight: 600; color: var(--tr-accent); }
+[data-block="cta"] > .url { max-width: 100%; overflow-wrap: anywhere; font-size: 28px; line-height: 1.4; color: var(--tr-muted); unicode-bidi: isolate; direction: ltr; }
+
+/* S1-L1: the portrait caption backdrop floats above the UI zone; fade BOTH edges. */
+[data-resolution="portrait"] .tr-captions {
+  background: linear-gradient(to bottom, rgba(8, 9, 12, 0) 0%, rgba(8, 9, 12, 0.88) 28%, rgba(8, 9, 12, 0.96) 55%, rgba(8, 9, 12, 0.88) 72%, rgba(8, 9, 12, 0) 100%);
+}
+
+/* S3-L1: room for stacked Arabic vowel marks on wrapped display text. */
+:root:lang(ar) section[data-beat] > h2,
+:root:lang(ar) [data-block="title"] h1,
+:root:lang(ar) [data-block="chapter-card"] .title,
+:root:lang(ar) [data-block="definition"] .term,
+:root:lang(ar) [data-block="list"] .heading,
+:root:lang(ar) [data-block="split"] > .col > h3,
+:root:lang(ar) [data-block="cta"] > h2 { line-height: 1.5; letter-spacing: 0; }
+
+/* S3-L2: scoped physical-side overrides preserve all landscape LTR rules.
+   Terminal/code are deliberate LTR islands and keep their physical coordinates. */
+[dir="rtl"] [data-block="list"] li { padding-left: 0; padding-right: calc(var(--tr-k) * 64px); }
+[dir="rtl"] [data-block="list"] li::before { left: auto; right: 0; }
+[dir="rtl"] [data-block="quote"] { padding-left: 0; padding-right: calc(var(--tr-k) * 136px); }
+[dir="rtl"] [data-block="quote"]::before { left: auto; right: 0; }
+[dir="rtl"] [data-block="chapter-card"] .number { padding-right: 0; padding-left: 56px; border-right: 0; border-left: 4px solid var(--tr-line); }
+[dir="rtl"][data-resolution="portrait"] [data-block="chapter-card"] .number,
+[dir="rtl"][data-resolution="square"] [data-block="chapter-card"] .number { padding-left: 28px; }
+[dir="rtl"] .tr-source { padding-left: 0; padding-right: 24px; }
+[dir="rtl"] .tr-source::before { margin-right: 0; margin-left: 14px; }
+[dir="rtl"] .tr-rail-fill { transform-origin: 100% 50%; }

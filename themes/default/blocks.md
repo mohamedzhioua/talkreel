@@ -20,7 +20,9 @@ A beat fills the safe area; its children stack vertically, centred, left
 aligned, with a 48 px gap (`data-align="center"` on the beat centres them). One
 primary block per beat, optionally with one `<h2>` heading or one `<p>` line
 directly in the beat. Camera moves may drift a beat up to 40 px past the left
-and right edges of the safe area, never into the caption band.
+and right edges of the safe area in landscape, never into the caption band.
+Portrait camera travel is bounded by the 6% side safe zone, including full-width
+content. Portrait captions fade at both edges above the bottom UI zone.
 
 ## Shared rules
 
@@ -131,6 +133,73 @@ fits the safe area in landscape, portrait and square.
   cue timeline. Images add no independent clock or camera motion.
 - Copy the image named in `examples/figure.html` into the talk's `assets/` before
   using that example. Compose copies referenced assets into the chapter build.
+
+### `device`
+
+A phone or browser frame around one local screenshot. Give it its own beat;
+the viewport is computed in Node to fit the safe area, excluding frame chrome.
+Phone screenshots use a 9:16 viewport; browser screenshots use 16:10. Prepare
+the image at that aspect ratio so its percentage coordinates match the display.
+
+```html
+<div data-block="device" data-frame="browser">
+  <img src="assets/screens/product.png" alt="The product's chapter dashboard">
+  <i data-target="publish" data-x="60%" data-y="20%"
+     data-width="20%" data-height="10%"
+     data-zoom="70,25,2" data-cue="focus"></i>
+  <i data-click="publish" data-cue="publish"></i>
+</div>
+```
+
+- `data-frame` is required: `phone` or `browser`. Exactly one direct `<img>`
+  child follows all the local image, alt-text and SVG rules of `figure`.
+- Targets are empty direct children. `data-target` is unique within the device
+  and uses lowercase letters, digits and hyphens, starting with a letter or digit.
+  `data-x`, `data-y`, `data-width`, `data-height` are percentage strings such as
+  `12.5%`; the rectangle must fit inside 0..100%. These are physical screenshot
+  coordinates, including on RTL pages.
+- `data-zoom="x,y,scale"` on a target needs `data-cue`. x/y are percentages
+  written as numbers (0..100); scale is 1..8. The composer centres that point
+  in the viewport at the requested scale. The zoom starts at the cue and reaches
+  its transform after the target's entrance duration (default 0.6 s; `pop` 0.5 s,
+  `draw` 0.8 s). The target is a marker, with no independent text entrance.
+- An empty direct child with `data-click="target-name"` and `data-cue` moves
+  the cursor over up to 0.6 s **before** the cue. It starts from its previous
+  screenshot position (initially 10%,85%), follows a quadratic curve, and starts
+  the click halo and pressed highlight at the cue. The cursor and halo follow
+  the screenshot camera. A click may share a target's zoom marker and cue.
+- Actions must follow the device entrance. Zooms must not overlap. Clicks must
+  allow the preceding 0.24 s pressed state to finish; the first path is shortened
+  if the device has only just appeared. An unknown target in the same device
+  fails with `E_CLICK_TARGET`; invalid device geometry/timing uses `E_DEVICE`.
+- Default entrance `fade`. Frame and action timing comes solely from cues; no
+  clocks or layout measurements are used. Run `node scripts/determinism.mjs
+  build/en/01` locally to automatically include mid-cursor and mid-zoom frames,
+  comparing fresh/sequential/shuffled seeks and workers 1/4. The seek check uses
+  installed HyperFrames dependencies and an existing browser (set
+  `HYPERFRAMES_BROWSER_PATH` if needed); it never downloads one.
+
+### `cta`
+
+A closing card with a local logo, one headline, one action line and an optional
+display URL. URL text is not a fetched resource or link; omit the scheme.
+
+```html
+<div data-block="cta">
+  <img src="assets/logo.svg" alt="Product logo">
+  <h2>Make your next reel</h2>
+  <p class="action">Start a chapter today</p>
+  <p class="url">example.org</p> <!-- optional -->
+</div>
+```
+
+- Exactly one direct logo `<img>`, following the same local asset rules as `figure`.
+- One non-empty `<h2>`, one non-empty `<p class="action">`, at most one
+  non-empty `<p class="url">`. Other direct elements fail with `E_CTA`.
+- Default entrance `fade`. Hold the fully entered card for at least **1.5 s**
+  before the chapter ends. Compose warns below that boundary, including delayed
+  child entrances or a beat that leaves early. Put the closing card in the final
+  beat and leave enough narration for the hold.
 
 ### `code`
 

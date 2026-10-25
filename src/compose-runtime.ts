@@ -5,6 +5,70 @@
 //
 // Plain ES5-style JavaScript in a string, so it runs as a classic script and is written to the
 // build directory verbatim.
+import { portraitCamera } from "./geometry.js";
+
+/** Keep the legacy landscape runtime byte-for-byte; constrain only portrait camera travel. */
+export function portraitRuntime(runtime: string): string {
+  const push = portraitCamera("push-in"), pan = portraitCamera("pan-left");
+  return runtime
+    .replace('scale: 1.04, duration: b.unmount - b.start, ease: "none"', `scale: ${push.to}, duration: b.unmount - b.start, ease: "none", immediateRender: false`)
+    .replace('{ x: 24 }, { x: -24, duration: b.unmount - b.start, ease: "none"', `{ x: ${pan.from} }, { x: ${pan.to}, duration: b.unmount - b.start, ease: "none", immediateRender: false`);
+}
+
+/** All geometry, path control points and previous values are resolved in Node. */
+export function deviceRuntime(runtime: string): string {
+  return runtime.replace("    P.targets.forEach(function (x) {", `    function property(el, prop, from, to, t, d, ease) {
+      var a = {}, b = { duration: d, ease: ease, immediateRender: false };
+      a[prop] = from;
+      b[prop] = to;
+      tl.fromTo(el, a, b, t);
+    }
+    P.devices.forEach(function (device) {
+      var camera = byId(device.camera), cursor = byId(device.cursor);
+      // Apply each initial value synchronously; no initialization waits for a ticker frame.
+      function initial(el, prop, value) {
+        var state = { immediateRender: false, paused: true };
+        state[prop] = value;
+        window.gsap.set(el, state).progress(1).kill();
+      }
+      ["x", "y", "scale"].forEach(function (prop) {
+        var value = prop === "scale" ? 1 : 0;
+        initial(camera, prop, value);
+      });
+      ["x", "y", "opacity"].forEach(function (prop, axis) {
+        var value = axis < 2 ? device.initial[axis] : 0;
+        initial(cursor, prop, value);
+      });
+      device.zooms.forEach(function (z) {
+        ["x", "y", "scale"].forEach(function (prop) {
+          property(camera, prop, z.from[prop], z.to[prop], z.t, z.d, "power2.inOut");
+        });
+      });
+      if (device.clicks.length) property(cursor, "opacity", 0, 1, device.clicks[0].start, 0.001, "none");
+      device.clicks.forEach(function (c) {
+        ["x", "y"].forEach(function (prop, axis) {
+          var a = c.path[0][axis], control = c.path[1][axis], end = c.path[2][axis];
+          // A unit span also handles paths whose endpoint equals their starting coordinate.
+          var span = end - a || 1;
+          property(cursor, prop, a, a + span, c.start, c.t - c.start, function (p) {
+            var q = 1 - p;
+            return (q * q * a + 2 * q * p * control + p * p * end - a) / span;
+          });
+        });
+        var halo = byId(c.halo), target = byId(c.target);
+        property(halo, "opacity", 0, 0.85, c.t, 0.001, "none");
+        property(halo, "opacity", 0.85, 0, c.t + 0.001, 0.399, "power1.out");
+        property(halo, "scale", 0.5, 1.6, c.t, 0.4, "power2.out");
+        property(target, "opacity", 0, 1, c.t, 0.001, "none");
+        property(target, "opacity", 1, 0, c.t + 0.12, 0.12, "power1.out");
+        property(target, "scale", 1, 0.96, c.t, 0.08, "power2.out");
+        property(target, "scale", 0.96, 1, c.t + 0.08, 0.16, "power2.out");
+      });
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
 /** Only RTL pages receive the mirrored runtime; LTR output remains byte-identical. */
 export function mirrorSlides(runtime: string): string {
   return runtime

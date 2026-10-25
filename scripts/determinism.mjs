@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-// Local determinism check (never in CI): render one composed chapter twice, with 1 and with 3
-// HyperFrames workers, and compare the PNG bytes of chosen frames. Different worker counts start
-// each worker's seek at a different frame, so equal bytes mean no frame depends on seek order.
+// Local only: compare fresh, sequential and shuffled PNG seeks, plus decoded frames from
+// HyperFrames --workers 1 and --workers 4. Mid-cursor and mid-zoom times are added from the plan.
 //
 //   node scripts/determinism.mjs <build/<lang>/NN dir> <t1> [t2 ...]
 // Theme regression: keep a copy of a composed M2 chapter BEFORE the theme change, compose it
@@ -9,9 +8,12 @@
 //   node scripts/determinism.mjs --compare <before dir> <after dir> <t1> <t2> <t3>
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { createRequire } from "node:module";
+import { homedir, tmpdir } from "node:os";
+import { basename, extname, isAbsolute, join, relative, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { findTool } from "../dist/ffmpeg.js";
 import { hyperframesEntry, hyperframesEnv, renderArgs } from "../dist/compose-hyperframes.js";
 
@@ -20,9 +22,9 @@ const compare = args[0] === "--compare";
 if (compare) args.shift();
 const dirArg = args.shift();
 const afterArg = compare ? args.shift() : undefined;
-const times = args;
-if (!dirArg || !times.length || (compare && (!afterArg || times.length !== 3)) || times.some((t) => !Number.isFinite(Number(t)) || Number(t) < 0)) {
-  console.error("usage: node scripts/determinism.mjs <chapter build dir> <seconds> [seconds ...]\n       node scripts/determinism.mjs --compare <before dir> <after dir> <t1> <t2> <t3>");
+const times = args.map(Number);
+if (!dirArg || (compare && (!afterArg || times.length !== 3)) || times.some((t) => !Number.isFinite(t) || t < 0)) {
+  console.error("usage: node scripts/determinism.mjs <chapter build dir> [seconds ...]\n       node scripts/determinism.mjs --compare <before dir> <after dir> <t1> <t2> <t3>");
   process.exit(2);
 }
 const dir = resolve(dirArg);
@@ -30,6 +32,20 @@ const ffmpeg = findTool("ffmpeg");
 if (!ffmpeg) throw new Error("ffmpeg not found");
 const out = mkdtempSync(join(tmpdir(), "talkreel-det-"));
 const FPS = 30;
+
+const labels = new Map(times.map((t) => [t, "requested"]));
+if (!compare) {
+  const source = readFileSync(join(dir, "timeline.js"), "utf8");
+  const plan = JSON.parse(source.match(/window\.__trPlan = (.+);\r?\n/)?.[1] ?? "{}");
+  for (const device of plan.devices ?? []) {
+    for (const c of device.clicks) if (c.t > c.start) labels.set((c.start + c.t) / 2, "mid-cursor");
+    for (const z of device.zooms) labels.set(z.t + z.d / 2, "mid-zoom");
+  }
+  times.splice(0, times.length, ...[...labels.keys()].map((t) => Math.round(t * FPS) / FPS));
+  for (const [t, label] of [...labels]) labels.set(Math.round(t * FPS) / FPS, label);
+}
+if (!times.length) throw new Error("provide frame times or a chapter with device click/zoom motion");
+const samples = [...new Set(times)].sort((a, b) => a - b);
 
 function render(dir, workers, label) {
   const mp4 = join(out, `${label}.mp4`);
@@ -49,14 +65,101 @@ function frame(mp4, t) {
 }
 
 const a = render(dir, 1, compare ? "before" : "w1");
-const b = render(compare ? resolve(afterArg) : dir, compare ? 1 : 3, compare ? "after" : "w3");
+const b = render(compare ? resolve(afterArg) : dir, compare ? 1 : 4, compare ? "after" : "w4");
 let bad = 0;
-for (const t of times) {
+for (const t of samples) {
   const [pa, pb] = [frame(a, t), frame(b, t)];
   const [ha, hb] = [pa, pb].map((p) => createHash("sha256").update(p).digest("hex"));
   const same = pa.equals(pb);
   if (!same) bad++;
-  console.log(`${same ? "same" : "DIFF"}  t=${t}s  ${compare ? "before" : "workers1"}=${ha}  ${compare ? "after" : "workers3"}=${hb}`);
+  console.log(`${same ? "same" : "DIFF"}  ${labels.get(t)} t=${t}s  ${compare ? "before" : "workers1"}=${ha}  ${compare ? "after" : "workers4"}=${hb}`);
 }
-console.log(bad ? `DETERMINISM FAILED: ${bad} frame(s) differ (${out})` : `DETERMINISM OK (${times.length} frames)`);
+if (!compare) await checkSeeks();
+console.log(bad ? `DETERMINISM FAILED: ${bad} frame(s) differ (${out})` : `DETERMINISM OK (${samples.length} frames; ${compare ? "theme comparison" : "fresh/sequential/shuffled and workers 1/4"})`);
 process.exit(bad ? 1 : 0);
+
+// Use HyperFrames' already-installed Puppeteer, with an existing browser only; no download.
+function chromeIn(root, depth = 0) {
+  if (!existsSync(root) || depth > 5) return undefined;
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    const file = join(root, entry.name);
+    if (entry.isFile() && /^(?:chrome-headless-shell|chrome)(?:\.exe)?$/.test(entry.name)) return file;
+    if (entry.isDirectory()) { const found = chromeIn(file, depth + 1); if (found) return found; }
+  }
+}
+
+async function checkSeeks() {
+  const require = createRequire(hyperframesEntry());
+  const { default: puppeteer } = await import(pathToFileURL(require.resolve("puppeteer-core")).href);
+  const executablePath = process.env.HYPERFRAMES_BROWSER_PATH ??
+    chromeIn(join(homedir(), ".cache", "hyperframes", "chrome")) ??
+    chromeIn(join(homedir(), ".cache", "puppeteer"));
+  if (!executablePath) throw new Error("seek checks need an existing Chrome; set HYPERFRAMES_BROWSER_PATH");
+  const mime = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".woff2": "font/woff2", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".wav": "audio/wav" };
+  const server = createServer((req, res) => {
+    try {
+      const file = resolve(dir, "." + decodeURIComponent(new URL(req.url, "http://localhost").pathname));
+      const rel = relative(dir, file);
+      if (isAbsolute(rel) || rel === ".." || rel.startsWith("../") || rel.startsWith("..\\")) throw new Error("outside chapter");
+      res.setHeader("Content-Type", mime[extname(file)] ?? "application/octet-stream");
+      res.end(readFileSync(file));
+    } catch { res.statusCode = 404; res.end(); }
+  });
+  await new Promise((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
+  let browser;
+  try {
+    browser = await puppeteer.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+    const html = readFileSync(join(dir, "index.html"), "utf8");
+    const width = Number(html.match(/data-width="(\d+)"/)[1]), height = Number(html.match(/data-height="(\d+)"/)[1]);
+    const open = async () => {
+      const page = await browser.newPage();
+      await page.setViewport({ width, height, deviceScaleFactor: 1 });
+      await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "networkidle0" });
+      await page.waitForFunction(() => !window.__hfTimelinesBuilding && window.__timelines?.main);
+      await page.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map((img) => img.decode())); });
+      return page;
+    };
+    const seek = (page, t) => page.evaluate((time) => {
+      window.__timelines.main.seek(time);
+      // Match HyperFrames' clip mounting without adding a second clock.
+      for (const el of document.querySelectorAll(".tr-stage > section[data-beat]")) {
+        const start = Number(el.dataset.start), end = start + Number(el.dataset.duration);
+        el.style.visibility = time >= start && time < end ? "visible" : "hidden";
+      }
+    }, t);
+    const shot = async (page) => Buffer.from(await page.screenshot({ type: "png" }));
+    const fresh = new Map();
+    for (const t of samples) {
+      const page = await open();
+      try { await seek(page, t); fresh.set(t, await shot(page)); } finally { await page.close(); }
+    }
+    const compareShot = async (page, t, mode) => {
+      const png = await shot(page), baseline = fresh.get(t);
+      const same = png.equals(baseline);
+      if (!same) {
+        bad++;
+        writeFileSync(join(out, `fresh-${t}.png`), baseline);
+        writeFileSync(join(out, `${mode}-${t}.png`), png);
+      }
+      console.log(`${same ? "same" : "DIFF"}  ${labels.get(t)} t=${t}s fresh/${mode}`);
+    };
+    const sequential = await open();
+    try {
+      const wanted = new Set(samples.map((t) => Math.round(t * FPS)));
+      for (let n = 0; n <= Math.round(samples.at(-1) * FPS); n++) {
+        await seek(sequential, n / FPS);
+        if (wanted.has(n)) await compareShot(sequential, n / FPS, "sequential");
+      }
+    } finally { await sequential.close(); }
+    const shuffled = await open();
+    try {
+      // Fixed alternating high/low order exercises backwards and forwards seeks reproducibly.
+      const order = samples.filter((_, i) => i % 2 === 0).reverse().concat(samples.filter((_, i) => i % 2));
+      await seek(shuffled, samples.at(-1));
+      for (const t of order) { await seek(shuffled, t); await compareShot(shuffled, t, "shuffled"); }
+    } finally { await shuffled.close(); }
+  } finally {
+    if (browser) await browser.close();
+    await new Promise((resolve) => server.close(resolve));
+  }
+}
