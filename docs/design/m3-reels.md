@@ -251,7 +251,7 @@ One branch, `m3-reels`, committed per slice and pushed once when the plan is fin
 
 Slice 0 wrote this section and `## Licence evidence` below it. Rolling slice 0 back deletes both. Slice 7 extends `## Licence evidence` rather than starting it.
 
-Date: 2026-10-25. Machine: Intel Core i7-1165G7 (4 cores, 8 threads, 2.8 GHz), 31.7 GB RAM, Windows 11, CPU only. The laptop ran on battery for the whole spike, with VS Code and Chrome open (observed during the spike session). Torch used 4 threads. Evidence (samples, logs, card snapshots, portrait frames, CTC output, scripts and the Lahgtna source) is kept locally in the repo's gitignored `.spike/m3-s0/` (below: `<s0>`). It is not committed. The Python venvs were not kept.
+Date: 2026-10-25. Machine: Intel Core i7-1165G7 (4 cores, 8 threads, 2.8 GHz), 31.7 GB RAM, Windows 11, CPU only. The laptop ran on battery for the whole spike, with VS Code and Chrome open (observed during the spike session). Torch used 4 threads. Evidence (samples, logs, card snapshots, portrait frames, CTC output, scripts and the Lahgtna source) is kept locally in the repo's gitignored `.spike/m3-s0/` (below: `<s0>`). It is not committed. The Python venvs were not kept. The samples were moved there from the session scratchpad so they survive until gate 2.
 
 **Portrait render: pass on HyperFrames 0.8.185.** A 3 s, 1080×1920 scratch composition rendered with talkreel's `renderArgs` shape and `--resolution portrait` (telemetry off, same env as `hyperframesEnv`). HyperFrames logged `width 1080, height 1920`. `ffprobe`: h264, 1080×1920, SAR 1:1, DAR 9:16, 3.000 s. In frames at 0.1 s and 2.5 s, each 20 px edge band (red top, green bottom, blue left, yellow right) measures exactly 20 px at the frame edge. The white corner squares sit at (0,0) and (1079,1919). The page's magenta background shows on 0 pixels. So there is no letterboxing, pillarboxing or scaling. Inter text is sharp. No bump slice is needed. Frames: `<s0>\portrait\frame-0.1.png`, `<s0>\portrait\frame-2.5.png`. Video: `<s0>\portrait\portrait.mp4`. Render time was 59.9 s, of which 24.8 s was setup.
 
@@ -295,10 +295,15 @@ Wall time in seconds, audio length in seconds, RTF = wall / audio. Runs 1–3 us
 - Split by input:
   - Chatterbox plain text 23.1 (n = 9), tashkeel 11.3 (n = 3).
   - Lahgtna plain text 13.9 (n = 6, 3 of them above 15), tashkeel 13.4 (n = 3).
-- Input and timing are confounded. All six tashkeel runs fell in one fast window, back to back.
+- sa-3's RTFs (17.4 and 9.1) measure a runaway output, not normal speed: 7.76 s of audio, where Chatterbox speaks the same text in 2.72 s. Excluding them leaves the Lahgtna median at 13.4.
+- Input and timing are confounded. The tashkeel runs were measured back to back, and the plain runs at other times.
 - The paired tashkeel runs are the only close-in-time comparison. They put Chatterbox at 11.3 and Lahgtna at 13.4 (medians), both under 15.
-- Both models are the same 0.5B Chatterbox design, so they should run at about the same speed. The remaining gap may come from the transformers version (5.2.0 against 4.46.3). The spike did not isolate it.
-- The "GPU recommended" call rests on the pooled medians. Own-voice plus CTC alignment stays the primary Arabic path, as planned.
+- T3 sampling rate per window:
+  - Chatterbox tashkeel runs: 5.95–6.20 tok/s (`bench-cb-t.log`)
+  - Lahgtna tashkeel runs: about 4.8 tok/s (`bench-lah-t.log`)
+  - Lahgtna plain run 2: about 5.9 tok/s (`bench-lah-run2.log`)
+- Both models are the same 0.5B Chatterbox design. Lahgtna on transformers 4.46.3 matched Chatterbox's rate (on 5.2.0) in its run 2. So the gap is most likely machine state, and a transformers-version effect is a weak explanation at most.
+- The "GPU recommended" call rests on the pooled medians. Own-voice plus CTC alignment stays the primary Arabic path, pending the re-measure.
 - Recommendation: re-measure on mains power before gate 2, with the engines run alternately in one window.
 
 **What faster-whisper `large-v3-turbo` heard.** This is an ASR read-back, not a listening test.
@@ -309,9 +314,9 @@ Wall time in seconds, audio length in seconds, RTF = wall / audio. Runs 1–3 us
   - sa-3 runs on past the text ("وانت عارف انه …") for 7.76 s, and the model's own alignment analyzer logged `forcing EOS token … alignment_repetition=True`
 
   With tashkeel:
-  - sa-1t is clean
+  - sa-1t is clean of repeats and additions (Whisper heard the brand as "تونكليل")
   - sa-2t repeats "والباقي علينا"
-  - sa-3t repeats "وشوف الفرق بنفسك", and the analyzer again logged `forcing EOS token … alignment_repetition=True` (`<s0>\logs\bench-lah-t.log`, line 320 once carriage returns are split into lines)
+  - sa-3t repeats "وشوف الفرق بنفسك", and the analyzer again logged `forcing EOS token … alignment_repetition=True` (grep `forcing EOS token` in `<s0>\logs\bench-lah-t.log`)
 
 **CTC alignment: works with the explicit model.** `ctc-forced-aligner` comes from git `MahmoudAshraf97/ctc-forced-aligner@64293cc6d711e57666c4a8b098e9fd93b381fd88`, with torch 2.14.1, transformers 5.20.2 and torchcodec 0.17.0.
 - `load_alignment_model(model_path=...)` takes a local `snapshot_download("jonatasgrosman/wav2vec2-large-xlsr-53-arabic", revision="af46c2d8531b8dcbb5e23b952f739b372c2e5d2d")` path. The function has no revision argument, so pinning goes through the snapshot path. The MMS default was never downloaded. Use `romanize=False`. All letters were in the model's vocabulary after the harakat strip.
@@ -354,12 +359,16 @@ Wall time in seconds, audio length in seconds, RTF = wall / audio. Runs 1–3 us
 - `run2\` and `run3\` hold the timing reruns. Their audio is the same.
 - Tashkeel text used: ar1t هَذَا تُولْكْرِيل، يِحَوِّل النَّص حَقَّك إِلَى فِيدْيُو كَامِل فِي دَقَايِق. ar2t تِكْتِب السِّكْرِبْت، وِتِخْتَار الصَّوْت، وَالْبَاقِي عَلَيْنَا. ar3t جَرِّبْه الْيَوْم، وِشُوف الْفَرْق بِنَفْسَك.
 
-**Verdict (2026-10-25).** The maintainer waived the listening step and delegated the verdict, in session: "call astra to choose and decide". `gpt-6-astra` (xhigh, read-only) ruled from the numbers, the Whisper read-backs and the licence evidence. It could not listen, so this is a waiver, not a listening verdict. The by-ear checks below are a precondition of gate 2.
-- Chatterbox V3 `ar` and `fr`: ship as experimental, opt-in, "GPU recommended". The CPU median RTF (20.5 and 18.6) misses the bar on the pooled median; inconclusive given machine state.
-- Lahgtna `sa`: drop from M3. Repeated phrases, added text and the forced-EOS warnings (sa-3 and sa-3t) are too unreliable for scripted ads. Reviving it later needs pinned downloads and a note that its fork disables the watermark.
-- Proof reel (slice 12): own voice plus CTC, with a male Saudi narrator. Kokoro stays the default for EN and FR. GPU speed was not measured.
-- Slice 4: keep, with explicit pinned Apache-2.0 weights and no MMS fallback. End each word at its last non-blank frame, and test on recorded narration, not only on a synthetic sample. The library's BSD-2 LICENSE versus CC-BY-NC metadata conflict must be resolved (upstream clarification or a commercial-safe replacement) before the `arabic` group merges. Gate 3 applies.
-- Slice 7: narrow to Chatterbox only, keeping auditions; remove the Lahgtna adapters and dialect promises. Pin the git commit and all model files, and document the watermark. Gate 2 makes the final scope call.
+**Verdict (2026-10-25).** History:
+- First, the maintainer delegated the verdict, in session: "call astra to choose and decide". `gpt-6-astra` (xhigh, read-only) ruled from the numbers, the Whisper read-backs and the licence evidence. It could not listen, so its ruling is not a listening verdict.
+- Then, told that astra cannot hear audio, the maintainer was asked "For the AI voice check, which do you want?" and chose "Listen later". That option read: "Skip it now. I'll ask you again before gate 2 (after slice 6) and play you 4 short clips then. Work continues now."
+
+The listening verdict is pending until that by-ear check before gate 2. The 4 clips are `<s0>\samples\chatterbox-ar-1.wav`, `chatterbox-fr-1.wav`, `lahgtna-sa-1t.wav` and `lahgtna-sa-3t.wav`. The maintainer's verdict is recorded here before gate 2 starts. Until then, the delegated model ruling below stands as recommendations only:
+- Recommendation for gate 2: ship Chatterbox V3 `ar` and `fr` as experimental, opt-in, "GPU recommended". The CPU median RTF (20.5 and 18.6) misses the bar on the pooled median; inconclusive given machine state.
+- Recommendation for gate 2: drop Lahgtna `sa` from M3. Repeated phrases, added text and the forced-EOS warnings (sa-3 and sa-3t) are too unreliable for scripted ads. Reviving it later needs pinned downloads and a note that its fork disables the watermark.
+- Recommendation for gate 2: the proof reel (slice 12) uses own voice plus CTC, with a male Saudi narrator. Kokoro stays the default for EN and FR. GPU speed was not measured.
+- Recommendation for gate 2: keep slice 4, with explicit pinned Apache-2.0 weights and no MMS fallback. End each word at its last non-blank frame, and test on recorded narration, not only on a synthetic sample. The library's BSD-2 LICENSE versus CC-BY-NC metadata conflict must be resolved (upstream clarification or a commercial-safe replacement) before the `arabic` group merges. Gate 3 applies.
+- Recommendation for gate 2: narrow slice 7 to Chatterbox only, keeping auditions; remove the Lahgtna adapters and dialect promises. Pin the git commit and all model files, and document the watermark. Gate 2 makes the final scope call.
 - Still to check by ear (gate-2 precondition): male voice, naturalness, pacing and Saudi delivery; brand and CTA wording. The finished reel's captions against the recording are checked at slice 12.
 
 ## Licence evidence

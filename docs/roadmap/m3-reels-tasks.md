@@ -33,7 +33,7 @@ A maintainer can make a 30–45 s 9:16 promo reel in Arabic (Saudi), English or 
 ## Slices
 
 ### Slice 0 — Spike: portrait render and Arabic voice/alignment benchmark
-Type: HITL (the maintainer listens to the samples; nothing merges)
+Type: HITL (nothing merges). On 2026-10-25 the maintainer chose to defer the listening verdict to a by-ear check before gate 2. Slice 0 records a delegated model ruling in the meantime.
 Dependencies: none
 Anchors: `src/compose-hyperframes.ts:renderArgs`, `py/talkreel_audio/tts.py:synthesize`, `py/talkreel_audio/align.py:transcribe_words`
 Acceptance Criteria:
@@ -44,7 +44,7 @@ Acceptance Criteria:
   - the numbers
   - the sample paths
   - each model's licence-card text, licence field and the revision used
-  - the maintainer's listening verdict
+  - a delegated model ruling, recorded as recommendations for gate 2. The maintainer's listening verdict is deferred, at the maintainer's choice on 2026-10-25, to a by-ear check before gate 2, and is added to the design doc then.
 Verification: spike notes in the design doc. Sample WAVs are kept in the scratchpad, not the repo.
 Brief: Throwaway work, run via `uv run --with …` or a scratch venv. Do not touch `py/pyproject.toml`. The ship bar is RTF ≤ 15. Rollback: delete the notes section.
 
@@ -149,6 +149,7 @@ Brief: The HyperFrames registry (`device-frame-stage`, `agent-cursor`, `cursor-z
 
 ### Gate 2 — scope cut after slice 6
 Type: HITL (delegated to Fable 5.1 by the maintainer)
+Precondition: gate 2 starts only after the maintainer's by-ear check of 4 slice-0 clips (`chatterbox-ar-1.wav`, `chatterbox-fr-1.wav`, `lahgtna-sa-1t.wav`, `lahgtna-sa-3t.wav` in `.spike/m3-s0/samples/`). That listening verdict is recorded in the design doc's `## Spike results (slice 0)` first.
 Review the portrait renders from slices 1–6 and the slice-0 numbers. Decide:
 - whether slice 7 ships TTS engines or demotes Arabic to own-voice
 - whether slices 9 (`<video>`) and 10 (count-up) are cut
@@ -237,7 +238,7 @@ Brief: Nothing from `talks/` is committed.
 ## Confirm Gates
 
 - **Gate 1:** this plan and the design doc.
-- **Gate 2:** after slice 6. The slice-0 verdict is read there.
+- **Gate 2:** after slice 6. It starts only after the maintainer's by-ear check of the 4 slice-0 clips, and that listening verdict is recorded in the design doc first. The slice-0 verdict is read there.
 - **Gate 3:** model licence sign-off before the `arabic` group merges; push, PR, merge, tag and release, all by the maintainer.
 
 ## Deferred / Rejected Slices
