@@ -4,7 +4,7 @@ import * as helper from "../audio-helper.js";
 import { buildCaptions } from "../align-map.js";
 import { parseScriptFile } from "../script.js";
 import { currentAlignHash, currentVoiceHash, voiceOutputs } from "../stages.js";
-import { chapterKey, readState, recordStage, stageStatus, WHISPER_MODEL, writeState } from "../state.js";
+import { chapterKey, CTC_MODEL, readState, recordStage, stageStatus, writeState } from "../state.js";
 import { paths, selectChapters, type Talk } from "../talk.js";
 import { readWavInfo } from "../wav.js";
 
@@ -21,6 +21,8 @@ export async function cmdAlign(talk: Talk, lang: string, chapter?: string): Prom
   }
   const stateFile = paths.state(talk);
   const state = readState(stateFile);
+  const model = await helper.alignmentModel(lang);
+  if (lang === "ar" && model !== CTC_MODEL) console.error("install the arabic group for script-level Arabic alignment");
   let failed = 0;
   for (const ch of chapters) {
     const key = chapterKey(lang, ch.chapter);
@@ -32,15 +34,23 @@ export async function cmdAlign(talk: Talk, lang: string, chapter?: string): Prom
         failed++;
         continue;
       }
-      const hash = await currentAlignHash(talk, ch, parsed);
+      const hash = await currentAlignHash(talk, ch, parsed, model);
       const captionsFile = paths.captions(talk, lang, ch.chapter);
       if (hash !== null && stageStatus(state, "align", key, hash, [captionsFile]).status === "fresh") {
         console.log(`${key}: align fresh, skipped`);
         continue;
       }
       const wav = paths.narrationWav(talk, lang, ch.chapter);
-      console.log(`${key}: aligning with whisper ${WHISPER_MODEL}`);
-      const heard = await helper.align(wav, lang, WHISPER_MODEL);
+      console.log(`${key}: aligning with ${model === CTC_MODEL ? model : `whisper ${model}`}`);
+      let heard;
+      if (model === CTC_MODEL) {
+        const textFile = paths.spokenText(talk, lang, ch.chapter);
+        mkdirSync(dirname(textFile), { recursive: true });
+        writeFileSync(textFile, parsed.spokenText + "\n", "utf8");
+        heard = await helper.ctcAlign(wav, textFile);
+      } else {
+        heard = await helper.align(wav, lang, model);
+      }
       writeJson(paths.whisperRaw(talk, lang, ch.chapter), heard);
       const captions = buildCaptions(lang, parsed.words, heard.words, { duration: readWavInfo(wav).duration });
       const matched = captions.words.filter((w) => w.matched).length;

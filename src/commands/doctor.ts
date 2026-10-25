@@ -6,6 +6,7 @@ export interface DoctorCheck {
   name: string;
   ok: boolean;
   detail: string;
+  optional?: boolean;
 }
 
 export const MIN_NODE_MAJOR = 22;
@@ -33,6 +34,8 @@ export async function doctorChecks(): Promise<DoctorCheck[]> {
       const missing = m.kokoro.files.filter((f) => !f.present).map((f) => f.name);
       checks.push({ name: "kokoro model", ok: m.kokoro.present, detail: m.kokoro.present ? m.cache_dir : `missing ${missing.join(", ")} in ${m.cache_dir} (downloaded on first "talkreel voice")` });
       checks.push({ name: `whisper ${m.whisper.model}`, ok: m.whisper.present, detail: m.whisper.present ? "in the Hugging Face cache" : 'not cached (downloaded on first "talkreel align")' });
+      checks.push({ name: "arabic group", ok: m.ctc.available, optional: true, detail: m.ctc.available ? "installed (optional)" : "optional; uv sync --project py --group arabic" });
+      checks.push({ name: "Arabic CTC model", ok: m.ctc.present, optional: true, detail: `optional; ${m.ctc.model}@${m.ctc.revision} ${m.ctc.present ? "in the Hugging Face cache" : "not cached (downloaded on first Arabic CTC alignment)"}` });
     } catch (e) {
       checks.push({ name: "audio helper", ok: false, detail: (e as Error).message.split("\n").slice(0, 3).join(" ") });
     }
@@ -47,6 +50,6 @@ export async function cmdDoctor(json: boolean): Promise<number> {
   if (!json) console.log("checking tools (the first run sets up the Python environment)...");
   const checks = await doctorChecks();
   if (json) console.log(JSON.stringify(checks, null, 2));
-  else for (const c of checks) console.log(`  ${c.ok ? "ok     " : "MISSING"} ${c.name.padEnd(16)} ${c.detail}`);
-  return checks.every((c) => c.ok) ? 0 : 2;
+  else for (const c of checks) console.log(`  ${c.ok ? "ok     " : c.optional ? "OPTIONAL" : "MISSING"} ${c.name.padEnd(16)} ${c.detail}`);
+  return checks.every((c) => c.ok || c.optional) ? 0 : 2;
 }

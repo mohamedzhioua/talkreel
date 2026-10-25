@@ -21,6 +21,7 @@ export interface StageStatus {
 /** Engine id recorded in the voice hash; bump when the TTS engine or its model files change. */
 export const TTS_ENGINE = "kokoro-onnx/kokoro-v1.0";
 export const WHISPER_MODEL = "small";
+export const CTC_MODEL = "ctc:af46c2d8531b8dcbb5e23b952f739b372c2e5d2d";
 
 export function chapterKey(lang: string, chapter: string): string {
   return `${lang}/${chapter}`;

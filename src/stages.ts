@@ -1,10 +1,11 @@
 // Current input hashes and freshness per chapter and stage. Shared by voice, align and status.
 import { existsSync, readFileSync } from "node:fs";
 import { sha256File } from "./hash.js";
+import { alignmentModel } from "./audio-helper.js";
 import { CANONICAL_AUDIO_ID } from "./ffmpeg.js";
 import { buildPaths, COMPOSE_VERSION, packageVersion, sceneFile, sceneInputHash, themeHash } from "./compose.js";
 import { parseScriptFile, spokenHash, type ParsedChapter } from "./script.js";
-import { alignInputHash, chapterKey, concatInputHash, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, WHISPER_MODEL, type StageStatus } from "./state.js";
+import { alignInputHash, chapterKey, concatInputHash, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, type StageStatus } from "./state.js";
 import { listChapters, loadSources, paths, type ChapterFile, type Talk } from "./talk.js";
 import type { Source, TalkState } from "./schema.js";
 
@@ -38,10 +39,10 @@ export function voiceOutputs(talk: Talk, ch: ChapterFile): string[] {
 }
 
 /** Align input hash, or null when the canonical narration WAV does not exist yet. */
-export async function currentAlignHash(talk: Talk, ch: ChapterFile, parsed: ParsedChapter): Promise<string | null> {
+export async function currentAlignHash(talk: Talk, ch: ChapterFile, parsed: ParsedChapter, model?: string): Promise<string | null> {
   const wav = paths.narrationWav(talk, ch.lang, ch.chapter);
   if (!existsSync(wav)) return null;
-  return alignInputHash({ wavHash: await sha256File(wav), spokenHash: spokenHash(parsed), model: WHISPER_MODEL });
+  return alignInputHash({ wavHash: await sha256File(wav), spokenHash: spokenHash(parsed), model: model ?? await alignmentModel(ch.lang) });
 }
 
 /** Quality of the last successful render of a chapter, or null when it was never rendered. */

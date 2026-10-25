@@ -24,6 +24,11 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--lang", required=True)
     a.add_argument("--model", default="small")
 
+    c = sub.add_parser("ctc-align", help="align an Arabic script with pinned CTC weights")
+    c.add_argument("--wav", required=True, type=Path)
+    c.add_argument("--text-file", required=True, type=Path)
+    c.add_argument("--lang", required=True, choices=["ar"])
+
     m = sub.add_parser("models", help="report which models are cached")
     m.add_argument("--whisper-model", default="small")
     return p
@@ -45,10 +50,21 @@ def run(args: argparse.Namespace) -> dict:
         from .models import report
 
         return report(args.whisper_model)
+    if args.command == "ctc-align":
+        from .ctc_align import align_script
+
+        if not args.wav.is_file():
+            raise FileNotFoundError(f"no such WAV: {args.wav}")
+        return align_script(args.wav, args.text_file.read_text(encoding="utf-8"), args.lang)
     raise ValueError(f"unknown command {args.command}")
 
 
 def main(argv: list[str] | None = None) -> int:
+    # -I ignores PYTHONIOENCODING. Configure real streams ourselves; pytest's
+    # capture streams do not expose reconfigure.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     args = build_parser().parse_args(argv)
     # Libraries may print to stdout; keep stdout for the one JSON result.
     real_stdout = sys.stdout
@@ -60,7 +76,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     finally:
         sys.stdout = real_stdout
-    real_stdout.write(json.dumps(result) + "\n")
+    real_stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
     real_stdout.flush()
     return 0
 
