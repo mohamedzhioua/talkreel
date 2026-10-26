@@ -16,7 +16,7 @@ voice deliberately before running `voice`.
   aloud. Each proof beat gets one clear photo or action and several seconds
   to read; move pictures with `{#cue}` / `data-cue`, never seconds in HTML.
 - Show proof before listing benefits. Use two or three concise list items.
-  With slice 8, put `data-check` on each `<li>` and give each its own
+  Put `data-check` on each `<li>` and give each its own
   `data-cue` to tick at the spoken phrase. Keep each line short for portrait.
 - Close with `cta`: local logo, `<h2>`, `<p class="action">` and optional
   `<p class="url">`. Ask for one action. Hold the fully entered card for at
@@ -51,7 +51,7 @@ not live websites. See `scenes.md` and the theme's `blocks.md` for markup.
 
 ## Photos and clips
 
-Prefer the largest original photos. For product shots, slice 8 adds
+Prefer the largest original photos. For product shots, use
 `<figure data-block="figure" data-fit="cover">`: its `<img>` becomes a
 composer-owned full-bleed backdrop with a fixed legibility scrim, between the
 ambient layer and stage. Its figcaption stays in the stage. It fades at the
@@ -94,8 +94,8 @@ the author.
 Own voice is primary for **male French and all Arabic**. For English, Kokoro
 `am_michael` is the default candidate to try; this recommendation does not
 change the scaffold's `af_heart`. Kokoro `ff_siwis` remains the French option
-when an AI voice suits the brief. Arabic TTS is not available in this slice.
-Auditions arrive **when slice 7 lands**; do not invoke `voice --audition` yet.
+when an AI voice suits the brief. talkreel has no Arabic TTS; record Arabic yourself.
+There is no audition command yet; voice one short chapter and listen before a full run.
 
 Record in a quiet room, at a consistent microphone distance, as **48 kHz WAV**,
 one take per chapter. Leave a little breathing room around the CTA. Save the

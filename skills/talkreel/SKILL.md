@@ -33,7 +33,10 @@ missing.
 
 For a short portrait reel, read [references/reel.md](references/reel.md) first
 and use `new <slug> --title "<topic>" --reel`. It guides pacing, assets,
-recording and safe-zone review. The same two human checkpoints apply.
+recording and safe-zone review. The same two human checkpoints apply. The
+scaffolded `01-reel.md` and `01-reel.html` are placeholders: the script and
+scenes stages stay due until you rewrite them for the brief, and checkpoint 1
+comes after that rewrite.
 
 1. **Find the talk.** If the user names a new topic, pick a slug
    (`[a-z0-9-]`) and run `new <slug> --title "<topic>"`; it creates

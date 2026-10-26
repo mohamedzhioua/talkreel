@@ -1,6 +1,6 @@
 # Third-party software
 
-talkreel's own code is MIT-licensed (see `LICENSE`). Your package managers (`npm install`, `uv sync`) install the software below on your machine, and you install FFmpeg yourself. Generated chapter builds copy fonts and browser runtime assets from the installed npm packages for offline rendering. GPL components are never bundled or vendored. Check each project's licence for your use.
+talkreel's own code is MIT-licensed (see `LICENSE`). Your package managers (`npm install`, `uv sync`) install the software below on your machine, and you install FFmpeg yourself. Generated chapter builds copy fonts and browser runtime assets from the installed npm packages for offline rendering. GPL components are never bundled or vendored. This file is a courtesy notice, not legal advice. Check each project's licence for your use.
 
 ## Installed by `npm install`
 
@@ -31,7 +31,7 @@ The talkreel CLI talks to the Python audio helper only through a separate proces
 | [jonatasgrosman/wav2vec2-large-xlsr-53-arabic](https://huggingface.co/jonatasgrosman/wav2vec2-large-xlsr-53-arabic/blob/af46c2d8531b8dcbb5e23b952f739b372c2e5d2d/README.md) | Apache-2.0 | CTC weights pinned at `af46c2d8531b8dcbb5e23b952f739b372c2e5d2d`; downloaded by revision, never a library-default model |
 | [Unidecode](https://github.com/avian2/unidecode) | GPL-2.0-or-later | Transitive dependency pulled in by the optional `arabic` group; installed by the author, behind the Python process boundary, never bundled or vendored |
 
-Default sync and CI do not install this group. Windows installation needs MSVC Build Tools. The aligner's licence-metadata discrepancy is recorded in `docs/design/m3-reels.md` and must be resolved before the optional group merges, or the group moves to a follow-up PR. It does not change the CTC weights' Apache-2.0 licence. Own voice and Kokoro report `Watermark: none` in generated credits. This slice adds no other voice engine.
+Default sync and CI do not install this group. Windows installation needs MSVC Build Tools. The aligner's licence-metadata discrepancy is recorded in `docs/design/m3-reels.md` and must be resolved before the optional group merges, or the group moves to a follow-up PR. It does not change the CTC weights' Apache-2.0 licence. Own voice and Kokoro report `Watermark: none` in generated credits. No other voice engine is included.
 
 ## Visual references for product blocks
 

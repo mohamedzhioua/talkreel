@@ -1,7 +1,7 @@
 # Scenes: the authoring contract
 
 For portrait reels, also read [reel.md](reel.md) for hook/proof/CTA pacing,
-UI crops and the 1080×1920 canvas's 936×708 stage. Slice 8 adds checklist
+UI crops and the 1080×1920 canvas's 936×708 stage. Use checklist
 ticks (`data-check` on cued list items) and full-bleed product photos
 (`figure data-fit="cover"`): only the photo extends beyond the stage;
 figcaptions and other text stay inside. The composer owns the backdrop and

@@ -98,7 +98,7 @@ node dist/cli.js new my-reel --title "My reel" --reel
 
 This scaffolds a portrait (1080×1920) talk, `assets/` and one chapter with a hook, photo proof, benefits list and CTA. Add your own `assets/proof.jpg` and `assets/logo.svg` before `check`, replace the sample copy and URL, and choose your voice. The voice defaults stay the same as a normal talk. Aim for 30–45 seconds; hold the fully entered CTA for at least 1.5 seconds.
 
-Prefer the largest photos. Slice 8 adds full-bleed product shots with `figure data-fit="cover"` (a composer-owned backdrop and scrim; figcaption stays in the stage) and checklist ticks with `data-check` on cued `<li>` items. Take stills from clips with your own tool: 1024×576 clips are landscape material and crop heavily in portrait. M3 has no video block. Crop UI screenshots around the task and use a `device` block for a focused zoom or click.
+Prefer the largest photos. Use full-bleed product shots with `figure data-fit="cover"` (a composer-owned backdrop and scrim; figcaption stays in the stage) and checklist ticks with `data-check` on cued `<li>` items. Take stills from clips with your own tool: 1024×576 clips are landscape material and crop heavily in portrait. M3 has no video block. Crop UI screenshots around the task and use a `device` block for a focused zoom or click.
 
 Keep text, logos and actions inside the 936×708 stage (x 72..1008, y 340..1048). Only photography should extend under the platform's top 14%, bottom 35% and side 6% zones. Inspect a draft with `frames --safe-zones`. For portrait talks, `status` prints one length table per report, with one row per language. It totals canonical narration WAV durations when every chapter's voice stage is fresh and its WAV is readable; otherwise it estimates the whole language at 150 spoken words/minute. Each row labels its source as `voiced` or `estimate`: over 90 s warns “long for a reel” and over 180 s also warns “over the Shorts limit”. Warnings do not fail the command; check the final MP4's actual length too. See the [reel authoring guide](skills/talkreel/references/reel.md).
 
@@ -112,7 +112,7 @@ The `arabic` dependency group is optional and excluded from the default install 
 uv sync --project py --group arabic
 ```
 
-On Windows it needs **MSVC Build Tools**. The group enables script-level alignment with pinned wav2vec2 Arabic CTC weights; without it, `align` warns and falls back to Whisper timing. Digits and words outside the CTC vocabulary get interpolated timings. This slice provides no Arabic TTS. See [THIRD_PARTY.md](THIRD_PARTY.md) for the aligner's licence-metadata discrepancy and the pinned model revision.
+On Windows it needs **MSVC Build Tools**. The group enables script-level alignment with pinned wav2vec2 Arabic CTC weights; without it, `align` warns and falls back to Whisper timing. Digits and words outside the CTC vocabulary get interpolated timings. talkreel has no Arabic TTS; use your own recording. See [THIRD_PARTY.md](THIRD_PARTY.md) for the aligner's licence-metadata discrepancy and the pinned model revision.
 
 ## Voice catalogue
 
@@ -123,7 +123,7 @@ On Windows it needs **MSVC Build Tools**. The group enables script-level alignme
 | French AI | Kokoro `ff_siwis` | `"voice": {"mode":"ai", "fr":"ff_siwis"}` |
 | Male French; all Arabic | Your recording, primary choice | `"voice": {"mode":"own"}` and `audio/<lang>/NN.wav` |
 
-Bare voice ids select Kokoro. Match the voice language to the script and listen before a full run. `voice --audition` arrives when slice 7 lands; it is not available yet. Own recordings and Kokoro audio have no embedded audio watermark. Additional engines and their credits arrive separately.
+Bare voice ids select Kokoro. Match the voice language to the script and listen before a full run. There is no audition command yet: voice one short chapter and listen. Own recordings and Kokoro audio have no embedded audio watermark. Additional engines and their credits arrive separately.
 
 ## Music and loudness
 
@@ -168,7 +168,7 @@ talks/<slug>/
 
 ## Roadmap
 
-M3 adds portrait authoring, local images, RTL captions, optional Arabic CTC alignment, device/CTA blocks and music mixing. Checklist ticks and full-bleed figures arrive in slice 8. Experimental voice engines and auditions follow separately; video blocks and count-up animation are deferred. See [the M3 roadmap](docs/roadmap/m3-reels-tasks.md).
+M3 adds portrait authoring, local images, RTL captions, optional Arabic CTC alignment, device and CTA blocks, checklist ticks, full-bleed cover figures and music mixing. An experimental voice engine with auditions may follow; video blocks, count-up animation and chat are deferred. See [the M3 roadmap](docs/roadmap/m3-reels-tasks.md).
 
 ## Licence and credits
 
