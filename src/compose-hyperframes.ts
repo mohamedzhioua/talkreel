@@ -72,9 +72,16 @@ export function renderWorkers(logicalCpus: number): number {
   return Math.max(1, Math.min(4, Math.floor(logicalCpus / 2) - 1));
 }
 
+/**
+ * `--no-browser-gpu` makes HyperFrames rasterise in software (SwiftShader), the mode it documents as
+ * deterministic. Left on auto, a machine with a GPU rasterises there, and the GPU image cache keeps
+ * a screenshot's mipmaps from its first draw: a worker whose chunk starts on a zoomed device and
+ * later zooms out drew that zoom-out differently from a worker that started at frame 0. Frames
+ * then depended on the worker count and on the machine.
+ */
 export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number, resolution: Resolution = "landscape"): string[] {
   if (!Object.hasOwn(GEOMETRY, resolution)) throw new Error(`unknown resolution: ${resolution}`);
-  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", resolution, "--quality", QUALITIES[quality], "--workers", String(workers)];
+  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", resolution, "--quality", QUALITIES[quality], "--workers", String(workers), "--no-browser-gpu"];
 }
 
 export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions, resolution: Resolution = "landscape"): Promise<RunResult> {

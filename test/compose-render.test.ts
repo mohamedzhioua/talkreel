@@ -164,8 +164,12 @@ describe("hyperframes arguments", () => {
   });
 
   it("render passes an explicit worker count so HyperFrames skips calibration", () => {
-    expect(renderArgs("/b", "/b/c.mp4", 30, "draft", 3)).toEqual(["render", "/b", "--output", "/b/c.mp4", "--fps", "30", "--resolution", "landscape", "--quality", "draft", "--workers", "3"]);
+    expect(renderArgs("/b", "/b/c.mp4", 30, "draft", 3)).toEqual(["render", "/b", "--output", "/b/c.mp4", "--fps", "30", "--resolution", "landscape", "--quality", "draft", "--workers", "3", "--no-browser-gpu"]);
     expect([1, 2, 4, 8, 12, 16, 64].map(renderWorkers)).toEqual([1, 1, 1, 3, 4, 4, 4]);
+  });
+
+  it("render always rasterises in software, so frames do not depend on worker count or GPU", () => {
+    for (const workers of [1, 4]) expect(renderArgs("/b", "/b/c.mp4", 30, "standard", workers, "portrait")).toContain("--no-browser-gpu");
   });
 });
 

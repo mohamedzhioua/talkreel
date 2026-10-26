@@ -16,6 +16,16 @@ export function deviceZoom(width: number, height: number, x: number, y: number, 
   return { x: width * (0.5 - x / 100 * scale), y: height * (0.5 - y / 100 * scale), scale };
 }
 
+/**
+ * Where the first cursor path starts: the screenshot point shown at 10%,85% of the viewport
+ * under `camera`, kept inside the screenshot. A zoomed camera would otherwise leave a fixed
+ * screenshot point off-screen for most of the cursor's travel.
+ */
+export function cursorEntry(width: number, height: number, camera: { x: number; y: number; scale: number }): [number, number] {
+  const clamp = (v: number, max: number) => Math.min(max, Math.max(0, v));
+  return [clamp((width * 0.1 - camera.x) / camera.scale, width), clamp((height * 0.85 - camera.y) / camera.scale, height)];
+}
+
 /** A gently curved quadratic path, expressed entirely in screenshot pixels. */
 export function cursorPath(from: [number, number], to: [number, number]): [number, number][] {
   const dx = to[0] - from[0], dy = to[1] - from[1];

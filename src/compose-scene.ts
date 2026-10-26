@@ -4,7 +4,7 @@
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve, win32 } from "node:path";
 import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, isLtrIsland, languageDirection, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
-import { cursorPath, deviceViewport, deviceZoom, GEOMETRY, type Resolution } from "./geometry.js";
+import { cursorEntry, cursorPath, deviceViewport, deviceZoom, GEOMETRY, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
 export const STAGGER = 0.12;
@@ -839,7 +839,8 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         .map((el) => ({ el, t: resolveBase(el) })).sort((a, b) => a.t - b.t);
       let camera = { x: 0, y: 0, scale: 1 };
       let zoomEnd = ready;
-      let previous: [number, number] = [viewport.width * 0.1, viewport.height * 0.85];
+      // The first path enters from the visible screenshot area under the camera at its cue.
+      let previous: [number, number] | null = null;
       let cursorReady = ready;
       for (const { el, t } of actions) {
         if (t < ready - 1e-9) issues.push(issue("E_DEVICE", el, "device action cue must follow the device entrance"));
@@ -863,7 +864,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
           const [x, y, w, h] = targetRect(target);
           const to: [number, number] = [(x + w / 2) / 100 * viewport.width, (y + h / 2) / 100 * viewport.height];
           const start = Math.min(t, Math.max(cursorReady, t - 0.6));
-          device.clicks.push({ el, target, t, start, path: cursorPath(previous, to) });
+          device.clicks.push({ el, target, t, start, path: cursorPath(previous ?? cursorEntry(viewport.width, viewport.height, camera), to) });
           previous = to;
           cursorReady = t + 0.24;
         }

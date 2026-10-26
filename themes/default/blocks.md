@@ -165,9 +165,11 @@ the image at that aspect ratio so its percentage coordinates match the display.
   `draw` 0.8 s). The target is a marker, with no independent text entrance.
 - An empty direct child with `data-click="target-name"` and `data-cue` moves
   the cursor over up to 0.6 s **before** the cue. It starts from its previous
-  screenshot position (initially 10%,85%), follows a quadratic curve, and starts
-  the click halo and pressed highlight at the cue. The cursor and halo follow
-  the screenshot camera. A click may share a target's zoom marker and cue.
+  screenshot position (the first click starts from the screenshot point shown at
+  10%,85% of the viewport after any zoom cued at or before it, so a zoomed
+  cursor enters on screen), follows a quadratic curve, and starts the click halo
+  and pressed highlight at the cue. The cursor and halo follow the screenshot
+  camera. A click may share a target's zoom marker and cue.
 - Actions must follow the device entrance. Zooms must not overlap. Clicks must
   allow the preceding 0.24 s pressed state to finish; the first path is shortened
   if the device has only just appeared. An unknown target in the same device

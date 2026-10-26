@@ -17,8 +17,10 @@ export function portraitRuntime(runtime: string): string {
 
 /** All geometry, path control points and previous values are resolved in Node. */
 export function deviceRuntime(runtime: string): string {
-  return runtime.replace("    P.targets.forEach(function (x) {", `    function property(el, prop, from, to, t, d, ease) {
-      var a = {}, b = { duration: d, ease: ease, immediateRender: false };
+  return runtime.replace("    P.targets.forEach(function (x) {", `    // force3D:false keeps mid-tween transforms 2D. A translate3d would give each moving element
+    // its own layer, created at whatever frame a render worker starts on.
+    function property(el, prop, from, to, t, d, ease) {
+      var a = {}, b = { duration: d, ease: ease, immediateRender: false, force3D: false };
       a[prop] = from;
       b[prop] = to;
       tl.fromTo(el, a, b, t);

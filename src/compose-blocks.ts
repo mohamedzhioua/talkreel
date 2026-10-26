@@ -72,15 +72,19 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
     }
     setAttr(d.block, "style", `--tr-device-width:${d.width}px;--tr-device-height:${d.height}px`);
     const vp = el("div", { class: "tr-device-vp" }, d.block);
-    const camera = el("div", { class: "tr-device-camera" }, vp, [image, ...targets]);
+    const camera = el("div", { class: "tr-device-camera" }, vp, [image]);
+    // Targets, cursor and halos share one composited layer above the screenshot (theme.css),
+    // so their motion never re-rasters part of the screenshot's layer.
+    const overlay = el("div", { class: "tr-device-overlay" }, camera, targets);
+    camera.children.push(overlay);
     const initial: [number, number] = d.clicks[0]?.path[0] ?? [0, 0];
-    const cursor = el("i", { class: "tr-agent-cursor", "aria-hidden": "true" }, camera);
-    camera.children.push(cursor);
+    const cursor = el("i", { class: "tr-agent-cursor", "aria-hidden": "true" }, overlay);
+    overlay.children.push(cursor);
     vp.children = [camera];
     const clicks = d.clicks.map((c) => {
       const end = c.path[2]!;
-      const halo = el("i", { class: "tr-click-halo", "aria-hidden": "true", style: `left:${end[0]}px;top:${end[1]}px` }, camera);
-      camera.children.push(halo);
+      const halo = el("i", { class: "tr-click-halo", "aria-hidden": "true", style: `left:${end[0]}px;top:${end[1]}px` }, overlay);
+      overlay.children.push(halo);
       return { target: idFor(c.target), halo: idFor(halo), t: r3(c.t), start: r3(c.start), path: c.path };
     });
     d.block.children = [vp];

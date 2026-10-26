@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Local only: compare fresh, sequential and shuffled PNG seeks, plus decoded frames from
-// HyperFrames --workers 1 and --workers 4. Mid-cursor and mid-zoom times are added from the plan.
+// Local only: compare fresh, sequential and shuffled PNG seeks (on the software raster path that
+// renders use), plus decoded frames from HyperFrames --workers 1 and --workers 4. Mid-cursor and
+// mid-zoom times are added from the plan.
 //
 //   node scripts/determinism.mjs <build/<lang>/NN dir> <t1> [t2 ...]
 // Theme regression: keep a copy of a composed M2 chapter BEFORE the theme change, compose it
@@ -75,7 +76,7 @@ for (const t of samples) {
   console.log(`${same ? "same" : "DIFF"}  ${labels.get(t)} t=${t}s  ${compare ? "before" : "workers1"}=${ha}  ${compare ? "after" : "workers4"}=${hb}`);
 }
 if (!compare) await checkSeeks();
-console.log(bad ? `DETERMINISM FAILED: ${bad} frame(s) differ (${out})` : `DETERMINISM OK (${samples.length} frames; ${compare ? "theme comparison" : "fresh/sequential/shuffled and workers 1/4"})`);
+console.log(bad ? `DETERMINISM FAILED: ${bad} frame(s) differ (${out})` : `DETERMINISM OK (${samples.length} frames; ${compare ? "theme comparison" : "fresh/sequential/shuffled and workers 1/4"}; ${out})`);
 process.exit(bad ? 1 : 0);
 
 // Use HyperFrames' already-installed Puppeteer, with an existing browser only; no download.
@@ -106,16 +107,26 @@ async function checkSeeks() {
     } catch { res.statusCode = 404; res.end(); }
   });
   await new Promise((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
-  let browser;
+  const html = readFileSync(join(dir, "index.html"), "utf8");
+  const width = Number(html.match(/data-width="(\d+)"/)[1]), height = Number(html.match(/data-height="(\d+)"/)[1]);
+  // The software raster path that renderArgs' --no-browser-gpu gives HyperFrames' Chrome.
+  const chromeArgs = ["--no-sandbox", "--disable-dev-shm-usage", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
+    "--disable-gpu-compositing", "--font-render-hinting=none", "--force-color-profile=srgb", "--force-device-scale-factor=1", `--window-size=${width},${height}`];
+  const browsers = new Set();
+  const launch = async () => {
+    const b = await puppeteer.launch({ executablePath, headless: true, args: chromeArgs });
+    browsers.add(b);
+    return b;
+  };
+  const quit = async (b) => { browsers.delete(b); await b.close(); };
   try {
-    browser = await puppeteer.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
-    const html = readFileSync(join(dir, "index.html"), "utf8");
-    const width = Number(html.match(/data-width="(\d+)"/)[1]), height = Number(html.match(/data-height="(\d+)"/)[1]);
-    const open = async () => {
+    const open = async (browser) => {
       const page = await browser.newPage();
       await page.setViewport({ width, height, deviceScaleFactor: 1 });
       await page.goto(`http://127.0.0.1:${server.address().port}/index.html`, { waitUntil: "networkidle0" });
-      await page.waitForFunction(() => !window.__hfTimelinesBuilding && window.__timelines?.main);
+      // Return a boolean, not the timeline: a GSAP timeline is a thenable, Puppeteer awaits the
+      // predicate's value, and a paused timeline never settles, so the wait used to time out.
+      await page.waitForFunction(() => !window.__hfTimelinesBuilding && !!window.__timelines?.main, { polling: 50 });
       await page.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map((img) => img.decode())); });
       return page;
     };
@@ -127,11 +138,17 @@ async function checkSeeks() {
         el.style.visibility = time >= start && time < end ? "visible" : "hidden";
       }
     }, t);
-    const shot = async (page) => Buffer.from(await page.screenshot({ type: "png" }));
+    // Two animation frames let Chrome paint the seeked state before the capture.
+    const shot = async (page) => {
+      await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+      return Buffer.from(await page.screenshot({ type: "png" }));
+    };
+    // Fresh: a new browser per sample, like a HyperFrames worker whose chunk starts there; pages
+    // in one browser can share a renderer process and its raster caches.
     const fresh = new Map();
     for (const t of samples) {
-      const page = await open();
-      try { await seek(page, t); fresh.set(t, await shot(page)); } finally { await page.close(); }
+      const browser = await launch();
+      try { const page = await open(browser); await seek(page, t); fresh.set(t, await shot(page)); } finally { await quit(browser); }
     }
     const compareShot = async (page, t, mode) => {
       const png = await shot(page), baseline = fresh.get(t);
@@ -143,23 +160,25 @@ async function checkSeeks() {
       }
       console.log(`${same ? "same" : "DIFF"}  ${labels.get(t)} t=${t}s fresh/${mode}`);
     };
-    const sequential = await open();
+    const seqBrowser = await launch();
     try {
+      const sequential = await open(seqBrowser);
       const wanted = new Set(samples.map((t) => Math.round(t * FPS)));
       for (let n = 0; n <= Math.round(samples.at(-1) * FPS); n++) {
         await seek(sequential, n / FPS);
         if (wanted.has(n)) await compareShot(sequential, n / FPS, "sequential");
       }
-    } finally { await sequential.close(); }
-    const shuffled = await open();
+    } finally { await quit(seqBrowser); }
+    const shuffleBrowser = await launch();
     try {
+      const shuffled = await open(shuffleBrowser);
       // Fixed alternating high/low order exercises backwards and forwards seeks reproducibly.
       const order = samples.filter((_, i) => i % 2 === 0).reverse().concat(samples.filter((_, i) => i % 2));
       await seek(shuffled, samples.at(-1));
       for (const t of order) { await seek(shuffled, t); await compareShot(shuffled, t, "shuffled"); }
-    } finally { await shuffled.close(); }
+    } finally { await quit(shuffleBrowser); }
   } finally {
-    if (browser) await browser.close();
+    for (const b of browsers) await b.close().catch(() => {});
     await new Promise((resolve) => server.close(resolve));
   }
 }

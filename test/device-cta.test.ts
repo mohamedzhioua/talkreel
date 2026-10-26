@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { describe, expect, it } from "vitest";
 import { buildPage, composeChapter, prepareScene, sceneInputHash, timelineScript } from "../src/compose.js";
 import { parseScene, resolveTimeline, validateScene } from "../src/compose-scene.js";
-import { cursorPath, deviceViewport, deviceZoom, GEOMETRY, portraitCamera } from "../src/geometry.js";
+import { cursorEntry, cursorPath, deviceViewport, deviceZoom, GEOMETRY, portraitCamera } from "../src/geometry.js";
 import { parseScript } from "../src/script.js";
 import { check } from "../src/check.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
@@ -212,9 +212,43 @@ describe("device motion", () => {
     }
     for (const { from, to } of calls) {
       expect(Object.keys(from)).toHaveLength(1);
-      expect(Object.keys(to).filter((k) => !["duration", "ease", "immediateRender"].includes(k))).toEqual(Object.keys(from));
+      expect(Object.keys(to).filter((k) => !["duration", "ease", "immediateRender", "force3D"].includes(k))).toEqual(Object.keys(from));
       expect(to.immediateRender).toBe(false);
     }
+    // Device tweens (3 zoom, 1 cursor reveal, 2 path, 7 click) keep mid-tween transforms 2D.
+    const device3d = calls.filter(({ to }) => "force3D" in to);
+    expect(device3d).toHaveLength(13);
+    expect(device3d.every(({ to }) => to.force3D === false)).toBe(true);
+  });
+
+  it("starts the first cursor path on screen under a preceding zoom", () => {
+    const p = page(device("browser"));
+    const d = p.plan.devices![0]!, z = d.zooms[0]!, c = d.clicks[0]!;
+    const g = deviceViewport(GEOMETRY.portrait, "browser");
+    expect(c.path[0]).toEqual(cursorEntry(g.width, g.height, z.to));
+    expect(d.initial).toEqual(c.path[0]);
+    // Every sampled point of the travel, including the mid-cursor frame, is inside the viewport.
+    for (const s of [0, 0.25, 0.5, 0.75, 1]) {
+      const [a, b, e] = c.path as [[number, number], [number, number], [number, number]];
+      const point = [0, 1].map((k) => (1 - s) ** 2 * a[k]! + 2 * (1 - s) * s * b[k]! + s ** 2 * e[k]!);
+      const screen = [point[0]! * z.to.scale + z.to.x, point[1]! * z.to.scale + z.to.y];
+      expect(screen[0]).toBeGreaterThanOrEqual(0);
+      expect(screen[0]).toBeLessThanOrEqual(g.width);
+      expect(screen[1]).toBeGreaterThanOrEqual(0);
+      expect(screen[1]).toBeLessThanOrEqual(g.height);
+    }
+    // Without a zoom the entry stays at 10%,85% of the screenshot.
+    const plain = page(device("browser", rect() + '<i data-click="save" data-cue="click"></i>')).plan.devices![0]!;
+    expect(plain.clicks[0]!.path[0]).toEqual([g.width * 0.1, g.height * 0.85]);
+    expect(cursorEntry(100, 100, { x: 500, y: -500, scale: 2 })).toEqual([0, 100]);
+  });
+
+  it("puts targets, cursor and halos in one overlay above the screenshot", () => {
+    const p = page();
+    const camera = p.html.match(/<div class="tr-device-camera" id="[^"]+">([\s\S]*?)<\/div><\/div><\/div>/)![1]!;
+    expect(camera).toMatch(/^<img [^>]+><div class="tr-device-overlay"><i data-target="save"[^>]*><\/i><i class="tr-agent-cursor"[^>]*><\/i><i class="tr-click-halo"[^>]*><\/i>$/);
+    const css = readFileSync(new URL("../themes/default/theme.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.tr-device-overlay \{ position: absolute; inset: 0; overflow: hidden; will-change: opacity; \}/);
   });
 });
 
@@ -239,6 +273,10 @@ describe("carried visual fixes", () => {
     expect(css).toMatch(/\[data-resolution="portrait"\] \.tr-captions \{\s*background: linear-gradient\(to bottom, rgba\(8, 9, 12, 0\) 0%,[^;]+rgba\(8, 9, 12, 0\) 100%\);/);
   });
 
+  it("gives portrait and square captions their own layer, keeping their text greyscale on every render worker", () => {
+    expect(css).toMatch(/\[data-resolution="portrait"\] \.tr-captions,\r?\n\[data-resolution="square"\] \.tr-captions \{ will-change: transform; \}/);
+  });
+
   it("gives wrapped Arabic headings more line height", () => {
     expect(css).toMatch(/:root:lang\(ar\) \[data-block="title"\] h1,[\s\S]+?line-height: 1\.5; letter-spacing: 0;/);
     expect(css).toContain(':root:lang(ar) [data-block="definition"] .term,');
@@ -257,7 +295,7 @@ describe("carried visual fixes", () => {
     expect(createHash("sha256").update(legacy!.trimEnd()).digest("hex")).toBe("cff657176fb63182de825ae5886748e06e54a85446ddfeb5e41b8464297e29b4");
     for (const match of added!.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{[^{}]*\}/g)) {
       for (const selector of match[1]!.split(",")) {
-        expect(selector.trim()).toMatch(/^(?:\[data-block="(?:device|cta)"\]|\.tr-(?:device|agent-cursor|click-halo)|\[data-resolution="portrait"\]|:root:lang\(ar\)|\[dir="rtl"\])/);
+        expect(selector.trim()).toMatch(/^(?:\[data-block="(?:device|cta)"\]|\.tr-(?:device|agent-cursor|click-halo)|\[data-resolution="(?:portrait|square)"\]|:root:lang\(ar\)|\[dir="rtl"\])/);
       }
     }
   });
