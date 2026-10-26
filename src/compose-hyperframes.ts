@@ -73,19 +73,19 @@ export function renderWorkers(logicalCpus: number): number {
 }
 
 /**
- * `--no-browser-gpu` makes HyperFrames rasterise in software (SwiftShader), the mode it documents as
- * deterministic. Left on auto, a machine with a GPU rasterises there, and the GPU image cache keeps
+ * Only device chapters use `--no-browser-gpu` to rasterise in software (SwiftShader), preserving
+ * the M2 raster path for chapters without devices. On auto, the GPU image cache keeps
  * a screenshot's mipmaps from its first draw: a worker whose chunk starts on a zoomed device and
  * later zooms out drew that zoom-out differently from a worker that started at frame 0. Frames
  * then depended on the worker count and on the machine.
  */
-export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number, resolution: Resolution = "landscape"): string[] {
+export function renderArgs(dir: string, output: string, fps: number, quality: Quality, workers: number, resolution: Resolution = "landscape", software = false): string[] {
   if (!Object.hasOwn(GEOMETRY, resolution)) throw new Error(`unknown resolution: ${resolution}`);
-  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", resolution, "--quality", QUALITIES[quality], "--workers", String(workers), "--no-browser-gpu"];
+  return ["render", dir, "--output", output, "--fps", String(fps), "--resolution", resolution, "--quality", QUALITIES[quality], "--workers", String(workers), ...(software ? ["--no-browser-gpu"] : [])];
 }
 
-export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions, resolution: Resolution = "landscape"): Promise<RunResult> {
-  return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism()), resolution), dir, opts);
+export async function hfRender(dir: string, output: string, fps: number, quality: Quality, opts: HfOptions, resolution: Resolution = "landscape", software = false): Promise<RunResult> {
+  return hyperframes(renderArgs(dir, output, fps, quality, renderWorkers(availableParallelism()), resolution, software), dir, opts);
 }
 
 /**

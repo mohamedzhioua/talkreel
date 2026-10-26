@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Local only: compare fresh, sequential and shuffled PNG seeks (on the software raster path that
-// renders use), plus decoded frames from HyperFrames --workers 1 and --workers 4. Mid-cursor and
-// mid-zoom times are added from the plan.
+// Local only: compare fresh, sequential and shuffled PNG seeks (using software raster for device
+// chapters, as renders do), plus decoded frames from HyperFrames --workers 1 and --workers 4.
+// Mid-cursor and mid-zoom times are added from the plan.
 //
 //   node scripts/determinism.mjs <build/<lang>/NN dir> <t1> [t2 ...]
 // Theme regression: keep a copy of a composed M2 chapter BEFORE the theme change, compose it
@@ -34,10 +34,13 @@ if (!ffmpeg) throw new Error("ffmpeg not found");
 const out = mkdtempSync(join(tmpdir(), "talkreel-det-"));
 const FPS = 30;
 
+function chapterPlan(dir) {
+  const source = readFileSync(join(dir, "timeline.js"), "utf8");
+  return JSON.parse(source.match(/window\.__trPlan = (.+);\r?\n/)?.[1] ?? "{}");
+}
+const plan = chapterPlan(dir);
 const labels = new Map(times.map((t) => [t, "requested"]));
 if (!compare) {
-  const source = readFileSync(join(dir, "timeline.js"), "utf8");
-  const plan = JSON.parse(source.match(/window\.__trPlan = (.+);\r?\n/)?.[1] ?? "{}");
   for (const device of plan.devices ?? []) {
     for (const c of device.clicks) if (c.t > c.start) labels.set((c.start + c.t) / 2, "mid-cursor");
     for (const z of device.zooms) labels.set(z.t + z.d / 2, "mid-zoom");
@@ -51,7 +54,8 @@ const samples = [...new Set(times)].sort((a, b) => a - b);
 function render(dir, workers, label) {
   const mp4 = join(out, `${label}.mp4`);
   const resolution = readFileSync(join(dir, "index.html"), "utf8").match(/data-resolution="(landscape|portrait|square)"/)?.[1] ?? "landscape";
-  const args = [hyperframesEntry(), ...renderArgs(dir, mp4, FPS, "draft", workers, resolution)];
+  const software = !!chapterPlan(dir).devices?.length;
+  const args = [hyperframesEntry(), ...renderArgs(dir, mp4, FPS, "draft", workers, resolution, software)];
   const r = spawnSync(process.execPath, args, { cwd: dir, env: hyperframesEnv(false), stdio: ["ignore", "ignore", "inherit"], windowsHide: true });
   if (r.status !== 0) throw new Error(`render with ${workers} worker(s) failed (exit ${r.status})`);
   return mp4;
@@ -109,16 +113,19 @@ async function checkSeeks() {
   await new Promise((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
   const html = readFileSync(join(dir, "index.html"), "utf8");
   const width = Number(html.match(/data-width="(\d+)"/)[1]), height = Number(html.match(/data-height="(\d+)"/)[1]);
-  // The software raster path that renderArgs' --no-browser-gpu gives HyperFrames' Chrome.
-  const chromeArgs = ["--no-sandbox", "--disable-dev-shm-usage", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
-    "--disable-gpu-compositing", "--font-render-hinting=none", "--force-color-profile=srgb", "--force-device-scale-factor=1", `--window-size=${width},${height}`];
+  // Match renderArgs' device-only software raster path; other chapters keep browser defaults.
+  const chromeArgs = ["--no-sandbox", "--disable-dev-shm-usage",
+    ...(plan.devices?.length ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--disable-gpu-compositing"] : []),
+    "--font-render-hinting=none", "--force-color-profile=srgb", "--force-device-scale-factor=1", `--window-size=${width},${height}`];
   const browsers = new Set();
   const launch = async () => {
     const b = await puppeteer.launch({ executablePath, headless: true, args: chromeArgs });
     browsers.add(b);
     return b;
   };
-  const quit = async (b) => { browsers.delete(b); await b.close(); };
+  const quit = async (b) => {
+    try { await b.close(); browsers.delete(b); } catch { /* Keep it for the final sweep without masking a seek error. */ }
+  };
   try {
     const open = async (browser) => {
       const page = await browser.newPage();

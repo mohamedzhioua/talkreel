@@ -21,11 +21,11 @@ const sceneHtml = (block: string) => `<section data-beat="demo">${block}</sectio
 const cues = { zoom: 2, click: 3, again: 4 };
 const options = { sources: new Set<string>(), cues: new Set(Object.keys(cues)), resolution: "portrait" as const };
 
-function page(block = device(), resolution: "portrait" | "landscape" | "square" = "portrait") {
+function page(block = device(), resolution: "portrait" | "landscape" | "square" = "portrait", cueTimes = cues) {
   const scene = parseScene(sceneHtml(block));
   const issues = validateScene(scene, { ...options, resolution });
   expect(issues).toEqual([]);
-  const timeline = resolveTimeline(scene, cues, 6);
+  const timeline = resolveTimeline(scene, cueTimes, 6);
   expect(timeline.issues).toEqual([]);
   return { ...buildPage({ scene, timeline, lang: "en", captions: { lang: "en", words: [] }, audioDuration: 6, sources: new Map(), resolution }), timeline };
 }
@@ -221,26 +221,61 @@ describe("device motion", () => {
     expect(device3d.every(({ to }) => to.force3D === false)).toBe(true);
   });
 
-  it("starts the first cursor path on screen under a preceding zoom", () => {
-    const p = page(device("browser"));
-    const d = p.plan.devices![0]!, z = d.zooms[0]!, c = d.clicks[0]!;
+  it.each([
+    ["a zoom running at path start", device("browser"), cues, 0],
+    ["a completed zoom", device("browser"), { zoom: 2, click: 3.2, again: 4 }, 0],
+    ["a click sharing its zoom marker and cue", device("browser", rect("save", 'data-zoom="70,25,2" data-click="save" data-cue="zoom"')), cues, -1],
+    ["a click before a zoom at the same cue in document order", device("browser", '<i data-click="save" data-cue="zoom"></i>' + rect("save", 'data-zoom="70,25,2" data-cue="zoom"')), cues, -1],
+    ["two zooms before a click", device("browser", rect("next", 'data-zoom="70,25,2" data-cue="click"') + rect("save", 'data-zoom="50,50,1.2" data-cue="zoom"') + '<i data-click="save" data-cue="again"></i>'), cues, 1],
+    ["a second zoom starting after path start", device("browser", rect("next", 'data-zoom="40,50,2" data-cue="click"') + rect("save", 'data-zoom="70,25,2" data-cue="zoom"') + '<i data-click="save" data-cue="click"></i>'), cues, 0],
+  ] as const)("first cursor path stays inside the viewport after %s", (_name, block, cueTimes, entryZoom) => {
+    const d = page(block, "portrait", cueTimes).plan.devices![0]!, c = d.clicks[0]!;
     const g = deviceViewport(GEOMETRY.portrait, "browser");
-    expect(c.path[0]).toEqual(cursorEntry(g.width, g.height, z.to));
+    const entryCamera = entryZoom < 0 ? { x: 0, y: 0, scale: 1 } : d.zooms[entryZoom]!.to;
+    expect(c.path[0]).toEqual(cursorEntry(g.width, g.height, entryCamera));
     expect(d.initial).toEqual(c.path[0]);
-    // Every sampled point of the travel, including the mid-cursor frame, is inside the viewport.
+    // Use the actual eased camera at each sampled time, including while the zoom is running.
     for (const s of [0, 0.25, 0.5, 0.75, 1]) {
+      const time = c.start + (c.t - c.start) * s;
+      let camera = { x: 0, y: 0, scale: 1 };
+      for (const z of d.zooms) {
+        if (time < z.t) break;
+        const p = gsap.parseEase("power2.inOut")(Math.min(1, (time - z.t) / z.d));
+        camera = {
+          x: z.from.x + (z.to.x - z.from.x) * p,
+          y: z.from.y + (z.to.y - z.from.y) * p,
+          scale: z.from.scale + (z.to.scale - z.from.scale) * p,
+        };
+      }
       const [a, b, e] = c.path as [[number, number], [number, number], [number, number]];
       const point = [0, 1].map((k) => (1 - s) ** 2 * a[k]! + 2 * (1 - s) * s * b[k]! + s ** 2 * e[k]!);
-      const screen = [point[0]! * z.to.scale + z.to.x, point[1]! * z.to.scale + z.to.y];
+      const screen = [point[0]! * camera.scale + camera.x, point[1]! * camera.scale + camera.y];
       expect(screen[0]).toBeGreaterThanOrEqual(0);
       expect(screen[0]).toBeLessThanOrEqual(g.width);
       expect(screen[1]).toBeGreaterThanOrEqual(0);
       expect(screen[1]).toBeLessThanOrEqual(g.height);
     }
-    // Without a zoom the entry stays at 10%,85% of the screenshot.
+  });
+
+  it("uses the plain entry without zoom and leaves 32 px for the cursor at screenshot edges", () => {
+    const g = deviceViewport(GEOMETRY.portrait, "browser");
     const plain = page(device("browser", rect() + '<i data-click="save" data-cue="click"></i>')).plan.devices![0]!;
     expect(plain.clicks[0]!.path[0]).toEqual([g.width * 0.1, g.height * 0.85]);
-    expect(cursorEntry(100, 100, { x: 500, y: -500, scale: 2 })).toEqual([0, 100]);
+    expect(cursorEntry(100, 100, { x: 500, y: -500, scale: 2 })).toEqual([0, 68]);
+    expect(cursorEntry(100, 100, { x: -500, y: 500, scale: 2 })).toEqual([68, 0]);
+    expect(cursorEntry(g.width, g.height, deviceZoom(g.width, g.height, 100, 100, 2))).toEqual([g.width * 0.8, g.height - 32]);
+  });
+
+  it("re-enters for a later click when a zoom moves the previous cursor point off-screen", () => {
+    const block = device("browser", rect("save") + '<i data-click="save" data-cue="zoom"></i>'
+      + rect("next", 'data-zoom="20,25,2" data-cue="click"').replace('60%', '10%')
+      + '<i data-click="next" data-cue="again"></i>');
+    const d = page(block).plan.devices![0]!, camera = d.zooms[0]!.to;
+    const [first, second] = d.clicks;
+    const g = deviceViewport(GEOMETRY.portrait, "browser");
+    expect(first!.path[2]![0] * camera.scale + camera.x).toBeGreaterThan(g.width);
+    expect(second!.path[0]).toEqual(cursorEntry(g.width, g.height, camera));
+    expect(second!.path[0]).not.toEqual(first!.path[2]);
   });
 
   it("puts targets, cursor and halos in one overlay above the screenshot", () => {

@@ -70,7 +70,7 @@ async function renderChapter(talk: Talk, ch: ChapterFile, hash: string, quality:
   const mp4 = buildPaths.mp4(talk, ch.lang, ch.chapter);
   rmSync(mp4, { force: true });
   console.log(`${key}: rendering (${quality})`);
-  const r = await retryOnCrash(() => hfRender(dir, mp4, talk.config.fps, quality, { telemetry }, talk.config.resolution), retryNote("render"));
+  const r = await retryOnCrash(() => hfRender(dir, mp4, talk.config.fps, quality, { telemetry }, talk.config.resolution, !!composed.page.plan.devices?.length), retryNote("render"));
   if (r.code !== 0 || !existsSync(mp4)) {
     console.error(`${key}: hyperframes render failed (exit ${r.code}):\n${tail(r.stdout + "\n" + r.stderr, 60)}`);
     return false;

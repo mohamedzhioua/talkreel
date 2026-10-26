@@ -839,7 +839,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         .map((el) => ({ el, t: resolveBase(el) })).sort((a, b) => a.t - b.t);
       let camera = { x: 0, y: 0, scale: 1 };
       let zoomEnd = ready;
-      // The first path enters from the visible screenshot area under the camera at its cue.
+      // Paths enter from the visible screenshot area when their previous point is off-screen.
       let previous: [number, number] | null = null;
       let cursorReady = ready;
       for (const { el, t } of actions) {
@@ -864,7 +864,18 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
           const [x, y, w, h] = targetRect(target);
           const to: [number, number] = [(x + w / 2) / 100 * viewport.width, (y + h / 2) / 100 * viewport.height];
           const start = Math.min(t, Math.max(cursorReady, t - 0.6));
-          device.clicks.push({ el, target, t, start, path: cursorPath(previous ?? cursorEntry(viewport.width, viewport.height, camera), to) });
+          let entryCamera = { x: 0, y: 0, scale: 1 };
+          for (const z of device.zooms) {
+            // Completed zooms apply; a zoom running at start uses its end camera. A zoom
+            // starting at or after the path's start does not apply, even at the click's cue.
+            if (z.t < start) entryCamera = z.to;
+          }
+          const onScreen = previous && previous[0] * entryCamera.scale + entryCamera.x >= 0
+            && previous[0] * entryCamera.scale + entryCamera.x <= viewport.width
+            && previous[1] * entryCamera.scale + entryCamera.y >= 0
+            && previous[1] * entryCamera.scale + entryCamera.y <= viewport.height;
+          const from = previous && onScreen ? previous : cursorEntry(viewport.width, viewport.height, entryCamera);
+          device.clicks.push({ el, target, t, start, path: cursorPath(from, to) });
           previous = to;
           cursorReady = t + 0.24;
         }
