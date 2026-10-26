@@ -35,6 +35,11 @@ if (!ffmpeg) throw new Error("ffmpeg not found");
 const out = mkdtempSync(join(tmpdir(), "talkreel-det-"));
 const FPS = 30;
 
+function frameCount(duration, fps) {
+  const raw = duration * fps, near = Math.round(raw);
+  return Math.abs(raw - near) <= 1e-3 ? near : Math.ceil(raw);
+}
+
 function chapterPlan(dir) {
   const source = readFileSync(join(dir, "timeline.js"), "utf8");
   return JSON.parse(source.match(/window\.__trPlan = (.+);\r?\n/)?.[1] ?? "{}");
@@ -91,7 +96,7 @@ if (!compare) {
     writeFileSync(`${mp4}.framemd5`, r.stdout);
     return r.stdout.split(/\r?\n/).filter((line) => line && !line.startsWith("#"));
   });
-  const expected = Math.ceil(plan.D * FPS);
+  const expected = frameCount(plan.D, FPS);
   if (!expected || hashes.some((frames) => frames.length !== expected)) throw new Error(`expected ${expected} frames, got ${hashes.map((frames) => frames.length).join("/")}`);
   const different = hashes[0].filter((line, i) => line !== hashes[1][i]).length;
   bad += different;

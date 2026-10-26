@@ -239,6 +239,28 @@ describe("cover figure", () => {
 });
 
 describe("checklist ticks", () => {
+  it("places RTL ticks on the right and composes checked Arabic lists", () => {
+    const css = readFileSync(new URL("../themes/default/theme.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\[dir="rtl"\] \[data-block="list"\] \.tr-check\s*\{[^}]*\bright:\s*0\s*;/);
+    const scene = parseScene(LIST_SCENE);
+    expect(validateScene(scene, { sources: new Set(), resolution: "portrait", lang: "ar" })).toEqual([]);
+    const timeline = resolveTimeline(scene, LIST_CUES, 6);
+    const p = buildPage({ scene, timeline, lang: "ar", captions: { lang: "ar", words: [] }, audioDuration: 6, sources: new Map(), resolution: "portrait" });
+    expect(p.html).toMatch(/<html[^>]*lang="ar"[^>]*dir="rtl"/);
+    expect(p.html).toContain('class="tr-check"');
+  });
+
+  it("calls late checked cues ticks and late plain cues entrances", () => {
+    const html = LIST_SCENE + '<section data-beat="next" data-cue="next"><p>Next</p></section>';
+    const timeline = resolveTimeline(parseScene(html), { ...LIST_CUES, next: 1.8 }, 6);
+    expect(timeline.issues).toEqual([]);
+    expect(timeline.warnings.map((w) => w.message)).toEqual([
+      expect.stringContaining('enters at 4.00 s, after its beat "why" ends (1.80 s)'),
+      expect.stringContaining('ticks at 2.00 s, after its beat "why" ends (1.80 s)'),
+      expect.stringContaining('ticks at 3.00 s, after its beat "why" ends (1.80 s)'),
+    ]);
+  });
+
   it("adds a check layer to each checked item: items enter with the list, ticks land on their cues", () => {
     const p = page(LIST_SCENE, LIST_CUES);
     expect(p.html).toMatch(/<li data-check data-cue="quote" id="tr-e-\d+">Free quote<i class="tr-check" aria-hidden="true" id="(tr-e-\d+)"><\/i><\/li>/);

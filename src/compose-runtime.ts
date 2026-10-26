@@ -18,7 +18,8 @@ export function portraitRuntime(runtime: string): string {
 /** All geometry, path control points and previous values are resolved in Node. */
 export function deviceRuntime(runtime: string): string {
   return runtime.replace("    await renderDiagrams();", `    await Promise.all(P.devices.map(function (device) {
-      return byId(device.camera).querySelector("img").decode();
+      var img = byId(device.camera).querySelector("img");
+      return img.decode().catch(function () { throw new Error("device screenshot could not be decoded: " + img.getAttribute("src")); });
     }));
     await renderDiagrams();`).replace("    P.targets.forEach(function (x) {", `    // force3D:false keeps mid-tween transforms 2D. A translate3d would give each moving element
     // its own layer, created at whatever frame a render worker starts on.

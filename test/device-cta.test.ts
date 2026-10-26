@@ -73,6 +73,13 @@ describe("device and CTA structure", () => {
     expect(validateScene(parseScene(sceneHtml(block.replace('alt="Product dashboard"', 'alt=""'))), options).map((i) => i.rule)).toContain("E_ASSET");
   });
 
+  it.each([device(), cta(), `<figure data-block="figure">${image}</figure>`])("rejects any loading attribute on an image slot: %s", (block) => {
+    for (const attr of ['loading="lazy"', 'loading="eager"', "loading"]) {
+      const issues = validateScene(parseScene(sceneHtml(block.replace("<img ", `<img ${attr} `))), options);
+      expect(issues).toEqual([expect.objectContaining({ rule: "E_ASSET", message: expect.stringContaining("a hidden lazy image never loads") })]);
+    }
+  });
+
   it.each(["phone", "browser", "cta"])("copies and hashes the %s image through full chapter composition", (kind) => {
     const source = sceneHtml(kind === "cta" ? cta() : device(kind, rect()));
     const script = "# Demo\n\nHello.\n";
@@ -127,6 +134,21 @@ async function runtime(block = device()) {
 }
 
 describe("device motion", () => {
+  it("reports the screenshot path when image decoding rejects", async () => {
+    const p = page();
+    const errors: string[] = [];
+    const img = { decode: () => Promise.reject(new Error("corrupt image")), getAttribute: () => "assets/screen.png" };
+    const window = { gsap, dispatchEvent() {}, __hfTimelinesBuilding: true, __timelines: {} as Record<string, gsap.core.Timeline> };
+    runInNewContext(timelineScript(p.plan), {
+      window, document: { fonts: { ready: Promise.resolve() }, getElementById: () => ({ querySelector: () => img }) },
+      Event: class {}, console: { error: (message: string) => errors.push(message) },
+    });
+    for (let n = 0; n < 20 && !errors.length; n++) await Promise.resolve();
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("device screenshot could not be decoded: assets/screen.png");
+    expect(window.__timelines.main).toBeUndefined();
+  });
+
   it("computes a quadratic path from the previous cursor position", () => {
     const p = page(device("browser", rect() + '<i data-click="save" data-cue="click"></i>' + rect("other").replace('60%', '10%') + '<i data-click="other" data-cue="again"></i>'));
     const d = p.plan.devices![0]!;

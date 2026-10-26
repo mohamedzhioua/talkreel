@@ -4,7 +4,7 @@
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve, win32 } from "node:path";
 import { classList, decodeEntities, describe, descendants, elementChildren, geometryFor, getAttr, hasAttr, isLtrIsland, languageDirection, parseFragment, textContent, type HtmlElement } from "./compose-html.js";
-import { cursorEntry, cursorPath, deviceViewport, deviceZoom, GEOMETRY, type Resolution } from "./geometry.js";
+import { cursorEntry, cursorPath, deviceViewport, deviceZoom, type Resolution } from "./geometry.js";
 
 export const TRANSITION = 0.3;
 export const STAGGER = 0.12;
@@ -14,16 +14,14 @@ export const ANIMS = ["fade-up", "fade", "pop", "type", "draw", "stream", "slide
 
 // Terminal geometry and pacing (scenes.md section 5a). Rows are fixed height and never wrap, so
 // the scroll offsets are computed here instead of measured in the browser.
-export const TERM_ROWS = GEOMETRY.landscape.terminal.maxRows;
 export const TERM_MIN_ROWS = 1;
 
-/** Visible rows of a terminal: data-rows (1..13), else 13. */
+/** Visible terminal rows: valid data-rows, else the resolution's maximum from GEOMETRY. */
 export function terminalRows(block: HtmlElement): number {
   const n = Number(getAttr(block, "data-rows"));
   const max = geometryFor(block).terminal.maxRows;
   return Number.isInteger(n) && n >= TERM_MIN_ROWS && n <= max ? n : max;
 }
-export const TERM_MAX_CHARS = GEOMETRY.landscape.terminal.maxChars;
 /** First line after the window appears. */
 export const TERM_OPEN = 0.3;
 /** An output line after the previous output line starts. */
@@ -181,6 +179,7 @@ export function sceneAssets(scene: Scene, talkDir?: string): { assets: SceneAsse
       continue;
     }
     const src = getAttr(el, "src");
+    if (hasAttr(el, "loading")) fail("loading is not allowed on image-slot images; a hidden lazy image never loads");
     if (typeof getAttr(el, "alt") !== "string" || !getAttr(el, "alt")!.trim()) fail("an image needs non-empty alt text");
     if (el.attrs.some((a) => a.name === "srcset" || a.name === "sizes")) fail("image alternatives are not allowed; use one local src");
     // Browser URL parsing and filesystem parsing must agree; reject URL metacharacters,
@@ -770,7 +769,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
         issues.push(issue("E_CUE_BEFORE_BEAT", el, `cue at ${own.toFixed(2)} s is before its beat "${b.id}" starts (${rb.start.toFixed(2)} s)`));
       }
       if (own !== null && own >= rb.end) {
-        warnings.push({ line: el.line, message: `${describe(el)} enters at ${own.toFixed(2)} s, after its beat "${b.id}" ends (${rb.end.toFixed(2)} s)` });
+        warnings.push({ line: el.line, message: `${describe(el)} ${isCheckItem(el) ? "ticks" : "enters"} at ${own.toFixed(2)} s, after its beat "${b.id}" ends (${rb.end.toFixed(2)} s)` });
       }
       const t = Math.max(own ?? ancT, ancT);
       return Math.max(t, rb.floor);

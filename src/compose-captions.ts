@@ -3,9 +3,6 @@ import type { CaptionWord } from "./schema.js";
 import type { DisplayForm } from "./script.js";
 import { GEOMETRY, type Geometry, type Resolution } from "./geometry.js";
 
-export const CAPTION_MAX_CHARS = GEOMETRY.landscape.caption.maxChars;
-/** Hard cap for a line that absorbs a lone word it could not be balanced with (theme.css: 1600 px at 52 px). */
-export const CAPTION_ABSORB_MAX_CHARS = GEOMETRY.landscape.caption.absorbMaxChars;
 export const CAPTION_GAP_BREAK = 0.6;
 /** The runtime's line fade-out duration (src/compose-runtime.ts). */
 export const CAPTION_HIDE_FADE = 0.08;
@@ -48,13 +45,13 @@ const COMPOUND_CLOSE = /^-[A-Za-z0-9]/;
 const COST = { line: 20, slack: 100, clause: 0.35, functionWord: 500, fragment: 300, orphan: 1000, overflow: 800, compound: 100000 };
 
 /**
- * Lines of at most 48 characters (spaces included). Always break after a word ending in . ? or !
+ * Lines use GEOMETRY[resolution].caption.maxChars (spaces included). Always break after a word ending in . ? or !
  * and before a word that starts more than 0.6 s after the previous word ended. Inside such a
  * segment the breaks minimise a fixed cost: fill lines, prefer breaking after , ; or :, never end
  * a line on a function word, never split a hyphenated compound ("human-owned" is one word and
  * never breaks; a compound written across words never breaks at its hyphen), avoid short
- * fragments and a lone last word. A line may reach 54 characters only when that is the cheapest
- * way to avoid a lone word.
+ * fragments and a lone last word. A line may reach the resolution's absorbMaxChars only when
+ * that is the cheapest way to avoid a lone word.
  */
 export function captionLines(words: CaptionWord[], duration: number, resolution: Resolution = "landscape", lang = "en"): CaptionLine[] {
   if (lang === "ar") words = words.map((w) => ({ ...w, text: captionDisplay(w.text, lang) }));

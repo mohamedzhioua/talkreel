@@ -51,6 +51,15 @@ function script(argv: string[], deviceDirs: string[], openError?: Error, differe
 }
 
 describe("determinism script raster mode and cleanup", () => {
+  it.each([
+    [8.3, 249],
+    [8.30002, 249],
+    [8.30004, 250],
+  ])("matches HyperFrames frame rounding for D=%s at 30 fps (%s frames)", (duration, expected) => {
+    const helper = source.match(/function frameCount\([^]*?\n\}/)![0];
+    expect(runInNewContext(`${helper}\nframeCount(${duration}, 30)`)).toBe(expected);
+  });
+
   it.each(["before", "after"])("reads each comparison side's plan independently (%s has a device)", async (deviceDir) => {
     const r = script(["--compare", "before", "after", "1", "2", "3"], [deviceDir]);
     await r.done;

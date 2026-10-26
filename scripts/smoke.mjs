@@ -114,7 +114,7 @@ step("ffprobe");
 const ffprobe = findTool("ffprobe");
 if (!ffprobe) fail("ffprobe not found");
 function probe(file) {
-  const r = spawnSync(ffprobe, ["-v", "error", "-show_entries", "format=duration:stream=codec_type,codec_name,sample_rate", "-of", "json", file], { encoding: "utf8", shell: false, windowsHide: true });
+  const r = spawnSync(ffprobe, ["-v", "error", "-show_entries", "format=duration:stream=codec_type,codec_name,sample_rate,width,height", "-of", "json", file], { encoding: "utf8", shell: false, windowsHide: true });
   if (r.status !== 0) fail(`ffprobe failed on ${file}: ${r.stderr}`);
   return JSON.parse(r.stdout);
 }
@@ -180,12 +180,12 @@ const creditsText = readFileSync(credits, "utf8");
 for (const want of [BED, MUSIC.credit, MUSIC.license, "Kokoro", "Watermark:", "Inter"]) if (!creditsText.includes(want)) fail(`out/credits.txt does not mention "${want}"`);
 function checkLoudness(file) {
   const loud = spawnSync(ffmpeg, ["-hide_banner", "-nostats", "-i", file, "-map", "0:a:0", "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8", shell: false, windowsHide: true });
-  if (loud.status !== 0) fail(`ebur128 failed: ${loud.stderr}`);
+  if (loud.status !== 0) fail(`ebur128 failed on ${file}: ${loud.stderr}`);
   const integrated = [...loud.stderr.matchAll(/Integrated loudness:\s*I:\s*(-?[\d.]+) LUFS/g)].at(-1)?.[1];
   const truePeak = [...loud.stderr.matchAll(/True peak:\s*Peak:\s*(-?[\d.]+) dBFS/g)].at(-1)?.[1];
-  if (integrated === undefined) fail(`ebur128 printed no integrated loudness:\n${loud.stderr.slice(-800)}`);
+  if (integrated === undefined) fail(`ebur128 printed no integrated loudness for ${file}:\n${loud.stderr.slice(-800)}`);
   console.log(`ebur128: integrated ${integrated} LUFS, true peak ${truePeak ?? "?"} dBFS (target -14 +/- 1 LUFS)`);
-  if (Math.abs(Number(integrated) + 14) > 1) fail(`integrated loudness ${integrated} LUFS is outside -14 +/- 1`);
+  if (Math.abs(Number(integrated) + 14) > 1) fail(`integrated loudness for ${file}: ${integrated} LUFS is outside -14 +/- 1`);
 }
 checkLoudness(out);
 
@@ -272,8 +272,13 @@ for (const [name, args] of [
 step("portrait reel: mixed output loudness");
 const reelOut = join(REEL, "out", "smoke-reel-fr.mp4");
 const reelJoined = join(REEL, "build", "fr", "concat.mp4");
-if (!existsSync(reelJoined) || !existsSync(reelOut)) fail("portrait reel concat or mixed output was not written");
-const reelDuration = Number(probe(reelOut).format.duration);
+if (!existsSync(reelJoined)) fail(`${reelJoined} was not written`);
+if (!existsSync(reelOut)) fail(`${reelOut} was not written`);
+const reelMixed = probe(reelOut);
+if (!reelMixed.streams.some((s) => s.codec_type === "video" && s.codec_name === "h264" && s.width === 1080 && s.height === 1920)) fail(`${reelOut} has no 1080x1920 h264 video stream`);
+const reelAudio = reelMixed.streams.find((s) => s.codec_type === "audio");
+if (reelAudio?.codec_name !== "aac" || reelAudio.sample_rate !== "48000") fail(`${reelOut} audio is not AAC at 48 kHz`);
+const reelDuration = Number(reelMixed.format.duration);
 console.log(`portrait reel: ${reelDuration.toFixed(3)} s`);
 if (reelDuration < 15 || reelDuration > 25) fail(`portrait reel duration ${reelDuration} is outside 15-25 s`);
 checkLoudness(reelOut);
