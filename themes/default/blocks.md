@@ -218,6 +218,10 @@ the image at that aspect ratio so its percentage coordinates match the display.
   `HYPERFRAMES_BROWSER_PATH` if needed); it never downloads one.
   It also compares every decoded MP4 frame with framemd5, including chunk
   boundaries and zoom-outs; a match at the sampled times alone is insufficient.
+- Render cost: device chapters render with software raster, the screenshot is
+  repainted into a canvas on every seek (up to three times per zoom frame),
+  and a page with a `<canvas>` skips HyperFrames' static-frame reuse. Expect
+  device chapters to render noticeably slower than other chapters.
 
 ### `cta`
 

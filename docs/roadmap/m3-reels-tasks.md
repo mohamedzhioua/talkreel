@@ -45,13 +45,13 @@ Acceptance Criteria:
   - the sample paths
   - each model's licence-card text, licence field and the revision used
   - a delegated model ruling, recorded as recommendations for gate 2. The maintainer's listening verdict is deferred, at the maintainer's choice on 2026-10-25, to a by-ear check before gate 2, and is added to the design doc then.
-Verification: spike notes in the design doc. Sample WAVs are kept in the scratchpad, not the repo.
+Verification: spike notes in the design doc. Sample WAVs are kept in the gitignored `.spike/m3-s0/`, not the repo.
 Brief: Throwaway work, run via `uv run --with …` or a scratch venv. Do not touch `py/pyproject.toml`. The ship bar is RTF ≤ 15. Rollback: delete the notes section.
 
 ### Slice 1 — Geometry per resolution, portrait and square pages, safe-zone frames
 Type: AFK
 Dependencies: 0
-Anchors: `src/compose.ts:composeChapter`, `src/compose-scene.ts:TERM_MAX_CHARS`, `src/compose-captions.ts:CAPTION_MAX_CHARS`, `src/compose-hyperframes.ts:renderArgs`, `src/stages.ts:currentRenderHash`, `src/commands/frames.ts`, `scripts/determinism.mjs`
+Anchors: `src/compose.ts:composeChapter`, `src/geometry.ts:GEOMETRY` (formerly `TERM_MAX_CHARS` and `CAPTION_MAX_CHARS`), `src/compose-hyperframes.ts:renderArgs`, `src/stages.ts:currentRenderHash`, `src/commands/frames.ts`, `scripts/determinism.mjs`
 Acceptance Criteria:
 - `src/geometry.ts` holds one table keyed by `landscape|portrait|square`:
   - canvas size and padding

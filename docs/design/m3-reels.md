@@ -11,7 +11,7 @@ Today talkreel makes 16:9 explainers only:
 - Scenes may not contain `<img>` or `<video>` (`src/compose-scene.ts:88`), so a promo cannot show the user's own product.
 - The TTS helper speaks only English and French (Kokoro, `py/talkreel_audio/tts.py:14`). The bundled fonts are Latin-only (`src/compose.ts:51`). The page never sets `dir`. The `type` entrance reveals left to right (`src/compose-runtime.ts:34`). The caption breaker knows only Latin punctuation and English function words (`src/compose-captions.ts:22-30`).
 - There is no music bed, and concat copies streams (`src/compose-concat.ts:82`).
-- Layout limits are fixed for a 1920 px canvas: `TERM_MAX_CHARS` 72 at 30 px mono is 1296 px wide (`src/compose-scene.ts:23`), and `CAPTION_MAX_CHARS` 48 assumes a 1600 px band (`src/compose-captions.ts:5`). Neither fits a 1080 px portrait canvas.
+- Layout limits are fixed for a 1920 px canvas: `TERM_MAX_CHARS` 72 at 30 px mono is 1296 px wide (`src/compose-scene.ts:23`), and `CAPTION_MAX_CHARS` 48 assumes a 1600 px band (`src/compose-captions.ts:5`). Neither fits a 1080 px portrait canvas. (Before M3; these limits now live per resolution in `GEOMETRY`, `src/geometry.ts`.)
 
 ## Goals
 
@@ -184,11 +184,13 @@ The slices, their order and the gate-2 cut line are in `docs/roadmap/m3-reels-ta
 | Risk | Mitigation |
 |---|---|
 | Over-scope (about 5 features; M2a's two blocks took three frame-review rounds) | Gate 2 after slice 6. Anything the proof reel does not need is cut there (`<video>` and count-up first) |
-| Arabic TTS unusable (CPU speed, word repetition, dialect quality) | Slice 0 measures RTF, and the maintainer listens to samples. Own-voice plus CTC alignment is the guaranteed Arabic path and does not depend on TTS. `voice --audition` before a full run |
+| Arabic TTS unusable (CPU speed, word repetition, dialect quality) | Slice 0 measures RTF; the clip verdict before gate 2 was delegated to a model ruling (see Spike results). Own-voice plus CTC alignment is the guaranteed Arabic path and does not depend on TTS. `voice --audition` before a full run |
 | New motion is not deterministic (cursor path, count-up, zoom, video seek) | Single-property tweens with `immediateRender: false`, as in M2. `scripts/determinism.mjs` gains mid-cursor, mid-count and mid-zoom frames. `<video>` is cut on its first failure |
 | RTL bugs invisible to unit tests | HTML-level asserts in CI (`dir`, isolation, LTR islands, tashkeel strip). Local golden frames of one Arabic caption page. `type` is forbidden on RTL |
 | Hidden geometry coupling to 1920 px | One `Geometry` table, unit-tested per resolution. Landscape is asserted byte-identical to M2 compose output |
 | Licence leakage (NC weights, GPL) | Explicit model ids and revisions, no library defaults. `arabic` group is opt-in. THIRD_PARTY lists every model and font with its licence |
+| Status cost on Arabic talks | Once an `ar` chapter is aligned, `status` and `render` run the Python `models` probe (a syncing `uv run`) to learn whether the `arabic` group is installed, so they are slower and need the lockfile's packages to be present. Accepted for M3; a lighter `--no-sync` probe is a follow-up |
+| Device chapters render slower | Software raster, a canvas repaint per seek (up to three per zoom frame) and no HyperFrames static-frame reuse on canvas pages. Accepted for determinism; one painter tween per zoom is a follow-up that must re-pass `scripts/determinism.mjs` |
 | HyperFrames portrait rendering is broken on 0.8.185 | Slice 0 spike. If it fails, a separate bump slice to an exact version, gated by `npm run smoke` and `scripts/determinism.mjs` |
 
 ## Alternatives
@@ -395,6 +397,13 @@ The maintainer replaced the proof reel with a 30–45 s French, own-voice, 9:16 
 - **Slice 10 (count-up): cut.** A static `stat` reads well in portrait and needs a sourced number.
 - **Slice 8:** checklist ticks plus `figure[data-fit="cover"]`, a composer-owned full-bleed backdrop with no transform. In portrait the stage is 936×708 px in the middle of 1080×1920, so a normal figure reads as a thumbnail in an ad. `chat` is deferred past the reel (slice 8b); the goal stays.
 - **Slice 12:** `talks/shasama-reel/` in French with the maintainer's recording and music, made of a hook, cover figures, a checked list and a CTA. AR and EN versions are not required for M3. The only Arabic item left for a human is one short recorded Arabic sentence through CTC.
+- **Known visual debts carried past M3** (each changes rendered pixels, so each needs its own frame review and determinism pass):
+  - A camera push-in or pan can move full-width portrait content about 10–17 px into the side safe zone.
+  - The portrait caption backdrop ends in a hard edge, and the bottom 35 % zone stays empty on pages without a cover figure.
+  - A split column keeps `--tr-k: 0.7`, so its text is larger than other beat text in portrait and square.
+  - A wrapped Arabic chapter-card title has tight line height, so dots and harakat can touch the next line.
+  - List bullets stay on the physical left on RTL pages. Checklist ticks do mirror.
+  - Landscape push-in beats can differ between `--workers 1` and `--workers 4` (the M2 `will-change` rule on beats); this was never proven to predate M3.
 - **Order:** 8, 11, 12, then gate 3. Slice 7 (Chatterbox) moved to a follow-up PR after M3 at the maintainer's request (2026-10-26). The ctc-forced-aligner licence-metadata question blocks the PR, not the reel; if it is not settled, the `arabic` group moves to a follow-up PR.
 
 ## Licence evidence
