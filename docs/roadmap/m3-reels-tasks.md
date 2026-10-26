@@ -154,66 +154,64 @@ Review the portrait renders from slices 1–6 and the slice-0 numbers. Decide:
 - whether slice 7 ships TTS engines or demotes Arabic to own-voice
 - whether slices 9 (`<video>`) and 10 (count-up) are cut
 
+**Ruling (2026-10-26, Fable 5.1; the maintainer delegated the listening verdict to astra, recorded in the design doc):**
+- The proof reel became a 30–45 s French, own-voice, 9:16 ad for Shasama (door photos and clips). Slices 7–12 below are rewritten for it.
+- Slice 7: Chatterbox V3 only, experimental and opt-in, with auditions. Lahgtna dropped. Recorded narration is primary for Arabic and male French. Slice 7 runs after slice 12.
+- Slices 9 and 10: cut (see each).
+- Slice 8: checklist ticks plus a full-bleed `figure[data-fit="cover"]`; `chat` deferred past the reel.
+- Order: 8, 11, 12, 7, then gate 3.
+
 ### Slice 7 — Arabic and multilingual TTS engines, auditions, licence evidence
 Type: AFK (its merge waits on the maintainer's licence sign-off at gate 3)
-Dependencies: 0, 4, Gate 2
-Anchors: `py/talkreel_audio/tts.py:synthesize`, `src/stages.ts:currentVoiceHash`, `src/state.ts:voiceInputHash`, `src/commands/voice.ts:cmdVoice`, `src/schema.ts:VoiceConfig`
-Acceptance Criteria:
-- The `arabic` group gains `chatterbox-tts` (pinned).
-- `tts_chatterbox.py` serves `chatterbox:<name>` (ar/en/fr) and `lahgtna:<dialect>` (sa, eg, iq, ma). `<name>` is `default` or `assets/voices/<name>.wav` (a clone reference).
+Dependencies: 0, 4, Gate 2, 12 (runs last)
+Anchors: `py/talkreel_audio/tts.py:synthesize`, `src/stages.ts:currentVoiceHash`, `src/state.ts:voiceInputHash`, `src/commands/voice.ts:cmdVoice`, `src/schema.ts:VoiceConfig`, `src/compose-mix.ts:voiceCredit`
+Acceptance Criteria (reduced at gate 2: Chatterbox only, experimental, opt-in):
+- The `arabic` group gains `chatterbox-tts` at git `resemble-ai/chatterbox@5de7a54aa4e5e2baadb0182dde554908b48b85c2`. Weights come only from `ResembleAI/chatterbox@5bb1f6ee58e50c3b8d408bc82a6d3740c2db6e18`, fetched by revision, never `main`. The default `uv sync --project py` is unchanged and CI never installs the group.
+- `tts_chatterbox.py` serves `chatterbox:<name>` (ar/en/fr). `<name>` is `default` or `assets/voices/<name>.wav` (a clone reference). No `lahgtna:` prefix, adapter or Saudi claim anywhere.
 - Voice hashes:
   - bare ids stay Kokoro, with unchanged hashes
-  - prefixed ids hash the engine, the revision and the reference WAV's sha256
+  - prefixed ids hash the engine, both revisions and the reference WAV's sha256
 - Validation:
-  - unknown prefixes and dialects are rejected
-  - a bare id for `ar` in `ai` mode errors and points to the prefixes or to own-voice
-- `voice --audition` writes `build/audition-<lang>.wav` and records no stage.
-- `## Licence evidence` in the design doc lists the card text, the licence field and the revision for every model.
-- README and THIRD_PARTY document the watermark and the licences.
-Verification: `npm test` for the grammar, hashes and validation. `uv run --project py pytest`, with model tests skipped when absent. One local audition per engine.
-Brief: If gate 2 demotes TTS, ship only the docs path ("GPU recommended", own-voice primary). Rollback: revert.
+  - unknown prefixes are rejected
+  - a bare id for `ar` in `ai` mode errors and points to `chatterbox:<name>` or to own-voice
+- `voice --audition [--chapter NN]` writes `build/audition-<lang>.wav`, prints the path and records no stage; it works for Kokoro ids too.
+- `voiceCredit` names Chatterbox Multilingual V3 (MIT) and the Resemble PerTh watermark for prefixed ids.
+- README: experimental, GPU recommended, CPU ship bar not established, PerTh watermark, own voice is the unwatermarked path. THIRD_PARTY lists Chatterbox code and weights. The design doc drops Lahgtna from its EARS lines and Decisions; its licence-evidence rows stay as history, marked "dropped at gate 2".
+Verification: `npm test` for the grammar, hashes and validation. `uv run --project py pytest`, with model tests skipped when absent. One local audition each for `ar` and `fr`.
+Brief: The Supertonic / MOSS-Nano spike is not part of M3. Gate 3 gates the `arabic` group's merge, not the reel. Rollback: revert.
 
-### Slice 8 — Chat and checklist ticks
+### Slice 8 — Checklist ticks and full-bleed cover figure
 Type: AFK
 Dependencies: 6
-Anchors: `src/compose-scene.ts` (terminal chain timing), `src/compose-runtime.ts`, `themes/default/blocks.md`
-Acceptance Criteria:
-- `chat` bubbles (`data-from="user|agent"`) work as follows: a cued bubble starts at max(cue, beat floor); uncued bubbles chain by the terminal rules; an agent bubble is preceded by a typing indicator.
+Anchors: `src/compose.ts` (page skeleton), `src/compose-scene.ts`, `src/compose-runtime.ts`, `themes/default/blocks.md`
+Acceptance Criteria (re-scoped at gate 2):
 - `list` items with `data-check` tick at their cue.
-- `blocks.md` and `examples/chat.html` are updated.
-Verification: `npm test`, local `node scripts/determinism.mjs`, and a portrait draft render.
-Brief: Rollback: revert.
+- `figure[data-fit="cover"]` puts its image full-bleed in a composer-owned `.tr-backdrop` layer between `.tr-ambient` and `.tr-stage` (object-fit cover, fixed scrim). It fades in at the figure's cue with no transform; the figcaption stays in the stage.
+- Pages without these features compose to identical bytes. Asset validation, copy and `sceneInputHash` are unchanged.
+- `blocks.md`, `examples/figure-cover.html` and a `data-check` example are updated.
+Verification: `npm test`, local `node scripts/determinism.mjs` (mid-fade and mid-tick frames), and a portrait draft render.
+Brief: `chat` is deferred past the Shasama reel (slice 8b below). Rollback: revert.
 
-### Slice 9 — Video clips in device frames (cut candidate)
-Type: AFK
-Dependencies: 6, Gate 2
-Anchors: `src/compose-scene.ts:FORBIDDEN_TAGS`, the `device` block
-Acceptance Criteria:
-- `<video src="assets/…">` is allowed only in a `device` slot. It is muted, H.264 and local, starts at a cue, and is trimmed by `data-from`/`data-to` on the asset.
-- A mid-clip determinism frame is byte-identical across seek orders and worker counts. If it is not, the slice is cut and recorded.
-Verification: `npm test`, plus local `node scripts/determinism.mjs`.
-Brief: Rollback: revert, or cut.
+### Slice 8b — Chat (deferred at gate 2)
+`chat` bubbles (`data-from="user|agent"`, cued or chained by the terminal rules, typing indicator) stay an M3 design goal but run after the Shasama reel, if at all in M3.
 
-### Slice 10 — Count-up stat (cut candidate)
-Type: AFK
-Dependencies: 6, Gate 2
-Anchors: `src/compose-runtime.ts`, the `stat` block in `themes/default/blocks.md`
-Acceptance Criteria:
-- `stat[data-count]` text is a pure function of time, with fixed decimals and Western digits.
-- A mid-count determinism frame is byte-identical.
-Verification: `npm test`, plus local `node scripts/determinism.mjs`.
-Brief: Rollback: revert, or cut.
+### Slice 9 — Video clips in device frames (cut at gate 2)
+Cut. The Shasama clips are 1024×576 landscape: in 9:16 a contained clip is the same band a still gives in a `figure`, and a cover crop keeps 32 % of the width at 3.3× upscale. Seeking `<video>` frame-exactly across render workers is the highest determinism risk left. Revisit after M3 only with a pre-transcode step (ffmpeg to all-intra or a frame sequence) so seeks are frame-exact.
+
+### Slice 10 — Count-up stat (cut at gate 2)
+Cut. The static `stat` reads well in portrait, `stat` needs a sourced figure, and per-frame text relayout is a new determinism surface for little value.
 
 ### Slice 11 — Reel authoring: skill, `new --reel`, length lint, docs, CI fixture
 Type: AFK
-Dependencies: 1, 3, 5, 6, 7, 8
+Dependencies: 1, 3, 5, 6, 8
 Anchors: `src/commands/new.ts`, `src/commands/status.ts`, `skills/talkreel/SKILL.md`, `skills/talkreel/references/scenes.md`
 Acceptance Criteria:
 - `new --reel` scaffolds `resolution: "portrait"`, `assets/`, and hook, proof and CTA script and scene skeletons.
 - `skills/talkreel/references/reel.md` covers:
   - hook, pacing, UI crops, CTA and safe zones
+  - photos and clips: prefer the largest photos, cover figures for product shots, stills taken from clips with the author's own tool (1024×576 clips are landscape material)
   - Arabic tashkeel, spelled numbers and display forms
-  - voice choice and auditions
+  - voice choice: own voice primary for male French and all Arabic, Kokoro `am_michael` as the EN default candidate, auditions "when slice 7 lands"
 - The `status` length lint (warn only, one table) warns over 90 s ("long for a reel") and over 180 s ("over the Shorts limit").
 - Docs:
   - README gets sections on reels, Arabic, music, the voice catalogue and the loudness note
@@ -223,16 +221,18 @@ Acceptance Criteria:
 Verification: `npm run build && npm run typecheck && npm test`, plus `uv run --project py pytest`.
 Brief: Rollback: revert.
 
-### Slice 12 — Proof reel and frame review
-Type: HITL (screenshot rights, a listening verdict, the final watch)
-Dependencies: 11
+### Slice 12 — Shasama French ad reel and frame review
+Type: HITL (the maintainer's recording, music licence, the final watch)
+Dependencies: 8, 11
 Anchors: `scripts/smoke.mjs`, `skills/talkreel/references/review.md`
-Acceptance Criteria:
-- `talks/talkreel-promo/` (gitignored, private): 30–45 s, 9:16, in AR (Saudi) plus EN and FR.
-- The reel uses talkreel's own screenshots, a device frame, cursor clicks, chat, a checklist, a CTA and music.
+Acceptance Criteria (rewritten at gate 2):
+- `talks/shasama-reel/` (gitignored, private): `languages: ["fr"]`, `resolution: "portrait"`, `voice: {mode: "own"}`, one chapter, 30–45 s, the maintainer's recording at `audio/fr/01.wav`. Media rights confirmed by the maintainer.
+- Blocks in order: a French `title` hook (push-in); 3–4 cued `figure data-fit="cover"` beats; one `list` with 3 `data-check` items; a `cta` with the Shasama logo, headline, action and `shasama.fr`, held at least 1.5 s. Optional: one `device` beat on a shasama.fr screenshot; a `stat` only with a real sourced number. Clips appear only as stills.
+- `music` is set with a bed the maintainer holds a licence for, so `mix` normalises the recording. `out/credits.txt` lists the bed, own voice and fonts.
 - `frames --safe-zones` review, at most 3 rounds.
-- `npm run smoke` gains one portrait Arabic chapter with mix on.
-Verification: `npm run smoke`, `node scripts/determinism.mjs`, the frame-review notes and the maintainer's watch.
+- `npm run smoke` gains one portrait chapter with mix on, voiced by Kokoro.
+- AR and EN versions are not required for M3.
+Verification: `npm run smoke`, `node scripts/determinism.mjs` on the reel chapter (mid-fade, mid-tick, workers 1 vs 4), the frame-review notes and the maintainer's watch.
 Brief: Nothing from `talks/` is committed.
 
 ## Confirm Gates

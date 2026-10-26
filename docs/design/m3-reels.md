@@ -386,6 +386,17 @@ The earlier recommendations below still stand, now confirmed by the gate-2 rulin
 - Recommendation for gate 2: narrow slice 7 to Chatterbox only, keeping auditions; remove the Lahgtna adapters and dialect promises. Pin the git commit and all model files, and document the watermark. Gate 2 makes the final scope call.
 - Still to check by ear (gate-2 precondition): male voice, naturalness, pacing and Saudi delivery; brand and CTA wording. The finished reel's captions against the recording are checked at slice 12.
 
+### Gate-2 scope ruling (2026-10-26, Fable 5.1)
+
+The maintainer replaced the proof reel with a 30–45 s French, own-voice, 9:16 ad for Shasama (shasama.fr: garage, sectional and industrial doors and gates), built from the maintainer's own photos and clips with media rights confirmed. The ruling, applied in `docs/roadmap/m3-reels-tasks.md`:
+
+- **Slice 7:** Chatterbox V3 only, experimental and opt-in, with auditions; Lahgtna dropped; recorded narration primary. It runs after slice 12, and slice 11 no longer depends on it. Arabic in M3 is own voice plus CTC (slice 4) plus RTL (slice 3).
+- **Slice 9 (`<video>`): cut.** The clips are 1024×576 landscape, so in 9:16 a clip gives the same band as a still in a `figure`, and frame-exact `<video>` seeks across render workers are the largest determinism risk left. Revisit after M3 only with a pre-transcode step.
+- **Slice 10 (count-up): cut.** A static `stat` reads well in portrait and needs a sourced number.
+- **Slice 8:** checklist ticks plus `figure[data-fit="cover"]`, a composer-owned full-bleed backdrop with no transform. In portrait the stage is 936×708 px in the middle of 1080×1920, so a normal figure reads as a thumbnail in an ad. `chat` is deferred past the reel (slice 8b); the goal stays.
+- **Slice 12:** `talks/shasama-reel/` in French with the maintainer's recording and music, made of a hook, cover figures, a checked list and a CTA. AR and EN versions are not required for M3. The only Arabic item left for a human is one short recorded Arabic sentence through CTC.
+- **Order:** 8, 11, 12, 7, then gate 3. The ctc-forced-aligner licence-metadata question blocks the PR, not the reel; if it is not settled, the `arabic` group moves to a follow-up PR.
+
 ## Licence evidence
 
 All facts were fetched on 2026-10-25. "Licence field" is `cardData.license` and the `license:` tag from `https://huggingface.co/api/models/<id>`.
