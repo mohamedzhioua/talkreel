@@ -363,7 +363,22 @@ Wall time in seconds, audio length in seconds, RTF = wall / audio. Runs 1–3 us
 - First, the maintainer delegated the verdict, in session: "call astra to choose and decide". `gpt-6-astra` (xhigh, read-only) ruled from the numbers, the Whisper read-backs and the licence evidence. It could not listen, so its ruling is not a listening verdict.
 - Then, told that astra cannot hear audio, the maintainer was asked "For the AI voice check, which do you want?" and chose "Listen later". That option read: "Skip it now. I'll ask you again before gate 2 (after slice 6) and play you 4 short clips then. Work continues now."
 
-The listening verdict is pending until that by-ear check before gate 2. The 4 clips are `<s0>\samples\chatterbox-ar-1.wav`, `chatterbox-fr-1.wav`, `lahgtna-sa-1t.wav` and `lahgtna-sa-3t.wav`. The maintainer's verdict is recorded here before gate 2 starts. Until then, the delegated model ruling below stands as recommendations only:
+- Before gate 2 (2026-10-26), the maintainer delegated the clip verdict again instead of listening: "use astra to decide for the voices than check on voiceStudio". `gpt-6-astra` (xhigh, read-only) ruled on the 4 clips `chatterbox-ar-1.wav`, `chatterbox-fr-1.wav`, `lahgtna-sa-3t.wav` and `chatterbox-ar-3.wav` (the last replaces `lahgtna-sa-1t.wav`) from the timings, the Whisper read-backs, a pitch estimate and the licence evidence. It is a model ruling, not a listening verdict.
+
+Gate-2 clip ruling (astra, 2026-10-26). "Not OK" means not cleared as finished ad narration:
+
+| Clip | Ruling | Evidence |
+|---|---|---|
+| `chatterbox-ar-1.wav` | Not OK; keep for auditions | Median F0 145 Hz (male range). Brand misread; كامل heard as كامي. CPU RTF 27.2 / 26.2 / 18.1. |
+| `chatterbox-fr-1.wav` | Not OK; strongest audition candidate | Read-back close; brand heard as "Tollcreen". F0 175 Hz is inconclusive. RTF 12.4 / 20.4 / 18.6. |
+| `lahgtna-sa-3t.wav` | Not OK; Lahgtna rejected for M3 | Closing phrase repeated; forced EOS with `alignment_repetition=True`. |
+| `chatterbox-ar-3.wav` | Not OK; keep for auditions | F0 124 Hz (male range). CTA misread. RTF 19.0 / 24.6 / 23.1. |
+
+Voice plan from the ruling: recorded male narration is primary for Arabic (MSA and Saudi) and for the slice-12 proof reel in all three languages; Chatterbox V3 ships only as experimental, opt-in Arabic and French TTS with auditions ("GPU recommended; CPU ship bar not established"); Lahgtna and its dialect promises are dropped; Kokoro stays the EN default (male candidate `am_michael`). Kokoro has only a female French voice (`ff_siwis`), so male French narration is a recording until a TTS voice passes listening.
+
+VoiceStudio (`debpalash/VoiceStudio`, checked 2026-10-26): not integrated. The application is AGPL-3.0-only, and its default OmniVoice weights are CC-BY-NC. Of the engines it wraps, the ruling names at most two for a separate spike outside M3's dependencies: `Supertone/supertonic-3@3cadd1ee6394adea1bd021217a0e650ede09a323` first (about 99M parameters, ONNX; OpenRAIL-M requires disclosing machine-generated content), and `OpenMOSS-Team/MOSS-TTS-Nano-100M@44502f80dbf9743528fa921cc544d662c685ebec` as a reserve once its licence notice and tokenizer are reviewed. VoxCPM2 and MOSS-TTS-v1.5 are deferred as too large for the CPU laptop. A spike must pass, per language: every run at CPU RTF ≤ 15, ASR WER ≤ 5 % (≤ 10 % Saudi) with no changed brands, numbers or CTAs, no repeats or added text, offline synthesis after download, and the maintainer's listening check.
+
+The earlier recommendations below still stand, now confirmed by the gate-2 ruling:
 - Recommendation for gate 2: ship Chatterbox V3 `ar` and `fr` as experimental, opt-in, "GPU recommended". The CPU median RTF (20.5 and 18.6) misses the bar on the pooled median; inconclusive given machine state.
 - Recommendation for gate 2: drop Lahgtna `sa` from M3. Repeated phrases, added text and the forced-EOS warnings (sa-3 and sa-3t) are too unreliable for scripted ads. Reviving it later needs pinned downloads and a note that its fork disables the watermark.
 - Recommendation for gate 2: the proof reel (slice 12) uses own voice plus CTC, with a male Saudi narrator. Kokoro stays the default for EN and FR. GPU speed was not measured.
