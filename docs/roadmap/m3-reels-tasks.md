@@ -159,11 +159,11 @@ Review the portrait renders from slices 1–6 and the slice-0 numbers. Decide:
 - Slice 7: Chatterbox V3 only, experimental and opt-in, with auditions. Lahgtna dropped. Recorded narration is primary for Arabic and male French. Slice 7 runs after slice 12.
 - Slices 9 and 10: cut (see each).
 - Slice 8: checklist ticks plus a full-bleed `figure[data-fit="cover"]`; `chat` deferred past the reel.
-- Order: 8, 11, 12, 7, then gate 3.
+- Order: 8, 11, 12, then gate 3. On 2026-10-26 the maintainer moved slice 7 to a follow-up PR after M3.
 
-### Slice 7 — Arabic and multilingual TTS engines, auditions, licence evidence
+### Slice 7 — Chatterbox experimental TTS and auditions (moved to a follow-up PR after M3)
 Type: AFK (its merge waits on the maintainer's licence sign-off at gate 3)
-Dependencies: 0, 4, Gate 2, 12 (runs last)
+Dependencies: 0, 4, Gate 2; not part of the M3 release
 Anchors: `py/talkreel_audio/tts.py:synthesize`, `src/stages.ts:currentVoiceHash`, `src/state.ts:voiceInputHash`, `src/commands/voice.ts:cmdVoice`, `src/schema.ts:VoiceConfig`, `src/compose-mix.ts:voiceCredit`
 Acceptance Criteria (reduced at gate 2: Chatterbox only, experimental, opt-in):
 - The `arabic` group gains `chatterbox-tts` at git `resemble-ai/chatterbox@5de7a54aa4e5e2baadb0182dde554908b48b85c2`. Weights come only from `ResembleAI/chatterbox@5bb1f6ee58e50c3b8d408bc82a6d3740c2db6e18`, fetched by revision, never `main`. The default `uv sync --project py` is unchanged and CI never installs the group.

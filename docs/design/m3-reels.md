@@ -395,7 +395,7 @@ The maintainer replaced the proof reel with a 30–45 s French, own-voice, 9:16 
 - **Slice 10 (count-up): cut.** A static `stat` reads well in portrait and needs a sourced number.
 - **Slice 8:** checklist ticks plus `figure[data-fit="cover"]`, a composer-owned full-bleed backdrop with no transform. In portrait the stage is 936×708 px in the middle of 1080×1920, so a normal figure reads as a thumbnail in an ad. `chat` is deferred past the reel (slice 8b); the goal stays.
 - **Slice 12:** `talks/shasama-reel/` in French with the maintainer's recording and music, made of a hook, cover figures, a checked list and a CTA. AR and EN versions are not required for M3. The only Arabic item left for a human is one short recorded Arabic sentence through CTC.
-- **Order:** 8, 11, 12, 7, then gate 3. The ctc-forced-aligner licence-metadata question blocks the PR, not the reel; if it is not settled, the `arabic` group moves to a follow-up PR.
+- **Order:** 8, 11, 12, then gate 3. Slice 7 (Chatterbox) moved to a follow-up PR after M3 at the maintainer's request (2026-10-26). The ctc-forced-aligner licence-metadata question blocks the PR, not the reel; if it is not settled, the `arabic` group moves to a follow-up PR.
 
 ## Licence evidence
 
