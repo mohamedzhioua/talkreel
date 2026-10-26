@@ -1,5 +1,13 @@
 # Scenes: the authoring contract
 
+For portrait reels, also read [reel.md](reel.md) for hook/proof/CTA pacing,
+UI crops and the 1080×1920 canvas's 936×708 stage. Slice 8 adds checklist
+ticks (`data-check` on cued list items) and full-bleed product photos
+(`figure data-fit="cover"`): only the photo extends beyond the stage;
+figcaptions and other text stay inside. The composer owns the backdrop and
+scrim. It fades at the cue without a camera or transform. Review with
+`frames --safe-zones`; keep text clear of platform overlays and captions.
+
 This file is the specification for two readers:
 
 - **the skill**, when it writes `scenes/NN-<chapter>.html`;
@@ -216,8 +224,9 @@ together with their separator. Text is HTML-escaped.
 
 These break HyperFrames' determinism or the theme. Each is `E_FORBIDDEN`:
 
-- `<script>`, `<style>`, `<link>`, `<iframe>`, `<img>`, `<video>`, `<audio>`,
-  `<object>`, `<embed>` (media in scenes is out of scope for M1);
+- `<script>`, `<style>`, `<link>`, `<iframe>`, `<video>`, `<audio>`,
+  `<object>`, `<embed>`; `<img>` is allowed only in figure, device and CTA
+  image slots with a validated local `assets/` path (see `blocks.md`);
 - any `on*` event-handler attribute, and any `style` attribute (the look
   belongs to the theme);
 - any `http:`, `https:` or protocol-relative `//` URL in an attribute;
@@ -396,8 +405,9 @@ were copied.
 
 - One idea per beat; one primary block per beat. A new beat at each `{#cue}`
   where the narration turns to a new idea; element cues for builds inside one.
-- Every figure or quote on screen comes from `sources.json` and carries
-  `data-source`; its numbers match the source's quote.
+- Every stat or quote on screen comes from `sources.json` and carries
+  `data-source`; its numbers match the source's quote. Photo figures do not
+  accept `data-source`.
 - A quote block always carries a figcaption naming the speaker and role; the source label under it names the work, host and year, never the speaker.
 - Respect the text limits in `blocks.md`. Too much text: split the beat.
 - Give each beat several seconds of narration. A beat shorter than about 2.5 s

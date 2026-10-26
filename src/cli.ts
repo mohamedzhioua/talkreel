@@ -14,8 +14,8 @@ import { loadTalk, TalkError } from "./talk.js";
 const USAGE = `usage: talkreel <command> [options]
 
 commands:
-  new <slug> --title "<title>"     create talks/<slug>/
-  status [--json]                  per-chapter, per-stage stale/fresh
+  new <slug> --title "<title>" [--reel]  create a talk (or portrait reel skeleton)
+  status [--json]                  per-stage stale/fresh and estimated length warnings
   doctor [--json]                  check Node, FFmpeg, uv, Python 3.11 and the models
   check                            validate scripts and scenes: unknown [s:id], unsourced
                                    stat/quote blocks, and every scene rule that needs no timing
@@ -40,7 +40,7 @@ const chapterOpts = {
 } as const;
 
 const OPTIONS = {
-  new: { ...common, title: { type: "string" } },
+  new: { ...common, title: { type: "string" }, reel: { type: "boolean" } },
   status: { ...common, json: { type: "boolean" } },
   doctor: { ...common, json: { type: "boolean" } },
   check: common,
@@ -72,7 +72,7 @@ async function main(argv: string[]): Promise<number> {
   const str = (k: string) => (typeof values[k] === "string" ? (values[k] as string) : undefined);
   const talkDir = str("talk") ?? process.cwd();
 
-  if (command === "new") return cmdNew(talkDir, positionals[0], str("title"));
+  if (command === "new") return cmdNew(talkDir, positionals[0], str("title"), values.reel === true);
   if (command === "doctor") return cmdDoctor(values.json === true);
 
   const talk = loadTalk(talkDir);

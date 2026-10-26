@@ -139,6 +139,16 @@ describe("Arabic script and composed pages", () => {
     mkdirSync(dirname(wav), { recursive: true });
     writeWav(wav, 6);
     const result = composeChapter(talk, listChapters(talk, "ar")[0]!);
+    const html = readFileSync(join(result.dir, "index.html"), "utf8");
+    const elements = descendants(parseFragment(html));
+    const root = elements.find((el) => el.tag === "html")!;
+    expect(getAttr(root, "dir")).toBe("rtl");
+    expect(getAttr(root, "data-resolution")).toBe("portrait");
+    expect(html).toContain('data-width="1080" data-height="1920"');
+    const displayed = elements.filter((el) => getAttr(el, "class") === "tr-word")
+      .map((el) => el.children.map((c) => c.type === "text" ? c.raw : "").join(""));
+    expect(displayed).toEqual(captions.words.map((w) => captionDisplay(w.text, "ar")));
+    expect(displayed.join(" ")).not.toMatch(/[\u064b-\u065f\u0670]/);
     const css = readFileSync(join(result.dir, "theme.css"), "utf8");
     expect(css).toMatch(/\.tr-word\s*\{[^}]*unicode-bidi:\s*isolate/);
     expect(css).toMatch(/:root:lang\(ar\)\s*\{[^}]*--tr-font:\s*"IBM Plex Sans Arabic"/);

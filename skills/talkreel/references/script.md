@@ -6,6 +6,8 @@ text is the script's spelling) and the cue times that drive the scenes.
 
 ## Files and length
 
+- For a short reel, follow [reel.md](reel.md): one chapter, hook → proof →
+  CTA, usually 30–45 seconds. The chapter counts below describe longer talks.
 - `script/en/NN-<chapter>.md`, `NN` = `01`, `02`, … in playing order;
   `<chapter>` is a short kebab-case name. The scene for it will be
   `scenes/NN-<chapter>.html`.
@@ -44,6 +46,12 @@ tools. [s:example-survey] {#loop}So I work in a loop.
   to 15 seconds (12 to 40 words): one per new beat, plus one per build inside a
   beat (a list item, a diagram step).
 - Never put a marker inside a word or between a number and its unit.
+
+For Arabic, keep tashkeel in the script where it helps the narrator. Captions
+strip harakat for display; there is no diacritizer. Spell numbers out for CTC
+alignment and use `[[٣|ثلاثة]]` to display digits. Digit tokens left in the
+spoken text get interpolated timing. See [reel.md](reel.md) for recording and
+RTL guidance.
 
 ## Writing for the ear
 
