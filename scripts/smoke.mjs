@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Local end-to-end smoke test (never in CI): a 2-chapter talk under .spike/smoke/talk built from
 // the default theme's example scenes, through voice, align, render --quality draft, ffprobe, a
-// music-bed mix measured with ebur128, and frames. Needs FFmpeg, uv and the models (see
+// music-bed mix measured with ebur128, and frames, then a French portrait reel with mix and
+// safe-zone frames. Needs FFmpeg, uv and the models (see
 // `talkreel doctor`). Exits non-zero on failure.
 //
 //   npm run smoke              reuse what is fresh (only stale stages run)
@@ -28,8 +29,8 @@ function step(name) {
 }
 
 /** Write a file only when its content changed, so a re-run keeps fresh stages fresh. */
-function put(rel, content) {
-  const p = join(TALK, rel);
+function put(rel, content, dir = TALK) {
+  const p = join(dir, rel);
   if (existsSync(p) && readFileSync(p, "utf8") === content) return;
   mkdirSync(dirname(p), { recursive: true });
   writeFileSync(p, content);
@@ -177,13 +178,16 @@ const credits = join(TALK, "out", "credits.txt");
 if (!existsSync(credits)) fail("out/credits.txt was not written");
 const creditsText = readFileSync(credits, "utf8");
 for (const want of [BED, MUSIC.credit, MUSIC.license, "Kokoro", "Watermark:", "Inter"]) if (!creditsText.includes(want)) fail(`out/credits.txt does not mention "${want}"`);
-const loud = spawnSync(ffmpeg, ["-hide_banner", "-nostats", "-i", out, "-map", "0:a:0", "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8", shell: false, windowsHide: true });
-if (loud.status !== 0) fail(`ebur128 failed: ${loud.stderr}`);
-const integrated = [...loud.stderr.matchAll(/Integrated loudness:\s*I:\s*(-?[\d.]+) LUFS/g)].at(-1)?.[1];
-const truePeak = [...loud.stderr.matchAll(/True peak:\s*Peak:\s*(-?[\d.]+) dBFS/g)].at(-1)?.[1];
-if (integrated === undefined) fail(`ebur128 printed no integrated loudness:\n${loud.stderr.slice(-800)}`);
-console.log(`ebur128: integrated ${integrated} LUFS, true peak ${truePeak ?? "?"} dBFS (target -14 +/- 1 LUFS)`);
-if (Math.abs(Number(integrated) + 14) > 1) fail(`integrated loudness ${integrated} LUFS is outside -14 +/- 1`);
+function checkLoudness(file) {
+  const loud = spawnSync(ffmpeg, ["-hide_banner", "-nostats", "-i", file, "-map", "0:a:0", "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8", shell: false, windowsHide: true });
+  if (loud.status !== 0) fail(`ebur128 failed: ${loud.stderr}`);
+  const integrated = [...loud.stderr.matchAll(/Integrated loudness:\s*I:\s*(-?[\d.]+) LUFS/g)].at(-1)?.[1];
+  const truePeak = [...loud.stderr.matchAll(/True peak:\s*Peak:\s*(-?[\d.]+) dBFS/g)].at(-1)?.[1];
+  if (integrated === undefined) fail(`ebur128 printed no integrated loudness:\n${loud.stderr.slice(-800)}`);
+  console.log(`ebur128: integrated ${integrated} LUFS, true peak ${truePeak ?? "?"} dBFS (target -14 +/- 1 LUFS)`);
+  if (Math.abs(Number(integrated) + 14) > 1) fail(`integrated loudness ${integrated} LUFS is outside -14 +/- 1`);
+}
+checkLoudness(out);
 
 step("frames");
 const fr = cli(["frames"], { capture: true });
@@ -196,4 +200,89 @@ for (const f of frames) console.log(`  ${f.chapter} ${String(f.time).padStart(7)
 
 step("status");
 cli(["status"]);
+
+step("portrait reel fixture");
+const REEL = join(ROOT, ".spike", "smoke", "reel");
+if (process.argv.includes("--clean")) rmSync(REEL, { recursive: true, force: true });
+put("talk.json", JSON.stringify({
+  slug: "smoke-reel", title: "Un reel en images", languages: ["fr"],
+  voice: { mode: "ai", fr: "ff_siwis" }, theme: "default", fps: 30, resolution: "portrait",
+  music: { file: BED, credit: "Generated 330 Hz tone (portrait smoke fixture)", license: "CC0-1.0" },
+}, null, 2) + "\n", REEL);
+put("sources.json", JSON.stringify({ sources: [] }, null, 2) + "\n", REEL);
+put("script/fr/01-reel.md", `# Un reel en images
+
+Votre prochain projet mérite mieux qu'une simple image.
+{#cover}Avec ce format vertical, chaque détail reste au centre du regard.
+{#checks}Voici les trois étapes de notre méthode.
+{#image}Choisissez une image claire, {#voice}ajoutez une voix naturelle, {#music}puis une musique discrète.
+{#cta}À vous de jouer, créez votre premier reel et partagez votre histoire dès aujourd'hui.
+`, REEL);
+put("scenes/01-reel.html", `<section data-beat="hook" data-camera="push-in">
+  <div data-block="title" data-variant="hook">
+    <h1>Votre projet mérite <em>un reel.</em></h1>
+  </div>
+</section>
+<section data-beat="cover" data-cue="cover">
+  <figure data-block="figure" data-fit="cover">
+    <img src="assets/cover.png" alt="Mire de couleurs générée pour le reel">
+    <figcaption>Chaque détail au centre du regard</figcaption>
+  </figure>
+</section>
+<section data-beat="checks" data-cue="checks">
+  <div data-block="list">
+    <h3 class="heading">Trois étapes</h3>
+    <ul>
+      <li data-check data-cue="image">Une image claire</li>
+      <li data-check data-cue="voice">Une voix naturelle</li>
+      <li data-check data-cue="music">Une musique discrète</li>
+    </ul>
+  </div>
+</section>
+<section data-beat="cta" data-cue="cta" data-align="center">
+  <div data-block="cta">
+    <img src="assets/logo.svg" alt="Logo du reel de test">
+    <h2>Racontez votre histoire</h2>
+    <p class="action">Créez votre premier reel</p>
+    <p class="url">example.org</p>
+  </div>
+</section>
+`, REEL);
+put("assets/logo.svg", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#55ddaa"/><path d="M46 30 90 60 46 90Z" fill="#102030"/></svg>\n', REEL);
+for (const [rel, args] of [
+  ["assets/cover.png", ["-f", "lavfi", "-i", "testsrc2=size=1080x1920:rate=1", "-frames:v", "1"]],
+  [BED, ["-f", "lavfi", "-i", "sine=frequency=330:sample_rate=44100:duration=4", "-ac", "2", "-c:a", "pcm_s16le"]],
+]) {
+  const file = join(REEL, rel);
+  if (existsSync(file)) continue;
+  mkdirSync(dirname(file), { recursive: true });
+  const generated = spawnSync(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", ...args, file], { encoding: "utf8", shell: false, windowsHide: true });
+  if (generated.status !== 0) fail(`could not generate reel ${rel}: ${generated.stderr}`);
+}
+console.log(REEL);
+for (const [name, args] of [
+  ["check", ["check"]],
+  ["voice", ["voice"]],
+  ["align", ["align"]],
+  ["render --quality draft", ["render", "--quality", "draft"]],
+]) {
+  step(`portrait reel: ${name}`);
+  if (cli(args, { dir: REEL }).code !== 0) fail(`portrait reel: talkreel ${name} failed`);
+}
+step("portrait reel: mixed output loudness");
+const reelOut = join(REEL, "out", "smoke-reel-fr.mp4");
+const reelJoined = join(REEL, "build", "fr", "concat.mp4");
+if (!existsSync(reelJoined) || !existsSync(reelOut)) fail("portrait reel concat or mixed output was not written");
+const reelDuration = Number(probe(reelOut).format.duration);
+console.log(`portrait reel: ${reelDuration.toFixed(3)} s`);
+if (reelDuration < 15 || reelDuration > 25) fail(`portrait reel duration ${reelDuration} is outside 15-25 s`);
+checkLoudness(reelOut);
+
+step("portrait reel: frames --safe-zones");
+const reelFrames = cli(["frames", "--safe-zones"], { dir: REEL, capture: true });
+if (reelFrames.code !== 0) fail("portrait reel: talkreel frames --safe-zones failed");
+const safeFrames = JSON.parse(reelFrames.stdout).frames;
+if (!safeFrames.length) fail("no portrait safe-zone frames extracted");
+for (const f of safeFrames) if (!existsSync(f.path)) fail(`missing portrait safe-zone frame ${f.path}`);
+console.log(`${safeFrames.length} portrait safe-zone frames`);
 console.log("\nSMOKE OK");
