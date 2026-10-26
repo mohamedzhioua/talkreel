@@ -108,9 +108,13 @@ describe("device and CTA structure", () => {
 
 async function runtime(block = device()) {
   const p = page(block);
-  const nodes = new Map<string, { x: number; y: number; scale: number; opacity: number }>();
+  const draws: number[][] = [];
+  const imageNode = { decode: () => Promise.resolve() };
+  const context = { imageSmoothingEnabled: false, imageSmoothingQuality: "low", clearRect() {}, drawImage(_image: unknown, ...args: number[]) { draws.push(args); } };
+  const createNode = () => ({ x: 0, y: 0, scale: 1, opacity: 0, width: 1000, height: 1000, querySelector: () => imageNode, getContext: () => context });
+  const nodes = new Map<string, ReturnType<typeof createNode>>();
   const node = (id: string) => {
-    if (!nodes.has(id)) nodes.set(id, { x: 0, y: 0, scale: 1, opacity: 0 });
+    if (!nodes.has(id)) nodes.set(id, createNode());
     return nodes.get(id)!;
   };
   const errors: unknown[] = [];
@@ -119,7 +123,7 @@ async function runtime(block = device()) {
   for (let n = 0; n < 20 && window.__hfTimelinesBuilding; n++) await Promise.resolve();
   expect(errors).toEqual([]);
   expect(window.__hfTimelinesBuilding).toBe(false);
-  return { p, node, tl: window.__timelines.main! };
+  return { p, node, tl: window.__timelines.main!, draws, context };
 }
 
 describe("device motion", () => {
@@ -171,14 +175,21 @@ describe("device motion", () => {
   });
 
   it("reproduces fresh mid-motion states after sequential and shuffled seeks", async () => {
-    const block = device("phone", rect("save", 'data-zoom="70,25,2" data-cue="zoom"') + '<i data-click="save" data-cue="click"></i><i data-click="save" data-cue="again"></i>');
-    const times = [0, 2.3, 2.7, 3.08, 3.7, 4.08, 5];
+    const block = device("phone", rect("save", 'data-zoom="70,25,2" data-cue="zoom"') + '<i data-click="save" data-cue="click"></i>' + rect("reset", 'data-zoom="50,50,1" data-cue="again"') + '<i data-click="save" data-cue="again"></i>');
+    const times = [0, 2.3, 2.7, 3.08, 3.7, 4.08, 4.3, 5];
     const sample = (r: Awaited<ReturnType<typeof runtime>>) => {
       const d = r.p.plan.devices![0]!;
-      return [d.camera, d.cursor, ...d.clicks.flatMap((c) => [c.target, c.halo])].map((id) => {
+      const camera = r.node(d.camera), draw = r.draws.at(-1)!;
+      expect(draw[0]).toBeCloseTo(camera.x, 4);
+      expect(draw[1]).toBeCloseTo(camera.y, 4);
+      expect(draw[2]).toBeCloseTo(d.width * camera.scale, 3);
+      expect(draw[3]).toBeCloseTo(d.height * camera.scale, 3);
+      expect(r.context.imageSmoothingEnabled).toBe(true);
+      expect(r.context.imageSmoothingQuality).toBe("high");
+      return [...[d.camera, d.cursor, ...d.clicks.flatMap((c) => [c.target, c.halo])].map((id) => {
         const n = r.node(id);
         return [n.x, n.y, n.scale, n.opacity];
-      });
+      }), draw];
     };
     const expected = new Map<number, number[][]>();
     for (const t of times) {
@@ -189,7 +200,7 @@ describe("device motion", () => {
     }
     const r = await runtime(block);
     try {
-      for (const t of [...times, 5, 3.7, 0, 4.08, 2.3, 3.08, 2.7]) {
+      for (const t of [...times, 5, 3.7, 0, 4.3, 2.3, 4.08, 3.08, 2.7]) {
         r.tl.seek(t);
         expect(sample(r), `seek ${t}`).toEqual(expected.get(t));
       }
@@ -200,9 +211,14 @@ describe("device motion", () => {
     const p = page(device() + cta().replace('class="action"', 'class="action" data-cue="again"'));
     const calls: { from: object; to: Record<string, unknown> }[] = [];
     const initial: Record<string, unknown>[] = [];
-    const tl = { fromTo(_el: unknown, from: object, to: Record<string, unknown>) { calls.push({ from, to }); }, set() {}, seek() {} };
+    const tl = { fromTo(el: unknown, from: object, to: Record<string, unknown>) {
+      // A mixed DOM/object array makes GSAP apply its DOM harness to the raster state.
+      expect(Array.isArray(el)).toBe(false);
+      calls.push({ from, to });
+    }, set() {}, seek() {} };
     const window: Record<string, unknown> = { gsap: { timeline: () => tl, set(_el: unknown, state: Record<string, unknown>) { initial.push(state); return { progress() { return this; }, kill() {} }; } }, dispatchEvent() {} };
-    runInNewContext(timelineScript(p.plan), { window, document: { fonts: { ready: Promise.resolve() }, getElementById: (id: string) => id }, Event: class {}, console });
+    const context = { clearRect() {}, drawImage() {} };
+    runInNewContext(timelineScript(p.plan), { window, document: { fonts: { ready: Promise.resolve() }, getElementById: (id: string) => ({ id, querySelector: () => ({ decode: () => Promise.resolve() }), getContext: () => context }) }, Event: class {}, console });
     for (let i = 0; i < 20 && window.__hfTimelinesBuilding; i++) await Promise.resolve();
     expect(calls.length).toBeGreaterThan(10);
     expect(initial).toHaveLength(6);
@@ -215,7 +231,7 @@ describe("device motion", () => {
       expect(Object.keys(to).filter((k) => !["duration", "ease", "immediateRender", "force3D"].includes(k))).toEqual(Object.keys(from));
       expect(to.immediateRender).toBe(false);
     }
-    // Device tweens (3 zoom, 1 cursor reveal, 2 path, 7 click) keep mid-tween transforms 2D.
+    // Only DOM targets take the CSS force3D option; the raster state has no CSS properties.
     const device3d = calls.filter(({ to }) => "force3D" in to);
     expect(device3d).toHaveLength(13);
     expect(device3d.every(({ to }) => to.force3D === false)).toBe(true);
@@ -278,12 +294,26 @@ describe("device motion", () => {
     expect(second!.path[0]).not.toEqual(first!.path[2]);
   });
 
-  it("puts targets, cursor and halos in one overlay above the screenshot", () => {
-    const p = page();
-    const camera = p.html.match(/<div class="tr-device-camera" id="[^"]+">([\s\S]*?)<\/div><\/div><\/div>/)![1]!;
-    expect(camera).toMatch(/^<img [^>]+><div class="tr-device-overlay"><i data-target="save"[^>]*><\/i><i class="tr-agent-cursor"[^>]*><\/i><i class="tr-click-halo"[^>]*><\/i>$/);
+  it.each(["landscape", "portrait", "square"] as const)("paints the %s screenshot at fixed viewport resolution below an unscaled overlay holding the camera", (resolution) => {
+    const p = page(device("browser"), resolution);
+    const d = p.plan.devices![0]!;
+    expect([d.width, d.height]).toEqual(Object.values(deviceViewport(GEOMETRY[resolution], "browser")));
+    // The camera (scaled by the runtime) sits inside the overlay layer, never above it.
+    expect(p.html).toMatch(new RegExp(`<div class="tr-device-vp"><canvas class="tr-device-raster" width="${Math.ceil(d.width)}" height="${Math.ceil(d.height)}" aria-hidden="true" id="${d.raster}"></canvas>`
+      + `<div class="tr-device-overlay"><div class="tr-device-camera" id="${d.camera}">${image}`
+      + `<i data-target="save"[^>]*></i><i class="tr-agent-cursor"[^>]*></i><i class="tr-click-halo"[^>]*></i></div></div></div></div>`));
     const css = readFileSync(new URL("../themes/default/theme.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.tr-device-overlay \{ position: absolute; inset: 0; overflow: hidden; will-change: opacity; \}/);
+    expect(css).toContain(".tr-device-vp { position: relative; width: var(--tr-device-width); height: var(--tr-device-height); overflow: hidden; contain: paint; }");
+    expect(css).toContain(".tr-device-raster { position: absolute; left: 0; top: 0; max-width: none; }");
+    expect(css).toContain(".tr-device-overlay { position: absolute; inset: 0; will-change: opacity; }");
+    expect(css).toContain(".tr-device-camera { position: absolute; inset: 0; transform-origin: 0 0; overflow: hidden; }");
+    expect(css).toContain(".tr-device-camera > img { display: none; }");
+    // Nothing under the camera may become its own layer: its scale must be painted, not composited.
+    const rules = css.slice(css.indexOf("/* ---------- device screenshot and CTA ---------- */"), css.indexOf('[data-block="cta"] {'));
+    expect(rules).toContain(".tr-click-halo {");
+    for (const [, selector, body] of rules.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (/tr-device-camera|tr-agent-cursor|tr-click-halo|\[data-target\]/.test(selector!)) expect(body, selector).not.toMatch(/will-change|translateZ|translate3d|backface-visibility/);
+    }
   });
 });
 

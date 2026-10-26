@@ -178,10 +178,13 @@ the image at that aspect ratio so its percentage coordinates match the display.
   fails with `E_CLICK_TARGET`; invalid device geometry/timing uses `E_DEVICE`.
 - Default entrance `fade`. Frame and action timing comes solely from cues; no
   clocks or layout measurements are used. Run `node scripts/determinism.mjs
-  build/en/01` locally to automatically include mid-cursor and mid-zoom frames,
-  comparing fresh/sequential/shuffled seeks and workers 1/4. The seek check uses
+  build/en/01` locally to automatically include mid-cursor, mid-zoom and
+  after-zoom (0.2 s after each zoom settles) frames, comparing
+  fresh/sequential/shuffled seeks and workers 1/4. The seek check uses
   installed HyperFrames dependencies and an existing browser (set
   `HYPERFRAMES_BROWSER_PATH` if needed); it never downloads one.
+  It also compares every decoded MP4 frame with framemd5, including chunk
+  boundaries and zoom-outs; a match at the sampled times alone is insufficient.
 
 ### `cta`
 

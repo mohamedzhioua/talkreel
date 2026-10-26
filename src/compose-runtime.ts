@@ -17,16 +17,38 @@ export function portraitRuntime(runtime: string): string {
 
 /** All geometry, path control points and previous values are resolved in Node. */
 export function deviceRuntime(runtime: string): string {
-  return runtime.replace("    P.targets.forEach(function (x) {", `    // force3D:false keeps mid-tween transforms 2D. A translate3d would give each moving element
+  return runtime.replace("    await renderDiagrams();", `    await Promise.all(P.devices.map(function (device) {
+      return byId(device.camera).querySelector("img").decode();
+    }));
+    await renderDiagrams();`).replace("    P.targets.forEach(function (x) {", `    // force3D:false keeps mid-tween transforms 2D. A translate3d would give each moving element
     // its own layer, created at whatever frame a render worker starts on.
-    function property(el, prop, from, to, t, d, ease) {
-      var a = {}, b = { duration: d, ease: ease, immediateRender: false, force3D: false };
+    function property(el, prop, from, to, t, d, ease, plain) {
+      var a = {}, b = { duration: d, ease: ease, immediateRender: false };
+      if (!plain) b.force3D = false;
       a[prop] = from;
       b[prop] = to;
       tl.fromTo(el, a, b, t);
     }
     P.devices.forEach(function (device) {
       var camera = byId(device.camera), cursor = byId(device.cursor);
+      var image = camera.querySelector("img"), raster = byId(device.raster);
+      var context = raster.getContext("2d");
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      var values = { x: 0, y: 0, scale: 1 }, painter = {};
+      function paint() {
+        context.clearRect(0, 0, raster.width, raster.height);
+        context.drawImage(image, values.x, values.y, device.width * values.scale, device.height * values.scale);
+      }
+      // Property setters run even when seek() suppresses timeline events. Each setter redraws
+      // synchronously, so forward AND backward seeks finish with all three final camera values.
+      ["x", "y", "scale"].forEach(function (prop) {
+        Object.defineProperty(painter, prop, {
+          get: function () { return values[prop]; },
+          set: function (value) { values[prop] = value; paint(); }
+        });
+      });
+      paint();
       // Apply each initial value synchronously; no initialization waits for a ticker frame.
       function initial(el, prop, value) {
         var state = { immediateRender: false, paused: true };
@@ -44,6 +66,9 @@ export function deviceRuntime(runtime: string): string {
       device.zooms.forEach(function (z) {
         ["x", "y", "scale"].forEach(function (prop) {
           property(camera, prop, z.from[prop], z.to[prop], z.t, z.d, "power2.inOut");
+          // Keep DOM and object targets in separate tweens: GSAP chooses one harness per
+          // target array, and its DOM harness cannot accept a plain raster state object.
+          property(painter, prop, z.from[prop], z.to[prop], z.t, z.d, "power2.inOut", true);
         });
       });
       if (device.clicks.length) property(cursor, "opacity", 0, 1, device.clicks[0].start, 0.001, "none");

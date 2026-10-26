@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Local only: compare fresh, sequential and shuffled PNG seeks (using software raster for device
 // chapters, as renders do), plus decoded frames from HyperFrames --workers 1 and --workers 4.
-// Mid-cursor and mid-zoom times are added from the plan.
+// Mid-cursor, mid-zoom and after-zoom times are added from the plan; framemd5 checks every
+// decoded frame.
 //
 //   node scripts/determinism.mjs <build/<lang>/NN dir> <t1> [t2 ...]
 // Theme regression: keep a copy of a composed M2 chapter BEFORE the theme change, compose it
@@ -16,7 +17,7 @@ import { homedir, tmpdir } from "node:os";
 import { basename, extname, isAbsolute, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { findTool } from "../dist/ffmpeg.js";
-import { hyperframesEntry, hyperframesEnv, renderArgs } from "../dist/compose-hyperframes.js";
+import { hyperframesEntry, hyperframesEnv, isProcessCrash, renderArgs } from "../dist/compose-hyperframes.js";
 
 const args = process.argv.slice(2);
 const compare = args[0] === "--compare";
@@ -43,7 +44,11 @@ const labels = new Map(times.map((t) => [t, "requested"]));
 if (!compare) {
   for (const device of plan.devices ?? []) {
     for (const c of device.clicks) if (c.t > c.start) labels.set((c.start + c.t) / 2, "mid-cursor");
-    for (const z of device.zooms) labels.set(z.t + z.d / 2, "mid-zoom");
+    for (const z of device.zooms) {
+      labels.set(z.t + z.d / 2, "mid-zoom");
+      // A settled camera too: a sequential seek reaches it through every zoom frame, a fresh one directly.
+      if (z.t + z.d + 0.2 < plan.D) labels.set(z.t + z.d + 0.2, "after-zoom");
+    }
   }
   times.splice(0, times.length, ...[...labels.keys()].map((t) => Math.round(t * FPS) / FPS));
   for (const [t, label] of [...labels]) labels.set(Math.round(t * FPS) / FPS, label);
@@ -56,7 +61,12 @@ function render(dir, workers, label) {
   const resolution = readFileSync(join(dir, "index.html"), "utf8").match(/data-resolution="(landscape|portrait|square)"/)?.[1] ?? "landscape";
   const software = !!chapterPlan(dir).devices?.length;
   const args = [hyperframesEntry(), ...renderArgs(dir, mp4, FPS, "draft", workers, resolution, software)];
-  const r = spawnSync(process.execPath, args, { cwd: dir, env: hyperframesEnv(false), stdio: ["ignore", "ignore", "inherit"], windowsHide: true });
+  const run = () => spawnSync(process.execPath, args, { cwd: dir, env: hyperframesEnv(false), stdio: ["ignore", "ignore", "inherit"], windowsHide: true });
+  let r = run();
+  if (r.status !== null && isProcessCrash(r.status)) {
+    console.error(`render with ${workers} worker(s) crashed (exit ${r.status}); retrying once`);
+    r = run();
+  }
   if (r.status !== 0) throw new Error(`render with ${workers} worker(s) failed (exit ${r.status})`);
   return mp4;
 }
@@ -72,6 +82,19 @@ function frame(mp4, t) {
 const a = render(dir, 1, compare ? "before" : "w1");
 const b = render(compare ? resolve(afterArg) : dir, compare ? 1 : 4, compare ? "after" : "w4");
 let bad = 0;
+if (!compare) {
+  const hashes = [a, b].map((mp4) => {
+    const r = spawnSync(ffmpeg, ["-v", "error", "-i", mp4, "-map", "0:v:0", "-f", "framemd5", "-"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024, windowsHide: true });
+    if (r.status !== 0) throw new Error(`framemd5 failed: ${r.stderr}`);
+    writeFileSync(`${mp4}.framemd5`, r.stdout);
+    return r.stdout.split(/\r?\n/).filter((line) => line && !line.startsWith("#"));
+  });
+  const expected = Math.ceil(plan.D * FPS);
+  if (!expected || hashes.some((frames) => frames.length !== expected)) throw new Error(`expected ${expected} frames, got ${hashes.map((frames) => frames.length).join("/")}`);
+  const different = hashes[0].filter((line, i) => line !== hashes[1][i]).length;
+  bad += different;
+  console.log(`framemd5: ${different}/${expected} frames differ (workers 1/4)`);
+}
 for (const t of samples) {
   const [pa, pb] = [frame(a, t), frame(b, t)];
   const [ha, hb] = [pa, pb].map((p) => createHash("sha256").update(p).digest("hex"));

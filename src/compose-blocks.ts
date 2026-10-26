@@ -14,6 +14,7 @@ export interface BlocksPlan {
   figures?: { id: string; anim: string; t: number; d: number; n?: number }[];
   devices?: {
     camera: string; cursor: string; initial: [number, number];
+    raster: string; width: number; height: number;
     zooms: { t: number; d: number; from: { x: number; y: number; scale: number }; to: { x: number; y: number; scale: number } }[];
     clicks: { target: string; halo: string; t: number; start: number; path: [number, number][] }[];
   }[];
@@ -72,23 +73,26 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
     }
     setAttr(d.block, "style", `--tr-device-width:${d.width}px;--tr-device-height:${d.height}px`);
     const vp = el("div", { class: "tr-device-vp" }, d.block);
-    const camera = el("div", { class: "tr-device-camera" }, vp, [image]);
-    // Targets, cursor and halos share one composited layer above the screenshot (theme.css),
-    // so their motion never re-rasters part of the screenshot's layer.
-    const overlay = el("div", { class: "tr-device-overlay" }, camera, targets);
-    camera.children.push(overlay);
+    // Paint at viewport resolution rather than letting Chrome cache a transformed <img>.
+    // Round the backing store up; CSS keeps its pixels 1:1 and the viewport clips the excess.
+    const raster = el("canvas", { class: "tr-device-raster", width: String(Math.ceil(d.width)), height: String(Math.ceil(d.height)), "aria-hidden": "true" }, vp);
+    // Targets, cursor and halos move with the camera inside one unscaled composited layer above
+    // the screenshot (theme.css): the camera's scale is painted into that layer, never applied to it.
+    const overlay = el("div", { class: "tr-device-overlay" }, vp);
+    const camera = el("div", { class: "tr-device-camera" }, overlay, [image, ...targets]);
+    overlay.children = [camera];
     const initial: [number, number] = d.clicks[0]?.path[0] ?? [0, 0];
-    const cursor = el("i", { class: "tr-agent-cursor", "aria-hidden": "true" }, overlay);
-    overlay.children.push(cursor);
-    vp.children = [camera];
+    const cursor = el("i", { class: "tr-agent-cursor", "aria-hidden": "true" }, camera);
+    camera.children.push(cursor);
+    vp.children = [raster, overlay];
     const clicks = d.clicks.map((c) => {
       const end = c.path[2]!;
-      const halo = el("i", { class: "tr-click-halo", "aria-hidden": "true", style: `left:${end[0]}px;top:${end[1]}px` }, overlay);
-      overlay.children.push(halo);
+      const halo = el("i", { class: "tr-click-halo", "aria-hidden": "true", style: `left:${end[0]}px;top:${end[1]}px` }, camera);
+      camera.children.push(halo);
       return { target: idFor(c.target), halo: idFor(halo), t: r3(c.t), start: r3(c.start), path: c.path };
     });
     d.block.children = [vp];
-    return { camera: idFor(camera), cursor: idFor(cursor), initial, zooms: d.zooms.map((z) => ({ t: r3(z.t), d: r3(z.d), from: z.from, to: z.to })), clicks };
+    return { camera: idFor(camera), cursor: idFor(cursor), initial, raster: idFor(raster), width: d.width, height: d.height, zooms: d.zooms.map((z) => ({ t: r3(z.t), d: r3(z.d), from: z.from, to: z.to })), clicks };
   });
 
   const trackOf = new Map<HtmlElement, string>();
