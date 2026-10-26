@@ -818,6 +818,12 @@ html[data-resolution="square"],
    as a render from frame 0 already shows them. Landscape keeps its M2 bytes. */
 [data-resolution="portrait"] .tr-captions,
 [data-resolution="square"] .tr-captions { will-change: transform; }
+/* Deliberate fix for all portrait and square pages, including those without cover figures or
+   checklists: each caption line gets its own opacity layer. Fading a layer avoids re-rasterizing
+   glyph edges at partial opacity, whose pixels depended on when a render worker started or on
+   fresh versus sequential seeks. Landscape captions keep their existing rendering. */
+[data-resolution="portrait"] .tr-cap-line,
+[data-resolution="square"] .tr-cap-line { will-change: opacity; }
 
 /* S3-L1: room for stacked Arabic vowel marks on wrapped display text. */
 :root:lang(ar) section[data-beat] > h2,
@@ -840,3 +846,61 @@ html[data-resolution="square"],
 [dir="rtl"] .tr-source { padding-left: 0; padding-right: 24px; }
 [dir="rtl"] .tr-source::before { margin-right: 0; margin-left: 14px; }
 [dir="rtl"] .tr-rail-fill { transform-origin: 100% 50%; }
+
+/* ---------- checklist ticks and cover figure ---------- */
+/* A checked list item shows an empty box; the composer adds .tr-check over it and fades it in at
+   the item's cue (opacity only). The tick is a clip-path shape: no transform, no own layer.
+   The box is a border, not an inset box-shadow: at the fractional y of a list row, a rounded
+   inset shadow drew corner pixels that depended on the frame a render worker started on. */
+[data-block="list"] li[data-check]::before {
+  top: 0.225em;
+  width: calc(var(--tr-k) * 40px);
+  height: calc(var(--tr-k) * 40px);
+  box-sizing: border-box;
+  border: 3px solid var(--tr-accent);
+  border-radius: 6px;
+  background: transparent;
+}
+[data-block="list"] .tr-check {
+  position: absolute;
+  left: 0;
+  top: 0.225em;
+  width: calc(var(--tr-k) * 40px);
+  height: calc(var(--tr-k) * 40px);
+  border-radius: 6px;
+  background: var(--tr-accent);
+  opacity: 0;
+}
+[data-block="list"] .tr-check::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--tr-bg);
+  clip-path: polygon(18% 52%, 31% 39%, 43% 51%, 70% 24%, 83% 37%, 43% 77%);
+}
+[dir="rtl"] [data-block="list"] .tr-check { left: auto; right: 0; }
+
+/* A cover figure's <img> is moved by the composer into a full-bleed .tr-backdrop between the
+   ambient layer and the stage. Its opacity fades with the figure's cue and its beat; it is never
+   transformed, so a beat's camera scales only the section. The figure keeps its caption, pinned
+   to the bottom of the stage without moving the beat's other content. */
+[data-block="figure"][data-fit="cover"] { position: absolute; left: 0; right: 0; bottom: 0; }
+[data-block="figure"][data-fit="cover"] > figcaption {
+  font-size: max(28px, calc(var(--tr-k) * 44px));
+  font-weight: 600;
+  color: var(--tr-ink);
+}
+.tr-backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+.tr-backdrop > img { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Fixed scrim: even on a white photo, 0.65 keeps ink text above 5:1 and the accent (large
+   hook text) above 3:1. */
+.tr-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(11, 12, 16, 0.6) 0%, rgba(11, 12, 16, 0.65) 50%, rgba(11, 12, 16, 0.85) 100%);
+}
+/* Portrait: stage y 340..1048, captions y 1064..1224; the top and bottom UI zones show the photo. */
+[data-resolution="portrait"] .tr-backdrop::after {
+  background: linear-gradient(to bottom, rgba(11, 12, 16, 0.2) 0%, rgba(11, 12, 16, 0.25) 8%, rgba(11, 12, 16, 0.65) 17%, rgba(11, 12, 16, 0.65) 60%, rgba(11, 12, 16, 0.25) 72%, rgba(11, 12, 16, 0.15) 100%);
+}

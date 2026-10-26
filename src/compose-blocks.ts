@@ -1,11 +1,14 @@
 // Page structure for the terminal and pipeline blocks (scenes.md section 5a). The composer adds
 // the window chrome, the scroll track, the cursors, the rail and the lit chip layers; every time
 // was already resolved in compose-scene.ts, so this only writes nodes and plan entries.
-import { elementChildren, escapeText, geometryFor, getAttr, hasAttr, setAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
-import { targetRect, terminalRows, type ResolvedTimeline } from "./compose-scene.js";
+import { elementChildren, escapeText, geometryFor, getAttr, hasAttr, serialize, setAttr, textContent, type HtmlElement, type HtmlNode } from "./compose-html.js";
+import { ANIM_DURATION, isCoverFigure, targetRect, terminalRows, type ResolvedTimeline } from "./compose-scene.js";
 
 /** Viewport padding above and below the rows (theme.css .tr-term-vp). */
 const TERM_PAD_PX = 24;
+
+/** A check mark's fade, like a pipeline chip lighting up. */
+export const CHECK_TICK = 0.35;
 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -23,6 +26,46 @@ export interface BlocksPlan {
   grows: { id: string; t: number; h: number; h0: number }[];
   cursors: { id: string; show: number; hide: number }[];
   chips: { id: string; rail: string; t: number; f: number; done: boolean }[];
+  /** Check-mark layers of `data-check` list items; omitted without them to preserve page bytes. */
+  checks?: { id: string; t: number; d: number }[];
+}
+
+/** A cover figure's backdrop: fades in at the figure's entrance, out with its beat (`out`). */
+export interface Backdrop {
+  id: string;
+  t: number;
+  d: number;
+  /** The beat's fade-out start; null for the last beat. */
+  out: number | null;
+}
+
+/**
+ * Move each cover figure's `<img>` out of its beat into a composer-owned `.tr-backdrop` element,
+ * written between the ambient layer and the stage. The figure keeps its caption in the stage.
+ * Returns the backdrop markup (one element per figure) and its plan entries.
+ */
+export function coverBackdrops(tl: ResolvedTimeline, fps = 30): { html: string; backdrops: Backdrop[] } {
+  let html = "";
+  let n = 0;
+  const backdrops: Backdrop[] = [];
+  for (const target of tl.targets.filter((t) => isCoverFigure(t.el))) {
+    const image = elementChildren(target.el).find((c) => c.tag === "img");
+    if (!image) continue;
+    target.el.children = target.el.children.filter((c) => c !== image);
+    const id = `tr-backdrop-${n++}`;
+    html += `    <div class="tr-backdrop" id="${id}">${serialize(image)}</div>\n`;
+    const beat = tl.beats[target.beat]!;
+    // A figure cued after its beat has left (already warned) never shows its backdrop.
+    if (beat.fadeAt !== null && target.t >= beat.fadeAt) continue;
+    const t = r3(target.t);
+    const out = beat.fadeAt === null ? null : r3(beat.fadeAt);
+    // Skip windows shorter than one frame at the talk's FPS; leave the hoisted image hidden.
+    if (out !== null && r3(out - t) < 1 / fps) continue;
+    // Use the rounded plan endpoints so millisecond rounding cannot make the tweens overlap.
+    const d = out === null ? ANIM_DURATION.fade : r3(Math.min(ANIM_DURATION.fade, out - t));
+    backdrops.push({ id, t, d, out });
+  }
+  return { html, backdrops };
 }
 
 /** These image blocks use the deterministic single-property entrance runtime. */
@@ -143,5 +186,11 @@ export function buildBlocks(tl: ResolvedTimeline, idFor: (e: HtmlElement) => str
     c.chip.children.push(lit);
     plan.chips.push({ id: idFor(lit), rail, t: r3(c.t), f: r3(c.fraction), done: c.done });
   }
+
+  if (tl.checks?.length) plan.checks = tl.checks.map((c) => {
+    const tick = el("i", { class: "tr-check", "aria-hidden": "true" }, c.el);
+    c.el.children.push(tick);
+    return { id: idFor(tick), t: r3(c.t), d: CHECK_TICK };
+  });
   return plan;
 }

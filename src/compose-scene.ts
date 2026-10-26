@@ -65,6 +65,8 @@ export type RuleId =
   | "E_DEVICE"
   | "E_CLICK_TARGET"
   | "E_CTA"
+  | "E_FIGURE"
+  | "E_LIST"
   | "E_FORBIDDEN";
 
 export interface SceneIssue {
@@ -330,6 +332,16 @@ function deviceIssues(block: HtmlElement): SceneIssue[] {
   return out;
 }
 
+/** A full-bleed figure: the composer hoists its image into a backdrop layer under the stage. */
+export function isCoverFigure(el: HtmlElement): boolean {
+  return getAttr(el, "data-block") === "figure" && getAttr(el, "data-fit") === "cover";
+}
+
+/** A list item whose check mark ticks at its cue; the item itself enters with its list. */
+export function isCheckItem(el: HtmlElement): boolean {
+  return el.tag === "li" && hasAttr(el, "data-check") && blockOf(el) === "list" && ["ul", "ol"].includes(el.parent?.tag ?? "");
+}
+
 function ctaIssues(block: HtmlElement): SceneIssue[] {
   const kids = elementChildren(block);
   const headlines = kids.filter((el) => el.tag === "h2");
@@ -397,6 +409,8 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
     if (cam !== undefined && !(CAMERAS as readonly string[]).includes(cam ?? "")) out.push(issue("E_BAD_CAMERA", b.el, `data-camera must be one of ${CAMERAS.join(", ")}`));
     if (i === 0 && b.cue !== null) out.push(issue("E_FIRST_BEAT_CUE", b.el, "the first beat starts at 0 s and must not have data-cue"));
     if (i > 0 && (b.cue === null || b.cue === "")) out.push(issue("E_BEAT_NO_CUE", b.el, "every beat after the first needs data-cue"));
+    const covers = elementChildren(b.el).filter(isCoverFigure);
+    if (covers.length > 1) out.push(issue("E_FIGURE", covers[1]!, "a beat holds at most one cover figure"));
   });
   if (beats.length === 0 && out.length === 0) {
     out.push({ rule: "E_TOP_LEVEL", line: 1, element: "(scene)", message: "a scene needs at least one <section data-beat>" });
@@ -442,6 +456,19 @@ export function validateScene(scene: Scene, opts: StaticCheckOptions): SceneIssu
     if (block === "pipeline") out.push(...pipelineIssues(el));
     if (block === "device") out.push(...deviceIssues(el));
     if (block === "cta") out.push(...ctaIssues(el));
+    if (hasAttr(el, "data-fit")) {
+      if (block !== "figure") out.push(issue("E_FIGURE", el, "data-fit is only allowed on a figure block"));
+      else if (getAttr(el, "data-fit") !== "cover") out.push(issue("E_FIGURE", el, 'data-fit must be "cover"'));
+      else if (!el.parent || !beats.some((b) => b.el === el.parent)) out.push(issue("E_FIGURE", el, "a cover figure must be a direct child of its beat"));
+      // The backdrop only fades, timed by the figure: an <img> target would get its own entrance tweens.
+      for (const image of elementChildren(el).filter((c) => c.tag === "img" && (hasAttr(c, "data-cue") || hasAttr(c, "data-anim")))) {
+        out.push(issue("E_FIGURE", image, "a cover figure's <img> takes no data-cue or data-anim; time the backdrop with the figure's data-cue"));
+      }
+    }
+    if (hasAttr(el, "data-check")) {
+      if (!isCheckItem(el)) out.push(issue("E_LIST", el, "data-check marks an <li> of a list block"));
+      else if (getAttr(el, "data-check")) out.push(issue("E_LIST", el, "data-check is a bare attribute; time the tick with data-cue"));
+    }
     if (block === "diagram") {
       const pre = descendants(el).find((d) => hasAttr(d, "data-mermaid"));
       const source = pre ? textContent(pre) : "";
@@ -554,8 +581,16 @@ export interface ResolvedTimeline {
   cursors: ResolvedCursor[];
   chips: ResolvedChip[];
   devices?: ResolvedDevice[];
+  /** Check marks of `data-check` list items; omitted when the scene has none. */
+  checks?: ResolvedCheck[];
   issues: SceneIssue[];
   warnings: SceneWarning[];
+}
+
+/** A checked list item's tick: at its cue, never before the item has entered. */
+export interface ResolvedCheck {
+  el: HtmlElement;
+  t: number;
 }
 
 export interface ResolvedDevice {
@@ -607,7 +642,7 @@ export function typeDuration(chars: number): number {
   return Math.min(1.2, Math.max(0.3, 0.035 * chars));
 }
 
-const ANIM_DURATION: Record<Exclude<Anim, "type">, number> = { "fade-up": 0.6, fade: 0.6, pop: 0.5, draw: 0.8, stream: 0.12, slide: 0.6 };
+export const ANIM_DURATION: Record<Exclude<Anim, "type">, number> = { "fade-up": 0.6, fade: 0.6, pop: 0.5, draw: 0.8, stream: 0.12, slide: 0.6 };
 
 /** The entrance targets of a beat, in document order (section 5, "Targets"). */
 export function beatTargets(beat: HtmlElement): HtmlElement[] {
@@ -714,6 +749,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
   const cursors: ResolvedCursor[] = [];
   const chips: ResolvedChip[] = [];
   const devices: ResolvedDevice[] = [];
+  const checks: ResolvedCheck[] = [];
 
   scene.beats.forEach((b, bi) => {
     const rb = beats[bi]!;
@@ -726,10 +762,10 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       for (let p = el.parent; p && p !== b.el; p = p.parent) if (isTarget.has(p)) return p;
       return null;
     };
-    const resolveBase = (el: HtmlElement): number => {
+    const resolveBase = (el: HtmlElement, ownCue = true): number => {
       const anc = nearestTargetAncestor(el);
       const ancT = anc ? base.get(anc)! : rb.start;
-      const own = cueTime(el);
+      const own = ownCue ? cueTime(el) : null;
       if (own !== null && own < rb.start) {
         issues.push(issue("E_CUE_BEFORE_BEAT", el, `cue at ${own.toFixed(2)} s is before its beat "${b.id}" starts (${rb.start.toFixed(2)} s)`));
       }
@@ -774,7 +810,8 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
     const slot = new Map<string, number>();
     let prev: ResolvedTarget | null = null;
     for (const el of list) {
-      const t0 = resolveBase(el);
+      // A checked item is on screen with its list, like a pipeline chip; its cue times the tick.
+      const t0 = resolveBase(el, !isCheckItem(el));
       base.set(el, t0);
       const animAttr = getAttr(el, "data-anim");
       const anim: Anim = typeof animAttr === "string" && (ANIMS as readonly string[]).includes(animAttr) ? (animAttr as Anim) : defaultAnim(el);
@@ -798,6 +835,11 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
       targets.push(rt);
       entered.set(el, t);
       prev = rt;
+    }
+
+    for (const li of list.filter(isCheckItem)) {
+      const enteredAt = entered.get(li)!;
+      checks.push({ el: li, t: hasAttr(li, "data-cue") ? Math.max(resolveBase(li), enteredAt) : enteredAt });
     }
 
     let n = 0;
@@ -889,7 +931,7 @@ export function resolveTimeline(scene: Scene, cueTimes: Record<string, number>, 
     }
   });
 
-  return { duration: D, beats, targets, steps, diagrams, scrolls, grows, cursors, chips, ...(devices.length ? { devices } : {}), issues, warnings };
+  return { duration: D, beats, targets, steps, diagrams, scrolls, grows, cursors, chips, ...(devices.length ? { devices } : {}), ...(checks.length ? { checks } : {}), issues, warnings };
 }
 
 /** Cue names used anywhere in the scene (beats, elements, steps). */

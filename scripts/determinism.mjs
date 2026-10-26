@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Local only: compare fresh, sequential and shuffled PNG seeks (using software raster for device
 // chapters, as renders do), plus decoded frames from HyperFrames --workers 1 and --workers 4.
-// Mid-cursor, mid-zoom and after-zoom times are added from the plan; framemd5 checks every
-// decoded frame.
+// Mid-cursor, mid-zoom, after-zoom, mid-fade (cover-figure backdrop) and mid-tick (checklist)
+// times are added from the plan; framemd5 checks every decoded frame.
 //
 //   node scripts/determinism.mjs <build/<lang>/NN dir> <t1> [t2 ...]
 // Theme regression: keep a copy of a composed M2 chapter BEFORE the theme change, compose it
@@ -50,10 +50,12 @@ if (!compare) {
       if (z.t + z.d + 0.2 < plan.D) labels.set(z.t + z.d + 0.2, "after-zoom");
     }
   }
+  for (const b of plan.backdrops ?? []) if (b.t + b.d / 2 < plan.D) labels.set(b.t + b.d / 2, "mid-fade");
+  for (const c of plan.checks ?? []) if (c.t + c.d / 2 < plan.D) labels.set(c.t + c.d / 2, "mid-tick");
   times.splice(0, times.length, ...[...labels.keys()].map((t) => Math.round(t * FPS) / FPS));
   for (const [t, label] of [...labels]) labels.set(Math.round(t * FPS) / FPS, label);
 }
-if (!times.length) throw new Error("provide frame times or a chapter with device click/zoom motion");
+if (!times.length) throw new Error("provide frame times or a chapter with device click/zoom motion, cover figures or checklist ticks");
 const samples = [...new Set(times)].sort((a, b) => a - b);
 
 function render(dir, workers, label) {

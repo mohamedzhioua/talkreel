@@ -11,7 +11,7 @@ const source = readFileSync(new URL("../scripts/determinism.mjs", import.meta.ur
   .replace(/^import .+;\r?$/gm, "")
   .replace('await import(pathToFileURL(require.resolve("puppeteer-core")).href)', "puppeteerModule");
 
-function script(argv: string[], deviceDirs: string[], openError?: Error, differentFrame = false, device: object = { clicks: [], zooms: [] }) {
+function script(argv: string[], deviceDirs: string[], openError?: Error, differentFrame = false, device: object = { clicks: [], zooms: [] }, extra: object = {}) {
   const launches: { args: string[] }[] = [];
   const browsers: { close: ReturnType<typeof vi.fn> }[] = [];
   const spawnSync = vi.fn((_exe: string, args: string[], _options: unknown) => ({
@@ -28,7 +28,7 @@ function script(argv: string[], deviceDirs: string[], openError?: Error, differe
     spawnSync, findTool: () => "ffmpeg", hyperframesEntry: () => "hyperframes.mjs", hyperframesEnv: () => ({}), isProcessCrash, renderArgs,
     mkdtempSync: () => resolve("output"), tmpdir: () => resolve("tmp"), writeFileSync() {},
     readFileSync: (file: string) => {
-      if (file.endsWith("timeline.js")) return `window.__trPlan = ${JSON.stringify({ D: 2, ...(deviceDirs.some((dir) => file === join(resolve(dir), "timeline.js")) ? { devices: [device] } : {}) })};\n`;
+      if (file.endsWith("timeline.js")) return `window.__trPlan = ${JSON.stringify({ D: 2, ...(deviceDirs.some((dir) => file === join(resolve(dir), "timeline.js")) ? { devices: [device] } : {}), ...extra })};\n`;
       if (file.endsWith("index.html")) return '<html data-resolution="landscape" data-width="1920" data-height="1080">';
       return Buffer.from("identical PNG");
     },
@@ -99,6 +99,22 @@ describe("determinism script raster mode and cleanup", () => {
     // the second zoom settles at 2.2 s, after the 2 s chapter, so it adds no frame.
     expect([...new Set(frames)].sort((a, b) => a - b)).toEqual([9, 24, 30, 39, 51]);
     expect(r.launches).toHaveLength(7);
+    expect(r.exit).toHaveBeenCalledWith(0);
+  });
+
+  it("samples mid-fade cover backdrops and mid-tick checklist frames inside the chapter, without device raster", async () => {
+    const plan = {
+      backdrops: [{ id: "tr-backdrop-0", t: 0.12, d: 0.6, out: 1 }, { id: "tr-backdrop-1", t: 1.6, d: 0.6, out: null }],
+      checks: [{ id: "tr-e-1", t: 0.5, d: 0.35 }, { id: "tr-e-2", t: 1.9, d: 0.35 }],
+    };
+    const r = script(["chapter"], [], undefined, false, undefined, plan);
+    await r.done;
+    const frames = r.spawnSync.mock.calls.map((call) => call[1].join(" ").match(/select=eq\(n\\,(\d+)\)/)?.[1]).filter(Boolean).map(Number);
+    // 0.42 s and 1.9 s mid-fade, 0.675 s mid-tick; the second tick's midpoint (2.075 s) is past the 2 s chapter.
+    expect([...new Set(frames)].sort((a, b) => a - b)).toEqual([13, 20, 57]);
+    const renders = r.spawnSync.mock.calls.map((call) => call[1]).filter((args) => args.includes("render"));
+    expect(renders.every((args) => !args.includes("--no-browser-gpu"))).toBe(true);
+    expect(r.launches).toHaveLength(5);
     expect(r.exit).toHaveBeenCalledWith(0);
   });
 });

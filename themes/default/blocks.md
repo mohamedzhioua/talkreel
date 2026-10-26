@@ -23,6 +23,12 @@ directly in the beat. Camera moves may drift a beat up to 40 px past the left
 and right edges of the safe area in landscape, never into the caption band.
 Portrait camera travel is bounded by the 6% side safe zone, including full-width
 content. Portrait captions fade at both edges above the bottom UI zone.
+On all portrait and square pages, including those without cover figures or
+checklists, caption lines use their own opacity layers to keep glyph-edge pixels
+identical across fresh and sequential seeks; landscape captions are unchanged.
+The composer owns the full-bleed backdrop layer of cover figures
+(`.tr-backdrop`, under the stage) like the ambient layer, so a scene still
+writes only inside beats and nothing it writes reaches the caption band.
 
 ## Shared rules
 
@@ -133,6 +139,33 @@ fits the safe area in landscape, portrait and square.
   cue timeline. Images add no independent clock or camera motion.
 - Copy the image named in `examples/figure.html` into the talk's `assets/` before
   using that example. Compose copies referenced assets into the chapter build.
+
+**Cover figure** (`data-fit="cover"`): the photo fills the whole frame behind the
+beat, for product shots in a reel (`examples/figure-cover.html`).
+
+```html
+<figure data-block="figure" data-fit="cover">
+  <img src="assets/photos/door.jpg" alt="A sectional door on a warehouse">
+  <figcaption>Sectional doors, made to measure</figcaption> <!-- optional, <= 60 chars -->
+</figure>
+```
+
+- The composer moves the `<img>` into its own `.tr-backdrop` element between
+  the ambient layer and the stage (full frame, `object-fit: cover`, under a
+  fixed dark scrim that keeps a hook title, the figcaption and the captions
+  legible). The `<figcaption>` stays in the stage, pinned to its bottom; the
+  beat's other content (a hook `title`, an `<h2>`) keeps its normal place.
+- The backdrop fades in with the `fade` entrance (up to 0.6 s) at the figure's cue
+  (or with its beat) and fades out with its beat (0.3 s). It never moves: a
+  beat's `data-camera` scales only the beat, not the photo.
+- A late entrance is shortened to finish at the beat's fade-out start; if less
+  than one frame at the talk's FPS remains before fade-out, the backdrop is skipped.
+- A cover figure is a direct child of its beat, at most one per beat (`E_FIGURE`).
+  `cover` is the only `data-fit` value (`E_FIGURE`). Time it with the figure's
+  `data-cue`; its `<img>` takes no `data-cue` or `data-anim` (`E_FIGURE`). Image
+  rules are the same as above. Each cover figure in a chapter gets its own backdrop.
+- Prefer large photos with a centred subject: cover crops the sides of a square
+  photo in portrait (it shows about 56 % of the width).
 
 ### `device`
 
@@ -268,6 +301,28 @@ add quotation marks; the theme draws one.
 
 Items enter one by one: an item with `data-cue` at its cue, an item without one
 with the block (staggered).
+
+**Checklist** (`data-check`): a checked item shows an empty box and ticks it at
+its cue, like a pipeline chip lighting up.
+
+```html
+<div data-block="list">
+  <h3 class="heading">What every customer gets</h3>
+  <ul>
+    <li data-check data-cue="quote">A free quote within a day</li>
+    <li data-check data-cue="measure">Made to measure</li>
+    <li data-check>Fitted in one visit</li>        <!-- no cue: ticked as it enters -->
+  </ul>
+</div>
+```
+
+- A checked item is on screen with its list (it enters with the block,
+  staggered); its `data-cue` times the tick, not the entrance. The tick (an
+  accent box with a check mark) fades in over 0.35 s at the cue, never before
+  its item has entered. Items without `data-check` keep the rules above.
+- `data-check` is a bare attribute on an `<li>` of a `list` (`E_LIST`).
+- Run `node scripts/determinism.mjs build/<lang>/NN` locally: it adds a mid-tick
+  frame for each checked item and a mid-fade frame for each cover figure.
 
 ### `split`
 

@@ -360,7 +360,7 @@ describe("carried visual fixes", () => {
     expect(createHash("sha256").update(legacy!.trimEnd()).digest("hex")).toBe("cff657176fb63182de825ae5886748e06e54a85446ddfeb5e41b8464297e29b4");
     for (const match of added!.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{[^{}]*\}/g)) {
       for (const selector of match[1]!.split(",")) {
-        expect(selector.trim()).toMatch(/^(?:\[data-block="(?:device|cta)"\]|\.tr-(?:device|agent-cursor|click-halo)|\[data-resolution="(?:portrait|square)"\]|:root:lang\(ar\)|\[dir="rtl"\])/);
+        expect(selector.trim()).toMatch(/^(?:\[data-block="(?:device|cta)"\]|\[data-block="figure"\]\[data-fit="cover"\]|\[data-block="list"\] (?:li\[data-check\]|\.tr-check)|\.tr-(?:device|agent-cursor|click-halo|backdrop)|\[data-resolution="(?:portrait|square)"\]|:root:lang\(ar\)|\[dir="rtl"\])/);
       }
     }
   });

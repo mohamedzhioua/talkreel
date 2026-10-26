@@ -96,6 +96,40 @@ export function deviceRuntime(runtime: string): string {
     P.targets.forEach(function (x) {`);
 }
 
+/**
+ * Cover-figure backdrops (composer-owned, outside the stage): one opacity tween in at the figure's
+ * entrance and one out with its beat, never a transform, so a beat's camera never scales them.
+ */
+export function backdropRuntime(runtime: string): string {
+  return runtime.replace("    P.targets.forEach(function (x) {", `    P.backdrops.forEach(function (b) {
+      var el = byId(b.id);
+      tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: b.d, ease: "power1.out", immediateRender: false, force3D: false }, b.t);
+      if (b.out !== null) tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in", immediateRender: false, force3D: false }, b.out);
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
+/**
+ * Pages with cover backdrops or checklist ticks keep every tween 2D. GSAP's default force3D:"auto"
+ * gives a moving element (a hook title fading up over its backdrop) a translate3d layer whose
+ * raster depended on the frame a render worker started on. Other pages keep their runtime bytes.
+ */
+export function flatRuntime(runtime: string): string {
+  return runtime.replace("    var tl = window.gsap.timeline({ paused: true });\n", `    var tl = window.gsap.timeline({ paused: true });
+    window.gsap.config({ force3D: false });
+`);
+}
+
+/** Checklist ticks: each check-mark layer fades in at its item's cue; one property, no transform. */
+export function checkRuntime(runtime: string): string {
+  return runtime.replace("    P.targets.forEach(function (x) {", `    P.checks.forEach(function (c) {
+      tl.fromTo(byId(c.id), { opacity: 0 }, { opacity: 1, duration: c.d, ease: "power1.out", immediateRender: false, force3D: false }, c.t);
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
 /** Only RTL pages receive the mirrored runtime; LTR output remains byte-identical. */
 export function mirrorSlides(runtime: string): string {
   return runtime
