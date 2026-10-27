@@ -2,7 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { applyDisplays, CAPTION_ABSORB_MAX_CHARS, CAPTION_FUNCTION_WORDS, CAPTION_MAX_CHARS, captionLines } from "../src/compose-captions.js";
+import { applyDisplays, CAPTION_FUNCTION_WORDS, captionLines } from "../src/compose-captions.js";
+import { GEOMETRY } from "../src/geometry.js";
 import { buildPage, composeChapter, sourceLabel, timelineScript, typographic } from "../src/compose.js";
 import { parseScene, resolveTimeline } from "../src/compose-scene.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
@@ -148,7 +149,7 @@ describe("caption lines", () => {
       "Simon Willison says AI tools amplify existing expertise.",
       "My rule: every run-until-done loop carries a wall clock cap, a receipt per tick, and an explicit stop reason.",
     ]) {
-      for (const l of texts(s)) expect(l.length).toBeLessThanOrEqual(CAPTION_MAX_CHARS);
+      for (const l of texts(s)) expect(l.length).toBeLessThanOrEqual(GEOMETRY.landscape.caption.maxChars);
     }
   });
 

@@ -49,6 +49,11 @@ def run(args: argparse.Namespace) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # -I ignores PYTHONIOENCODING. Configure real streams ourselves; pytest's
+    # capture streams do not expose reconfigure.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     args = build_parser().parse_args(argv)
     # Libraries may print to stdout; keep stdout for the one JSON result.
     real_stdout = sys.stdout
@@ -60,7 +65,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     finally:
         sys.stdout = real_stdout
-    real_stdout.write(json.dumps(result) + "\n")
+    real_stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
     real_stdout.flush()
     return 0
 

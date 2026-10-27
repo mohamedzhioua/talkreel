@@ -5,6 +5,139 @@
 //
 // Plain ES5-style JavaScript in a string, so it runs as a classic script and is written to the
 // build directory verbatim.
+import { portraitCamera } from "./geometry.js";
+
+/** Keep the legacy landscape runtime byte-for-byte; constrain only portrait camera travel. */
+export function portraitRuntime(runtime: string): string {
+  const push = portraitCamera("push-in"), pan = portraitCamera("pan-left");
+  return runtime
+    .replace('scale: 1.04, duration: b.unmount - b.start, ease: "none"', `scale: ${push.to}, duration: b.unmount - b.start, ease: "none", immediateRender: false`)
+    .replace('{ x: 24 }, { x: -24, duration: b.unmount - b.start, ease: "none"', `{ x: ${pan.from} }, { x: ${pan.to}, duration: b.unmount - b.start, ease: "none", immediateRender: false`);
+}
+
+/** All geometry, path control points and previous values are resolved in Node. */
+export function deviceRuntime(runtime: string): string {
+  return runtime.replace("    await renderDiagrams();", `    await Promise.all(P.devices.map(function (device) {
+      var img = byId(device.camera).querySelector("img");
+      return img.decode().catch(function () { throw new Error("device screenshot could not be decoded: " + img.getAttribute("src")); });
+    }));
+    await renderDiagrams();`).replace("    P.targets.forEach(function (x) {", `    // force3D:false keeps mid-tween transforms 2D. A translate3d would give each moving element
+    // its own layer, created at whatever frame a render worker starts on.
+    function property(el, prop, from, to, t, d, ease, plain) {
+      var a = {}, b = { duration: d, ease: ease, immediateRender: false };
+      if (!plain) b.force3D = false;
+      a[prop] = from;
+      b[prop] = to;
+      tl.fromTo(el, a, b, t);
+    }
+    P.devices.forEach(function (device) {
+      var camera = byId(device.camera), cursor = byId(device.cursor);
+      var image = camera.querySelector("img"), raster = byId(device.raster);
+      var context = raster.getContext("2d");
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      var values = { x: 0, y: 0, scale: 1 }, painter = {};
+      function paint() {
+        context.clearRect(0, 0, raster.width, raster.height);
+        context.drawImage(image, values.x, values.y, device.width * values.scale, device.height * values.scale);
+      }
+      // Property setters run even when seek() suppresses timeline events. Each setter redraws
+      // synchronously, so forward AND backward seeks finish with all three final camera values.
+      ["x", "y", "scale"].forEach(function (prop) {
+        Object.defineProperty(painter, prop, {
+          get: function () { return values[prop]; },
+          set: function (value) { values[prop] = value; paint(); }
+        });
+      });
+      paint();
+      // Apply each initial value synchronously; no initialization waits for a ticker frame.
+      function initial(el, prop, value) {
+        var state = { immediateRender: false, paused: true };
+        state[prop] = value;
+        window.gsap.set(el, state).progress(1).kill();
+      }
+      ["x", "y", "scale"].forEach(function (prop) {
+        var value = prop === "scale" ? 1 : 0;
+        initial(camera, prop, value);
+      });
+      ["x", "y", "opacity"].forEach(function (prop, axis) {
+        var value = axis < 2 ? device.initial[axis] : 0;
+        initial(cursor, prop, value);
+      });
+      device.zooms.forEach(function (z) {
+        ["x", "y", "scale"].forEach(function (prop) {
+          property(camera, prop, z.from[prop], z.to[prop], z.t, z.d, "power2.inOut");
+          // Keep DOM and object targets in separate tweens: GSAP chooses one harness per
+          // target array, and its DOM harness cannot accept a plain raster state object.
+          property(painter, prop, z.from[prop], z.to[prop], z.t, z.d, "power2.inOut", true);
+        });
+      });
+      if (device.clicks.length) property(cursor, "opacity", 0, 1, device.clicks[0].start, 0.001, "none");
+      device.clicks.forEach(function (c) {
+        ["x", "y"].forEach(function (prop, axis) {
+          var a = c.path[0][axis], control = c.path[1][axis], end = c.path[2][axis];
+          // A unit span also handles paths whose endpoint equals their starting coordinate.
+          var span = end - a || 1;
+          property(cursor, prop, a, a + span, c.start, c.t - c.start, function (p) {
+            var q = 1 - p;
+            return (q * q * a + 2 * q * p * control + p * p * end - a) / span;
+          });
+        });
+        var halo = byId(c.halo), target = byId(c.target);
+        property(halo, "opacity", 0, 0.85, c.t, 0.001, "none");
+        property(halo, "opacity", 0.85, 0, c.t + 0.001, 0.399, "power1.out");
+        property(halo, "scale", 0.5, 1.6, c.t, 0.4, "power2.out");
+        property(target, "opacity", 0, 1, c.t, 0.001, "none");
+        property(target, "opacity", 1, 0, c.t + 0.12, 0.12, "power1.out");
+        property(target, "scale", 1, 0.96, c.t, 0.08, "power2.out");
+        property(target, "scale", 0.96, 1, c.t + 0.08, 0.16, "power2.out");
+      });
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
+/**
+ * Cover-figure backdrops (composer-owned, outside the stage): one opacity tween in at the figure's
+ * entrance and one out with its beat, never a transform, so a beat's camera never scales them.
+ */
+export function backdropRuntime(runtime: string): string {
+  return runtime.replace("    P.targets.forEach(function (x) {", `    P.backdrops.forEach(function (b) {
+      var el = byId(b.id);
+      tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: b.d, ease: "power1.out", immediateRender: false, force3D: false }, b.t);
+      if (b.out !== null) tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in", immediateRender: false, force3D: false }, b.out);
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
+/**
+ * Pages with cover backdrops or checklist ticks keep every tween 2D. GSAP's default force3D:"auto"
+ * gives a moving element (a hook title fading up over its backdrop) a translate3d layer whose
+ * raster depended on the frame a render worker started on. Other pages keep their runtime bytes.
+ */
+export function flatRuntime(runtime: string): string {
+  return runtime.replace("    var tl = window.gsap.timeline({ paused: true });\n", `    var tl = window.gsap.timeline({ paused: true });
+    window.gsap.config({ force3D: false });
+`);
+}
+
+/** Checklist ticks: each check-mark layer fades in at its item's cue; one property, no transform. */
+export function checkRuntime(runtime: string): string {
+  return runtime.replace("    P.targets.forEach(function (x) {", `    P.checks.forEach(function (c) {
+      tl.fromTo(byId(c.id), { opacity: 0 }, { opacity: 1, duration: c.d, ease: "power1.out", immediateRender: false, force3D: false }, c.t);
+    });
+
+    P.targets.forEach(function (x) {`);
+}
+
+/** Only RTL pages receive the mirrored runtime; LTR output remains byte-identical. */
+export function mirrorSlides(runtime: string): string {
+  return runtime
+    .replace("{ opacity: 0, x: 80 }", "{ opacity: 0, x: -80 }")
+    .replace('tween("x", 80, 0,', 'tween("x", -80, 0,');
+}
+
 export const TIMELINE_RUNTIME = `(function () {
   "use strict";
   var P = window.__trPlan;
@@ -178,3 +311,23 @@ export const TIMELINE_RUNTIME = `(function () {
   });
 })();
 `;
+
+// Extend only figure pages: the image-free runtime remains byte-identical to M2.
+// All figure entrance values and times come from the Node plan. Each tween owns one property.
+export const FIGURE_TIMELINE_RUNTIME = TIMELINE_RUNTIME.replace("    P.targets.forEach(function (x) {", `    P.figures.forEach(function (x) {
+      var el = byId(x.id);
+      tl.set(el, { opacity: 0 }, 0);
+      function tween(prop, from, to, ease) {
+        var a = {}, b = { duration: x.d, ease: ease, immediateRender: false };
+        a[prop] = from;
+        b[prop] = to;
+        tl.fromTo(el, a, b, x.t);
+      }
+      tween("opacity", 0, 1, "power1.out");
+      if (x.anim === "fade-up" || x.anim === "stream") tween("y", x.anim === "stream" ? 6 : 40, 0, "power3.out");
+      if (x.anim === "slide") tween("x", 80, 0, "power3.out");
+      if (x.anim === "pop") tween("scale", 0.85, 1, "back.out(1.7)");
+      if (x.anim === "type") tween("clipPath", "inset(0 100% 0 0)", "inset(0 0% 0 0)", "steps(" + x.n + ")");
+    });
+
+    P.targets.forEach(function (x) {`);

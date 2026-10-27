@@ -35,17 +35,17 @@ export function checkSceneSources(ctx: CheckContext): CheckIssue[] {
     const file = `scenes/${f}`;
     const scene = parseScene(readFileSync(join(dir, f), "utf8"));
     const toIssue = (i: SceneIssue, lang?: string): CheckIssue => ({ file, line: i.line, message: `${i.rule} ${i.element}: ${i.message}${lang ? ` (script/${lang})` : ""}` });
-    issues.push(...validateScene(scene, { sources: ids }).map((i) => toIssue(i)));
+    issues.push(...validateScene(scene, { sources: ids, resolution: ctx.talk.config.resolution, talkDir: ctx.talk.dir }).map((i) => toIssue(i)));
     for (const lang of ctx.talk.config.languages) {
       const ch = listChapters(ctx.talk, lang).find((c) => `${c.chapter}-${c.name}.html` === f);
       if (!ch) continue;
-      let cues: Set<string>;
+      let cues: Set<string> | undefined;
       try {
         cues = new Set(parseScriptFile(ch.file).cues.map((c) => c.id));
       } catch {
-        continue; // the script problem is reported by the script checks
+        // The script problem is reported by the script checks; RTL validation still runs.
       }
-      for (const i of validateScene(scene, { sources: ids, cues })) if (i.rule === "E_UNKNOWN_CUE") issues.push(toIssue(i, lang));
+      for (const i of validateScene(scene, { sources: ids, cues, lang, resolution: ctx.talk.config.resolution, talkDir: ctx.talk.dir })) if (i.rule === "E_UNKNOWN_CUE" || i.rule === "E_RTL_TYPE") issues.push(toIssue(i, lang));
     }
   }
   return issues;

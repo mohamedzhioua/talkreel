@@ -1,10 +1,11 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { sha256 } from "../src/hash.js";
 import { chapterStatus } from "../src/stages.js";
 import { currentAlignHash, currentVoiceHash } from "../src/stages.js";
 import { parseScriptFile } from "../src/script.js";
-import { alignInputHash, chapterKey, concatInputHash, readState, recordStage, renderInputHash, stageStatus, voiceInputHash, writeState } from "../src/state.js";
+import { alignInputHash, chapterKey, concatInputHash, readState, recordStage, renderInputHash, stageStatus, voiceInputHash, WHISPER_MODEL, writeState } from "../src/state.js";
 import { emptyState } from "../src/schema.js";
 import { listChapters, loadTalk, paths } from "../src/talk.js";
 import { makeTalk } from "./helpers.js";
@@ -15,6 +16,11 @@ function touch(p: string, content = "x") {
 }
 
 describe("stage hashes", () => {
+  it("preserves the exact original Whisper hash bytes", () => {
+    const oldHash = sha256('{"model":"small","spokenHash":"s","stage":"align","wavHash":"w"}');
+    expect(alignInputHash({ wavHash: "w", spokenHash: "s", model: WHISPER_MODEL })).toBe(oldHash);
+  });
+
   it("voice hash depends on spoken text, voice and engine only", () => {
     const a = voiceInputHash({ mode: "ai", spokenHash: "s1", voice: "af_heart", engine: "e" });
     expect(voiceInputHash({ mode: "ai", spokenHash: "s1", voice: "af_heart", engine: "e" })).toBe(a);

@@ -14,15 +14,16 @@ import { loadTalk, TalkError } from "./talk.js";
 const USAGE = `usage: talkreel <command> [options]
 
 commands:
-  new <slug> --title "<title>"     create talks/<slug>/
-  status [--json]                  per-chapter, per-stage stale/fresh
+  new <slug> --title "<title>" [--reel]  create a talk (or portrait reel skeleton)
+  status [--json]                  per-stage stale/fresh and estimated length warnings
   doctor [--json]                  check Node, FFmpeg, uv, Python 3.11 and the models
   check                            validate scripts and scenes: unknown [s:id], unsourced
                                    stat/quote blocks, and every scene rule that needs no timing
   voice [--lang en] [--chapter NN] synthesize (or normalise own) narration
   align [--lang en] [--chapter NN] word-timed captions from the narration
   render [--lang en] [--chapter NN] [--quality standard|draft] [--telemetry]
-  frames [--lang en] [--chapter NN]
+                                   render, join, and mix the music bed when talk.json has music
+  frames [--lang en] [--chapter NN] [--safe-zones]
 
 common options:
   --talk <path>                    talk folder (default: current directory)`;
@@ -39,14 +40,14 @@ const chapterOpts = {
 } as const;
 
 const OPTIONS = {
-  new: { ...common, title: { type: "string" } },
+  new: { ...common, title: { type: "string" }, reel: { type: "boolean" } },
   status: { ...common, json: { type: "boolean" } },
   doctor: { ...common, json: { type: "boolean" } },
   check: common,
   voice: chapterOpts,
   align: chapterOpts,
   render: { ...chapterOpts, quality: { type: "string" }, telemetry: { type: "boolean" } },
-  frames: chapterOpts,
+  frames: { ...chapterOpts, "safe-zones": { type: "boolean" } },
 } satisfies Record<string, ParseArgsConfig["options"]>;
 
 type Command = keyof typeof OPTIONS;
@@ -71,7 +72,7 @@ async function main(argv: string[]): Promise<number> {
   const str = (k: string) => (typeof values[k] === "string" ? (values[k] as string) : undefined);
   const talkDir = str("talk") ?? process.cwd();
 
-  if (command === "new") return cmdNew(talkDir, positionals[0], str("title"));
+  if (command === "new") return cmdNew(talkDir, positionals[0], str("title"), values.reel === true);
   if (command === "doctor") return cmdDoctor(values.json === true);
 
   const talk = loadTalk(talkDir);
@@ -91,7 +92,7 @@ async function main(argv: string[]): Promise<number> {
     case "render":
       return cmdRender(talk, { lang, chapter: str("chapter"), quality: str("quality") ?? "standard", telemetry: values.telemetry === true });
     case "frames":
-      return cmdFrames(talk, { lang, chapter: str("chapter") });
+      return cmdFrames(talk, { lang, chapter: str("chapter"), safeZones: values["safe-zones"] === true });
   }
 }
 

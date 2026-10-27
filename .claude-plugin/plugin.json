@@ -1,6 +1,6 @@
 {
   "name": "talkreel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn a topic, docs or a repo into a narrated explainer video with animated slides, diagrams, word-synced captions and cited sources. Runs locally with free, open-source tools.",
   "author": {
     "name": "Zhioua Mohamed"

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=1920, height=1080">
+  <link rel="stylesheet" href="theme.css">
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/mermaid.min.js"></script>
+</head>
+<body>
+  <div id="tr-root" class="tr-root" data-composition-id="main"
+       data-start="0" data-duration="20.3" data-width="1920" data-height="1080">
+    <div class="tr-stage">
+      <section data-beat="open" data-camera="push-in" id="tr-beat-0" class="clip" data-start="0" data-duration="5.96" data-track-index="1">
+  <div data-block="chapter-card" data-anim="pop" id="tr-e-0">
+    <p class="number">02</p>
+    <h2 class="title">Verification beats vibes</h2>
+  </div>
+  <p data-cue="doubt" id="tr-e-1">But who checks it?</p>
+</section>
+      <section data-beat="stat" data-cue="stat" id="tr-beat-1" class="clip" data-start="5.66" data-duration="6.14" data-track-index="1">
+  <div data-block="stat" data-source="s:example-survey" id="tr-e-2">
+    <p class="value">46%</p>
+    <p class="label">of developers distrust the accuracy of AI tools</p>
+  <p class="tr-source">Source: Developer Survey · example.org · 2025</p></div>
+</section>
+      <section data-beat="loop" data-cue="loop" id="tr-beat-2" class="clip" data-start="11.5" data-duration="8.8" data-track-index="1">
+  <figure data-block="diagram" id="tr-e-3">
+    <pre data-mermaid>flowchart LR
+  S[Spec] --> T[Tests]
+  T --> R[Review]
+  R -->|next slice| S</pre><div class="tr-mermaid" id="tr-m-2-0"></div>
+    <i data-step data-nodes="S" data-cue="spec"></i>
+    <i data-step data-nodes="T" data-edges="S-T" data-cue="tests"></i>
+    <i data-step data-nodes="R" data-edges="T-R,R-S" data-cue="review"></i>
+    <figcaption>One slice at a time</figcaption>
+  </figure>
+</section>
+    </div>
+    <div id="tr-captions" class="tr-captions clip" data-start="0" data-duration="20.3" data-track-index="2">
+      <div class="tr-cap-line" id="tr-cap-0"><span class="tr-word" id="tr-w-0" data-state="upcoming">An</span> <span class="tr-word" id="tr-w-1" data-state="upcoming">assistant</span> <span class="tr-word" id="tr-w-2" data-state="upcoming">can</span> <span class="tr-word" id="tr-w-3" data-state="upcoming">draft</span> <span class="tr-word" id="tr-w-4" data-state="upcoming">a</span> <span class="tr-word" id="tr-w-5" data-state="upcoming">feature</span> <span class="tr-word" id="tr-w-6" data-state="upcoming">in</span> <span class="tr-word" id="tr-w-7" data-state="upcoming">minutes.</span></div>
+      <div class="tr-cap-line" id="tr-cap-1"><span class="tr-word" id="tr-w-8" data-state="upcoming">But</span> <span class="tr-word" id="tr-w-9" data-state="upcoming">who</span> <span class="tr-word" id="tr-w-10" data-state="upcoming">checks</span> <span class="tr-word" id="tr-w-11" data-state="upcoming">it?</span></div>
+      <div class="tr-cap-line" id="tr-cap-2"><span class="tr-word" id="tr-w-12" data-state="upcoming">In</span> <span class="tr-word" id="tr-w-13" data-state="upcoming">one</span> <span class="tr-word" id="tr-w-14" data-state="upcoming">survey,</span> <span class="tr-word" id="tr-w-15" data-state="upcoming">46%</span> <span class="tr-word" id="tr-w-16" data-state="upcoming">of</span> <span class="tr-word" id="tr-w-17" data-state="upcoming">developers</span> <span class="tr-word" id="tr-w-18" data-state="upcoming">said</span> <span class="tr-word" id="tr-w-19" data-state="upcoming">they</span></div>
+      <div class="tr-cap-line" id="tr-cap-3"><span class="tr-word" id="tr-w-20" data-state="upcoming">distrust</span> <span class="tr-word" id="tr-w-21" data-state="upcoming">the</span> <span class="tr-word" id="tr-w-22" data-state="upcoming">accuracy</span> <span class="tr-word" id="tr-w-23" data-state="upcoming">of</span> <span class="tr-word" id="tr-w-24" data-state="upcoming">AI</span> <span class="tr-word" id="tr-w-25" data-state="upcoming">tools.</span></div>
+      <div class="tr-cap-line" id="tr-cap-4"><span class="tr-word" id="tr-w-26" data-state="upcoming">So</span> <span class="tr-word" id="tr-w-27" data-state="upcoming">I</span> <span class="tr-word" id="tr-w-28" data-state="upcoming">work</span> <span class="tr-word" id="tr-w-29" data-state="upcoming">in</span> <span class="tr-word" id="tr-w-30" data-state="upcoming">a</span> <span class="tr-word" id="tr-w-31" data-state="upcoming">loop.</span></div>
+      <div class="tr-cap-line" id="tr-cap-5"><span class="tr-word" id="tr-w-32" data-state="upcoming">Write</span> <span class="tr-word" id="tr-w-33" data-state="upcoming">the</span> <span class="tr-word" id="tr-w-34" data-state="upcoming">spec,</span> <span class="tr-word" id="tr-w-35" data-state="upcoming">run</span> <span class="tr-word" id="tr-w-36" data-state="upcoming">the</span> <span class="tr-word" id="tr-w-37" data-state="upcoming">tests,</span> <span class="tr-word" id="tr-w-38" data-state="upcoming">and</span> <span class="tr-word" id="tr-w-39" data-state="upcoming">let</span> <span class="tr-word" id="tr-w-40" data-state="upcoming">a</span> <span class="tr-word" id="tr-w-41" data-state="upcoming">fresh</span></div>
+      <div class="tr-cap-line" id="tr-cap-6"><span class="tr-word" id="tr-w-42" data-state="upcoming">model</span> <span class="tr-word" id="tr-w-43" data-state="upcoming">review</span> <span class="tr-word" id="tr-w-44" data-state="upcoming">the</span> <span class="tr-word" id="tr-w-45" data-state="upcoming">diff.</span></div>
+    </div>
+    <audio id="tr-narration" src="assets/narration.wav" data-start="0"
+           data-duration="19.7" data-track-index="3" data-volume="1"></audio>
+  </div>
+  <script>window.__hfTimelinesBuilding = true; window.__timelines = window.__timelines || {};</script>
+  <script src="timeline.js"></script>
+</body>
+</html>

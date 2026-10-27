@@ -1,0 +1,11 @@
+<!-- Copy a 16:10 screenshot to assets/screens/product.png. Script cues:
+     {#focus} at least 0.6 s after the device enters; {#publish} after the zoom.
+     All target coordinates are percentages of the full screenshot. -->
+<section data-beat="device" data-align="center">
+  <div data-block="device" data-frame="browser">
+    <img src="assets/screens/product.png" alt="A dashboard listing chapters and a publish button">
+    <i data-target="publish" data-x="60%" data-y="20%" data-width="20%" data-height="10%"
+       data-zoom="70,25,2" data-cue="focus"></i>
+    <i data-click="publish" data-cue="publish"></i>
+  </div>
+</section>

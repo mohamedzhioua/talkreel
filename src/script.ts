@@ -153,7 +153,7 @@ export function parseScript(source: string): ParsedChapter {
         if (normToken(tok) === "" && words.length > paraStart) {
           const prev = words.length - 1;
           // "claim [s:x]." -> "claim."; "design —" stays "design —".
-          words[prev] = words[prev] + (/^[.,;:!?)"'»]+$/.test(tok) ? "" : " ") + tok;
+          words[prev] = words[prev] + (/^[.,;:!?،؛؟)"'»]+$/.test(tok) ? "" : " ") + tok;
           continue;
         }
         if (normToken(tok) === "") continue;

@@ -52,6 +52,6 @@ export interface ModelsReport {
   whisper: { present: boolean; model: string };
 }
 
-export async function models(): Promise<ModelsReport> {
-  return (await runHelper(["models", "--whisper-model", "small"], { echoStderr: false })) as ModelsReport;
+export function models(): Promise<ModelsReport> {
+  return runHelper(["models", "--whisper-model", "small"], { echoStderr: false }) as Promise<ModelsReport>;
 }

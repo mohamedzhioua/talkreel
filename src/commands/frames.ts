@@ -4,6 +4,7 @@ import { buildPaths, loadCaptions, prepareScene, sceneFile } from "../compose.js
 import { probeDuration } from "../compose-concat.js";
 import { resolveCues } from "../cues.js";
 import { requireTool } from "../ffmpeg.js";
+import { GEOMETRY, type Resolution } from "../geometry.js";
 import { run } from "../proc.js";
 import { parseScriptFile } from "../script.js";
 import { loadSources, paths, selectChapters, type Talk } from "../talk.js";
@@ -12,6 +13,7 @@ import { readWavInfo } from "../wav.js";
 export interface FramesOptions {
   lang: string;
   chapter?: string;
+  safeZones?: boolean;
 }
 
 export interface FramePoint {
@@ -25,6 +27,18 @@ export interface FrameInfo extends FramePoint {
   /** Beat on screen at that time, when the scene resolves. */
   beat?: string;
   path: string;
+}
+
+/** Review-only overlay, relative to the encoded frame size (including draft renders). */
+export function safeZoneFilter(resolution: Resolution): string | null {
+  if (resolution !== "portrait") return null;
+  const { top, bottom, sides } = GEOMETRY[resolution].safeZones;
+  return [
+    `drawbox=x=0:y=0:w=iw:h=ih*${top}:color=red@0.28:t=fill`,
+    `drawbox=x=0:y=ih*(1-${bottom}):w=iw:h=ih*${bottom}:color=red@0.28:t=fill`,
+    `drawbox=x=0:y=0:w=iw*${sides}:h=ih:color=yellow@0.28:t=fill`,
+    `drawbox=x=iw*(1-${sides}):y=0:w=iw*${sides}:h=ih:color=yellow@0.28:t=fill`,
+  ].join(",");
 }
 
 /**
@@ -53,6 +67,8 @@ export function framePoints(
 export async function cmdFrames(talk: Talk, opts: FramesOptions): Promise<number> {
   const chapters = selectChapters(talk, opts.lang, opts.chapter);
   const ffmpeg = requireTool("ffmpeg");
+  const overlay = opts.safeZones ? safeZoneFilter(talk.config.resolution) : null;
+  if (opts.safeZones && !overlay) console.error(`--safe-zones is for portrait talks; extracting ${talk.config.resolution} frames without an overlay`);
   const frames: FrameInfo[] = [];
   let failed = 0;
   for (const ch of chapters) {
@@ -72,7 +88,7 @@ export async function cmdFrames(talk: Talk, opts: FramesOptions): Promise<number
       try {
         const sources = new Set(loadSources(talk).sources.map((s) => s.id));
         const wav = paths.narrationWav(talk, ch.lang, ch.chapter);
-        const { timeline } = prepareScene("scene", readFileSync(sceneFile(talk, ch), "utf8"), parsed, captions, readWavInfo(wav).duration, sources);
+        const { timeline } = prepareScene("scene", readFileSync(sceneFile(talk, ch), "utf8"), parsed, captions, readWavInfo(wav).duration, sources, talk.config.resolution);
         beats = timeline.beats.map((b) => ({ id: b.id, start: b.start }));
       } catch {
         beats = [];
@@ -83,7 +99,7 @@ export async function cmdFrames(talk: Talk, opts: FramesOptions): Promise<number
       const pts = framePoints(cueTimes, duration, beats);
       for (const [i, p] of pts.entries()) {
         const file = join(dir, `${String(i).padStart(2, "0")}-${p.time.toFixed(2)}s-${p.label}.png`);
-        const r = await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", "-ss", p.time.toFixed(3), "-i", mp4, "-frames:v", "1", file]);
+        const r = await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", "-ss", p.time.toFixed(3), "-i", mp4, ...(overlay ? ["-vf", overlay] : []), "-frames:v", "1", file]);
         if (r.code !== 0 || !existsSync(file)) throw new Error(`ffmpeg could not extract a frame at ${p.time} s:\n${r.stderr.trim()}`);
         const beat = [...beats].reverse().find((b) => b.start <= p.time)?.id;
         frames.push({ lang: ch.lang, chapter: ch.chapter, ...(beat ? { beat } : {}), label: p.label, time: p.time, path: file });

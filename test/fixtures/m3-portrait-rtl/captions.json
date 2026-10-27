@@ -1,0 +1,21 @@
+{
+  "lang": "ar",
+  "words": [
+    { "text": "أَهْلًا", "start": 0.1, "end": 0.4, "matched": true },
+    { "text": "بِكُمْ،", "start": 0.45, "end": 0.7, "matched": true },
+    { "text": "نَصْنَعُ", "start": 0.75, "end": 1.1, "matched": true },
+    { "text": "مَعَ", "start": 1.15, "end": 1.3, "matched": true },
+    { "text": "TalkReel", "start": 1.35, "end": 1.7, "matched": true },
+    { "text": "مَقَاطِعَ", "start": 1.75, "end": 2.1, "matched": true },
+    { "text": "قَصِيرَةً؛", "start": 2.15, "end": 2.5, "matched": true },
+    { "text": "إِلَى", "start": 2.55, "end": 2.7, "matched": true },
+    { "text": "الْعَالَمِ", "start": 2.75, "end": 3.1, "matched": true },
+    { "text": "نَنْطَلِقُ؟", "start": 3.15, "end": 3.5, "matched": true },
+    { "text": "آفَاقٌ", "start": 3.55, "end": 3.9, "matched": true },
+    { "text": "وَمَسْؤُولٌ", "start": 3.95, "end": 4.3, "matched": true },
+    { "text": "وَبِيئَةٌ", "start": 4.35, "end": 4.7, "matched": true },
+    { "text": "وَالـنَّصُّ", "start": 4.75, "end": 5.1, "matched": true },
+    { "text": "٩٠٪", "start": 5.15, "end": 5.4, "matched": true },
+    { "text": "90%.", "start": 5.45, "end": 5.8, "matched": true }
+  ]
+}

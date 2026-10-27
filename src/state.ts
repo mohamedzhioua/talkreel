@@ -5,7 +5,8 @@
 //   voice  - spoken text, voice id, engine version (own mode: the supplied WAV is the root input)
 //   align  - WAV hash, spoken text, model
 //   render - scene, captions, WAV, theme, HyperFrames version, compose version, quality
-//   concat - ordered chapter MP4 hashes
+//   concat - ordered chapter MP4 hashes (+ music: true when the mix stage follows)
+//   mix    - concat MP4 hash, music sha256 and gain, mix params
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { hashJson } from "./hash.js";
@@ -43,7 +44,10 @@ export function readState(file: string): TalkState {
 export function writeState(file: string, state: TalkState): void {
   mkdirSync(dirname(file), { recursive: true });
   const tmp = `${file}.tmp`;
-  writeFileSync(tmp, JSON.stringify(state, null, 2) + "\n", "utf8");
+  // A talk that never mixed keeps its M2 state bytes: an empty mix stage is not written.
+  const { mix, ...m2 } = state.stages;
+  const out = Object.keys(mix).length ? state : { ...state, stages: m2 };
+  writeFileSync(tmp, JSON.stringify(out, null, 2) + "\n", "utf8");
   renameSync(tmp, file);
 }
 
@@ -99,7 +103,24 @@ export function renderInputHash(i: RenderInputs): string {
   return hashJson({ stage: "render", ...i });
 }
 
-/** Concat input: chapter MP4 hashes in chapter order. */
-export function concatInputHash(orderedChapterMp4Hashes: string[]): string {
-  return hashJson({ stage: "concat", chapters: orderedChapterMp4Hashes });
+/**
+ * Concat input: chapter MP4 hashes in chapter order. `music` (talk.json has a music bed) moves the
+ * output to build/<lang>/concat.mp4; without it the hash bytes are exactly M2's.
+ */
+export function concatInputHash(orderedChapterMp4Hashes: string[], music = false): string {
+  return hashJson({ stage: "concat", chapters: orderedChapterMp4Hashes, ...(music ? { music: true } : {}) });
+}
+
+export interface MixInputs {
+  /** sha256 of build/<lang>/concat.mp4. */
+  concatHash: string;
+  /** The bed; absent for a loudness-only mix. */
+  music?: { sha256: string; gainDb: number };
+  /** Filter and encoder parameters (MIX_PARAMS). */
+  params: Readonly<Record<string, unknown>>;
+}
+
+/** Mix input: no chapter input, so a music change never re-renders chapters. */
+export function mixInputHash(i: MixInputs): string {
+  return hashJson({ stage: "mix", ...i });
 }

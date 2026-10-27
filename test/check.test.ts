@@ -1,9 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { check, sceneChecks } from "../src/check.js";
+import { GEOMETRY } from "../src/geometry.js";
 import { loadTalk } from "../src/talk.js";
 import { makeTalk, SOURCES } from "./helpers.js";
 
 describe("talkreel check", () => {
+  it.each(["portrait", "square", "landscape"] as const)("uses %s terminal limits", async (resolution) => {
+    const length = GEOMETRY.portrait.terminal.maxChars + 1;
+    const dir = makeTalk({
+      "sources.json": SOURCES,
+      "script/en/01-intro.md": "# Intro\n\nHello.\n",
+      "scenes/01-intro.html": `<section data-beat="intro"><div data-block="terminal"><p data-out>${"x".repeat(length)}</p></div></section>`,
+    }, { resolution });
+    expect(await check(loadTalk(dir))).toEqual(resolution === "landscape" ? [] : [{
+      file: "scenes/01-intro.html",
+      line: 1,
+      message: `E_TERM_LINE <p>: ${length} characters; a terminal line holds at most ${GEOMETRY[resolution].terminal.maxChars}`,
+    }]);
+  });
+
   it("passes when every [s:id] is in sources.json", async () => {
     const dir = makeTalk({ "sources.json": SOURCES, "script/en/01-intro.md": "# Intro\n\nTeams ship faster [s:dora].\n" });
     expect(await check(loadTalk(dir))).toEqual([]);

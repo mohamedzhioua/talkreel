@@ -5,6 +5,44 @@
 // (script, style) handled. Text is kept raw so serializing an unchanged tree gives back the
 // same markup; attribute values are stored decoded and re-escaped on output.
 
+import { GEOMETRY, type Geometry, type Resolution } from "./geometry.js";
+
+const LANGUAGE_DIRECTIONS: Readonly<Record<string, "rtl" | "ltr">> = { ar: "rtl" };
+
+export function languageDirection(lang: string): "rtl" | "ltr" {
+  return LANGUAGE_DIRECTIONS[lang] === "rtl" ? "rtl" : "ltr";
+}
+
+/** Terminal and code blocks keep their LTR reveal and reading order on RTL pages. */
+export function isLtrIsland(el: HtmlElement): boolean {
+  for (let p: HtmlElement | null = el; p; p = p.parent) {
+    if (["terminal", "code"].includes(getAttr(p, "data-block") ?? "")) return true;
+  }
+  return false;
+}
+
+/** Layout context on the fragment root; never serialized as scene markup. */
+export function geometryFor(el: HtmlElement): Geometry {
+  while (el.parent) el = el.parent;
+  return GEOMETRY[el.resolution ?? "landscape"];
+}
+
+/** Geometry variables are emitted only for new resolutions, preserving landscape page bytes. */
+export function geometryStyle(resolution: Resolution): string {
+  if (resolution === "landscape") return "";
+  const g = GEOMETRY[resolution];
+  const vars = {
+    "canvas-width": g.width, "canvas-height": g.height,
+    "safe-left": g.padding.left, "safe-top": g.padding.top,
+    "safe-width": g.width - g.padding.left - g.padding.right,
+    "safe-height": g.height - g.padding.top - g.padding.bottom,
+    "caption-band": g.caption.height, "caption-width": g.caption.width,
+    "caption-bottom": g.caption.bottom, "caption-font": g.caption.fontSize,
+    "term-row": g.terminal.rowHeight,
+  };
+  return `  <style>:root{${Object.entries(vars).map(([k, v]) => `--tr-${k}:${v}px`).join(";")}}</style>\n`;
+}
+
 export interface HtmlAttr {
   name: string;
   /** Decoded value, or null for a bare attribute (`<i data-step>`). */
@@ -12,6 +50,7 @@ export interface HtmlAttr {
 }
 
 export interface HtmlElement {
+  resolution?: Resolution;
   type: "element";
   tag: string;
   attrs: HtmlAttr[];

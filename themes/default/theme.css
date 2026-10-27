@@ -52,6 +52,13 @@
   src: url("fonts/jetbrains-mono-latin-ext-600-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
 
+@font-face { font-family: "IBM Plex Sans Arabic"; font-style: normal; font-display: block; font-weight: 400;
+  src: url("fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-style: normal; font-display: block; font-weight: 600;
+  src: url("fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-style: normal; font-display: block; font-weight: 700;
+  src: url("fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2"); }
+
 /* ---------- tokens ---------- */
 
 :root {
@@ -77,6 +84,8 @@
   /* Block type scale. split columns lower --tr-k so nested blocks fit. */
   --tr-k: 1;
 }
+
+:root:lang(ar) { --tr-font: "IBM Plex Sans Arabic", "Inter", Arial, sans-serif; }
 
 /* ---------- canvas (composer-owned skeleton) ---------- */
 
@@ -163,7 +172,7 @@ section[data-beat] > p {
   letter-spacing: -0.005em;
   opacity: 0;
 }
-.tr-word { display: inline-block; color: var(--tr-dim); }   /* upcoming */
+.tr-word { display: inline-block; unicode-bidi: isolate; color: var(--tr-dim); }   /* upcoming */
 .tr-word[data-state="spoken"] { color: var(--tr-ink); }
 .tr-word[data-state="current"] { color: var(--tr-accent); }
 
@@ -618,6 +627,29 @@ section[data-beat] > p {
   transform: scaleX(0);
 }
 
+/* ---------- single-image figure ---------- */
+
+[data-block="figure"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 24px;
+}
+[data-block="figure"] > img {
+  display: block;
+  width: 100%;
+  height: calc(var(--tr-safe-height) - 200px);
+  object-fit: contain;
+  border-radius: 16px;
+}
+[data-block="figure"] > figcaption {
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--tr-muted);
+  text-align: center;
+}
+
 /* ---------- ambient layer (talk.json "ambient": true) ---------- */
 
 .tr-ambient { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
@@ -648,4 +680,227 @@ section[data-beat] > p {
   font-size: 28px;
   letter-spacing: 0.06em;
   color: var(--tr-muted);
+}
+
+/* ---------- portrait and square ---------- */
+/* Pixel geometry comes from geometry.ts via the composer-owned root variables. */
+html[data-resolution="portrait"],
+html[data-resolution="square"],
+[data-resolution="portrait"] body,
+[data-resolution="square"] body,
+[data-resolution="portrait"] .tr-root,
+[data-resolution="square"] .tr-root {
+  width: var(--tr-canvas-width);
+  height: var(--tr-canvas-height);
+}
+[data-resolution="portrait"], [data-resolution="square"] { --tr-k: 0.65; }
+[data-resolution="portrait"] .tr-stage > section[data-beat],
+[data-resolution="square"] .tr-stage > section[data-beat] { gap: 32px; }
+[data-resolution="portrait"] .tr-captions,
+[data-resolution="square"] .tr-captions { bottom: var(--tr-caption-bottom); }
+[data-resolution="portrait"] .tr-cap-line,
+[data-resolution="square"] .tr-cap-line {
+  left: calc((100% - var(--tr-caption-width)) / 2);
+  right: calc((100% - var(--tr-caption-width)) / 2);
+  font-size: var(--tr-caption-font);
+}
+[data-resolution="portrait"] [data-block="terminal"],
+[data-resolution="square"] [data-block="terminal"] { height: calc(var(--rows) * var(--tr-term-row) + 48px + 68px); }
+[data-resolution="portrait"] .tr-term-vp,
+[data-resolution="square"] .tr-term-vp { height: calc(var(--rows) * var(--tr-term-row) + 48px); }
+[data-resolution="portrait"] .tr-term-track > p,
+[data-resolution="square"] .tr-term-track > p { height: var(--tr-term-row); line-height: var(--tr-term-row); }
+[data-resolution="portrait"] [data-block="split"],
+[data-resolution="square"] [data-block="split"] { grid-template-columns: 1fr; gap: 32px; }
+[data-resolution="portrait"] [data-block="chapter-card"],
+[data-resolution="square"] [data-block="chapter-card"] { gap: 28px; }
+[data-resolution="portrait"] [data-block="chapter-card"] .number,
+[data-resolution="square"] [data-block="chapter-card"] .number { padding-right: 28px; }
+[data-resolution="portrait"] [data-block="pipeline"],
+[data-resolution="square"] [data-block="pipeline"] { --gap: 12px; }
+[data-resolution="portrait"] [data-block="pipeline"] li,
+[data-resolution="square"] [data-block="pipeline"] li { font-size: 24px; }
+[data-resolution="portrait"] [data-block="figure"],
+[data-resolution="square"] [data-block="figure"] { gap: 20px; }
+[data-resolution="portrait"] [data-block="figure"] > img,
+[data-resolution="square"] [data-block="figure"] > img { height: calc(var(--tr-safe-height) - 140px); }
+/* Keep the chapter tag below the top UI zone, with room before the stage starts. */
+[data-resolution="portrait"] .tr-tag { top: calc(var(--tr-safe-top) - 56px); }
+[data-resolution="square"] .tr-tag { top: 32px; }
+[data-resolution="portrait"] .tr-blob-a,
+[data-resolution="square"] .tr-blob-a { left: 400px; top: -400px; }
+[data-resolution="portrait"] .tr-blob-b { left: -540px; top: 1000px; }
+[data-resolution="square"] .tr-blob-b { left: -540px; top: 420px; }
+[data-resolution="portrait"] .tr-grid,
+[data-resolution="square"] .tr-grid { height: calc(var(--tr-canvas-height) + 160px); }
+
+/* ---------- device screenshot and CTA ---------- */
+/* Independently implemented frame chrome, cursor halo and closing-card composition;
+   visual reference names are credited in THIRD_PARTY.md. */
+[data-block="device"] {
+  align-self: center;
+  flex-shrink: 0;
+  direction: ltr;
+  border: 12px solid var(--tr-line);
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--tr-surface);
+}
+[data-block="device"][data-frame="browser"] { border-width: 8px; border-radius: 12px; }
+[data-block="device"][data-frame="browser"]::before {
+  content: "";
+  display: block;
+  height: 32px;
+  background:
+    radial-gradient(circle at 14px 16px, #ff5f57 4px, transparent 5px),
+    radial-gradient(circle at 30px 16px, #febc2e 4px, transparent 5px),
+    radial-gradient(circle at 46px 16px, #28c840 4px, transparent 5px),
+    var(--tr-surface-2);
+}
+/* A centred device can sit at a fractional x. Paint containment rounds the viewport to whole
+   pixels for everything inside; otherwise Chrome kept that fraction for camera content only
+   while the camera was unscaled, so a render that zoomed in from scale 1 drew the cursor about
+   half a pixel away from a render whose worker started mid-zoom. */
+.tr-device-vp { position: relative; width: var(--tr-device-width); height: var(--tr-device-height); overflow: hidden; contain: paint; }
+/* The source stays decoded in <img>; the runtime redraws a fixed viewport bitmap at each
+   seek with explicit high-quality filtering. A transformed <img> otherwise keeps a cached
+   sampling choice from earlier paints, even with software raster, depending on worker start. */
+.tr-device-raster { position: absolute; left: 0; top: 0; max-width: none; }
+/* Targets, cursor and halos animate in one unscaled layer above the screenshot, so Chrome never
+   partially re-rasters the screenshot under them. The camera scales inside that layer: a layer
+   under the scaled camera kept the raster scale of earlier frames (a zoom-out drew the cursor
+   from its 2x raster), so frames depended on where a render worker started. */
+.tr-device-overlay { position: absolute; inset: 0; will-change: opacity; }
+/* The camera clips its content to the screenshot. */
+.tr-device-camera { position: absolute; inset: 0; transform-origin: 0 0; overflow: hidden; }
+.tr-device-camera > img { display: none; }
+.tr-device-camera > [data-target] {
+  position: absolute;
+  display: block;
+  background: var(--tr-accent-soft);
+  border: 2px solid var(--tr-accent);
+  border-radius: 6px;
+  opacity: 0;
+}
+.tr-agent-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 32px;
+  background: var(--tr-ink);
+  clip-path: polygon(0 0, 100% 70%, 56% 72%, 40% 100%);
+  filter: drop-shadow(1px 2px 1px #0b0c10);
+  opacity: 0;
+}
+.tr-click-halo {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border: 3px solid var(--tr-accent);
+  border-radius: 50%;
+  opacity: 0;
+}
+[data-block="cta"] { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center; }
+[data-block="cta"] > img { width: 160px; height: 120px; object-fit: contain; }
+[data-block="cta"] > h2 { max-width: 22ch; font-size: calc(var(--tr-k) * 88px); line-height: 1.15; letter-spacing: -0.03em; text-wrap: balance; }
+[data-block="cta"] > .action { max-width: 30ch; font-size: calc(var(--tr-k) * 48px); line-height: 1.35; font-weight: 600; color: var(--tr-accent); }
+[data-block="cta"] > .url { max-width: 100%; overflow-wrap: anywhere; font-size: 28px; line-height: 1.4; color: var(--tr-muted); unicode-bidi: isolate; direction: ltr; }
+
+/* S1-L1: the portrait caption backdrop floats above the UI zone; fade BOTH edges. */
+[data-resolution="portrait"] .tr-captions {
+  background: linear-gradient(to bottom, rgba(8, 9, 12, 0) 0%, rgba(8, 9, 12, 0.88) 28%, rgba(8, 9, 12, 0.96) 55%, rgba(8, 9, 12, 0.88) 72%, rgba(8, 9, 12, 0) 100%);
+}
+/* Captions otherwise paint into the page's root layer, where Chrome draws text subpixel (LCD)
+   antialiased until the first caption fade and greyscale ever after. A render worker whose chunk
+   starts mid-chapter then drew different captions. In their own layer they are always greyscale,
+   as a render from frame 0 already shows them. Landscape keeps its M2 bytes. */
+[data-resolution="portrait"] .tr-captions,
+[data-resolution="square"] .tr-captions { will-change: transform; }
+/* Deliberate fix for all portrait and square pages, including those without cover figures or
+   checklists: each caption line gets its own opacity layer. Fading a layer avoids re-rasterizing
+   glyph edges at partial opacity, whose pixels depended on when a render worker started or on
+   fresh versus sequential seeks. Landscape captions keep their existing rendering. */
+[data-resolution="portrait"] .tr-cap-line,
+[data-resolution="square"] .tr-cap-line { will-change: opacity; }
+
+/* S3-L1: room for stacked Arabic vowel marks on wrapped display text. */
+:root:lang(ar) section[data-beat] > h2,
+:root:lang(ar) [data-block="title"] h1,
+:root:lang(ar) [data-block="chapter-card"] .title,
+:root:lang(ar) [data-block="definition"] .term,
+:root:lang(ar) [data-block="list"] .heading,
+:root:lang(ar) [data-block="split"] > .col > h3,
+:root:lang(ar) [data-block="cta"] > h2 { line-height: 1.5; letter-spacing: 0; }
+
+/* S3-L2: scoped physical-side overrides preserve all landscape LTR rules.
+   Terminal/code are deliberate LTR islands and keep their physical coordinates. */
+[dir="rtl"] [data-block="list"] li { padding-left: 0; padding-right: calc(var(--tr-k) * 64px); }
+[dir="rtl"] [data-block="list"] li::before { left: auto; right: 0; }
+[dir="rtl"] [data-block="quote"] { padding-left: 0; padding-right: calc(var(--tr-k) * 136px); }
+[dir="rtl"] [data-block="quote"]::before { left: auto; right: 0; }
+[dir="rtl"] [data-block="chapter-card"] .number { padding-right: 0; padding-left: 56px; border-right: 0; border-left: 4px solid var(--tr-line); }
+[dir="rtl"][data-resolution="portrait"] [data-block="chapter-card"] .number,
+[dir="rtl"][data-resolution="square"] [data-block="chapter-card"] .number { padding-left: 28px; }
+[dir="rtl"] .tr-source { padding-left: 0; padding-right: 24px; }
+[dir="rtl"] .tr-source::before { margin-right: 0; margin-left: 14px; }
+[dir="rtl"] .tr-rail-fill { transform-origin: 100% 50%; }
+
+/* ---------- checklist ticks and cover figure ---------- */
+/* A checked list item shows an empty box; the composer adds .tr-check over it and fades it in at
+   the item's cue (opacity only). The tick is a clip-path shape: no transform, no own layer.
+   The box is a border, not an inset box-shadow: at the fractional y of a list row, a rounded
+   inset shadow drew corner pixels that depended on the frame a render worker started on. */
+[data-block="list"] li[data-check]::before {
+  top: 0.225em;
+  width: calc(var(--tr-k) * 40px);
+  height: calc(var(--tr-k) * 40px);
+  box-sizing: border-box;
+  border: 3px solid var(--tr-accent);
+  border-radius: 6px;
+  background: transparent;
+}
+[data-block="list"] .tr-check {
+  position: absolute;
+  left: 0;
+  top: 0.225em;
+  width: calc(var(--tr-k) * 40px);
+  height: calc(var(--tr-k) * 40px);
+  border-radius: 6px;
+  background: var(--tr-accent);
+  opacity: 0;
+}
+[data-block="list"] .tr-check::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--tr-bg);
+  clip-path: polygon(18% 52%, 31% 39%, 43% 51%, 70% 24%, 83% 37%, 43% 77%);
+}
+[dir="rtl"] [data-block="list"] .tr-check { left: auto; right: 0; }
+
+/* A cover figure's <img> is moved by the composer into a full-bleed .tr-backdrop between the
+   ambient layer and the stage. Its opacity fades with the figure's cue and its beat; it is never
+   transformed, so a beat's camera scales only the section. The figure keeps its caption, pinned
+   to the bottom of the stage without moving the beat's other content. */
+[data-block="figure"][data-fit="cover"] { position: absolute; left: 0; right: 0; bottom: 0; }
+[data-block="figure"][data-fit="cover"] > figcaption {
+  font-size: max(28px, calc(var(--tr-k) * 44px));
+  font-weight: 600;
+  color: var(--tr-ink);
+}
+.tr-backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+.tr-backdrop > img { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Fixed scrim: even on a white photo, 0.65 keeps ink text above 5:1 and the accent (large
+   hook text) above 3:1. */
+.tr-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(11, 12, 16, 0.6) 0%, rgba(11, 12, 16, 0.65) 50%, rgba(11, 12, 16, 0.85) 100%);
+}
+/* Portrait: stage y 340..1048, captions y 1064..1224; the top and bottom UI zones show the photo. */
+[data-resolution="portrait"] .tr-backdrop::after {
+  background: linear-gradient(to bottom, rgba(11, 12, 16, 0.2) 0%, rgba(11, 12, 16, 0.25) 8%, rgba(11, 12, 16, 0.65) 17%, rgba(11, 12, 16, 0.65) 60%, rgba(11, 12, 16, 0.25) 72%, rgba(11, 12, 16, 0.15) 100%);
 }

@@ -1,6 +1,6 @@
 ---
 name: talkreel
-description: Make a narrated explainer or talk video (about 10 minutes, animated slides and diagrams, word-synced captions, cited sources) from a topic, a set of docs or a code repository, fully on the local machine. Use when the user asks to make, script, voice, render or review an explainer video, a talk video, a narrated walkthrough of a repo or docs, or continues an existing talkreel talk in talks/<slug>/.
+description: Make a narrated explainer, talk video or short portrait reel with word-synced captions and cited sources, fully on the local machine. Use when the user asks to make, script, voice, render or review an explainer video, reel, talk video, narrated walkthrough of a repo or docs, or continues an existing talkreel talk in talks/<slug>/.
 ---
 
 # talkreel
@@ -31,6 +31,13 @@ missing.
 
 ## Work loop
 
+For a short portrait reel, read [references/reel.md](references/reel.md) first
+and use `new <slug> --title "<topic>" --reel`. It guides pacing, assets,
+recording and safe-zone review. The same two human checkpoints apply. The
+scaffolded `01-reel.md` and `01-reel.html` are placeholders: the script and
+scenes stages stay due until you rewrite them for the brief, and checkpoint 1
+comes after that rewrite.
+
 1. **Find the talk.** If the user names a new topic, pick a slug
    (`[a-z0-9-]`) and run `new <slug> --title "<topic>"`; it creates
    `talks/<slug>/` in the working directory. Otherwise use the talk the user
@@ -38,9 +45,15 @@ missing.
    Every other command takes `--talk talks/<slug>` (without it the CLI expects
    `talk.json` in the current directory).
 2. **Read the state.** Run `status --json` for that talk. It prints
-   `{talk, dir, chapters, concat}`: one entry per script chapter
+   `{talk, dir, chapters, concat, length, mix?}`: one entry per script chapter
    (`{lang, chapter, title, script, voice, align, render}`) and one concat entry
    per language, each stage as `{status: "fresh" | "stale", reason?}`.
+   For portrait talks, `length` contains one row per language with `words`,
+   `seconds`, `source` and warning text. `source: "voiced"` totals canonical
+   narration WAV durations when every chapter's voice stage is fresh and its
+   WAV is readable; otherwise `source: "estimate"` uses 150 spoken words/minute
+   for the whole language. An invalid script has null words, seconds and source.
+   Other resolutions have an empty `length`; `mix` is present when music is configured.
    Research, script, translate and scenes are not in it: a stage of yours is
    due when its files are missing (`sources.json` empty, no `script/<lang>/`,
    no `scenes/NN-<chapter>.html` for a chapter). The next stage is the first
@@ -83,9 +96,10 @@ progress in one line per stage.
 
 ## Rules
 
-- Every figure, date and quote shown or spoken comes from `sources.json`, with
-  its `[s:id]` in the script and `data-source` on the scene block. If you cannot
-  verify a number, leave it out.
+- Every numerical claim, date and quote shown or spoken comes from
+  `sources.json`, with its `[s:id]` in the script. Put `data-source` on stat
+  and quote blocks (optional on definition); photo figures do not accept it.
+  If you cannot verify a number, leave it out.
 - When the user edits a script after scenes exist, re-check that every
   `{#cue}` used by the scene is still in the script; `status` shows which
   chapters went stale.
@@ -95,6 +109,7 @@ progress in one line per stage.
 
 ## References
 
+- [references/reel.md](references/reel.md): short portrait reels, assets, Arabic, voice and safe zones
 - `references/research.md`: sources with verbatim quotes and URLs
 - `references/script.md`: spoken script, chapters, `[s:id]` and `{#cue}` markers
 - `references/translate.md`: a second language from the same script

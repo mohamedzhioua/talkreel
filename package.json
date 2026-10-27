@@ -1,6 +1,6 @@
 {
   "name": "talkreel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn a topic into a narrated explainer video with local, free tools.",
   "license": "MIT",
   "private": true,
@@ -26,6 +26,7 @@
     "smoke": "npm run build && node scripts/smoke.mjs"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "gsap": "^3.15.0",

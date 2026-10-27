@@ -1,6 +1,6 @@
 // Talk folder layout and loading. Every path a stage reads or writes is built here.
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { talkConfigProblems, sourcesProblems, type TalkConfig, type SourcesFile } from "./schema.js";
 
 export class TalkError extends Error {}
@@ -36,7 +36,26 @@ export function loadTalk(dir: string): Talk {
   const config = readJson(file);
   const problems = talkConfigProblems(config);
   if (problems.length) throw new TalkError(problems.join("\n"));
+  const music = (config as TalkConfig).music;
+  const musicProblem = music ? musicFileProblem(abs, music.file) : null;
+  if (musicProblem) throw new TalkError(musicProblem);
   return { dir: abs, config: config as TalkConfig };
+}
+
+/** The music file must exist as a file inside <talk>/assets/, after resolving symlinks. */
+export function musicFileProblem(talkDir: string, file: string): string | null {
+  let assets: string;
+  let real: string;
+  try {
+    assets = realpathSync(join(talkDir, "assets"));
+    real = realpathSync(resolve(talkDir, file));
+  } catch {
+    return `talk.json: music.file is missing: ${file}`;
+  }
+  const rel = relative(assets, real);
+  const inside = rel !== "" && rel !== ".." && !rel.startsWith("../") && !rel.startsWith("..\\") && !isAbsolute(rel);
+  if (!inside || !statSync(real).isFile()) return `talk.json: music.file must be a file inside the talk's assets/ folder (including symlink targets): ${file}`;
+  return null;
 }
 
 export function loadSources(talk: Talk): SourcesFile {
@@ -89,4 +108,6 @@ export const paths = {
   whisperRaw: (talk: Talk, lang: string, nn: string) => join(talk.dir, "build", "whisper", lang, `${nn}.json`),
   spokenText: (talk: Talk, lang: string, nn: string) => join(talk.dir, "build", "text", lang, `${nn}.txt`),
   state: (talk: Talk) => join(talk.dir, "talk.state.json"),
+  /** talk.json `music.file`, or null when the talk has no music bed. */
+  music: (talk: Talk) => (talk.config.music ? resolve(talk.dir, talk.config.music.file) : null),
 };

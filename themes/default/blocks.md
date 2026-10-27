@@ -1,6 +1,6 @@
 # Default theme: building blocks
 
-Scenes are built from the eleven blocks below. Each block is an HTML fragment
+Scenes are built from the twelve blocks below. Each block is an HTML fragment
 with `data-block="<name>"`, placed inside a `<section data-beat>` (see
 `skills/talkreel/references/scenes.md` for beats, cues and timing). The look
 lives in `theme.css`; scene files never carry styles.
@@ -20,7 +20,15 @@ A beat fills the safe area; its children stack vertically, centred, left
 aligned, with a 48 px gap (`data-align="center"` on the beat centres them). One
 primary block per beat, optionally with one `<h2>` heading or one `<p>` line
 directly in the beat. Camera moves may drift a beat up to 40 px past the left
-and right edges of the safe area, never into the caption band.
+and right edges of the safe area in landscape, never into the caption band.
+Portrait camera travel is bounded by the 6% side safe zone, including full-width
+content. Portrait captions fade at both edges above the bottom UI zone.
+On all portrait and square pages, including those without cover figures or
+checklists, caption lines use their own opacity layers to keep glyph-edge pixels
+identical across fresh and sequential seeks; landscape captions are unchanged.
+The composer owns the full-bleed backdrop layer of cover figures
+(`.tr-backdrop`, under the stage) like the ambient layer, so a scene still
+writes only inside beats and nothing it writes reaches the caption band.
 
 ## Shared rules
 
@@ -109,6 +117,134 @@ reveals.
   unambiguous.
 - Do not write `.tr-mermaid`; the composer inserts it.
 
+### `figure`
+
+A single local image, optionally captioned. The image keeps its aspect ratio and
+fits the safe area in landscape, portrait and square.
+
+```html
+<figure data-block="figure">
+  <img src="assets/screens/product.png" alt="The product's chapter dashboard">
+  <figcaption>One place for every chapter</figcaption> <!-- optional, <= 60 chars -->
+</figure>
+```
+
+- Exactly one direct `<img>` child; its `alt` must contain meaningful text.
+- Paths resolve from the talk folder. Use `assets/<path>` with png, jpg, jpeg,
+  webp or svg (case-insensitive). No URLs, schemes, absolute paths, dot segments,
+  URL escapes, query strings, fragments or alternate `srcset` images.
+- SVGs load through `<img>` only. They must be standalone: no external references,
+  embedded images, scripts or foreignObject. Internal `#id` references are allowed.
+- Default entrance `fade`; a cue or `data-anim` on the block uses the existing
+  cue timeline. Images add no independent clock or camera motion.
+- Copy the image named in `examples/figure.html` into the talk's `assets/` before
+  using that example. Compose copies referenced assets into the chapter build.
+
+**Cover figure** (`data-fit="cover"`): the photo fills the whole frame behind the
+beat, for product shots in a reel (`examples/figure-cover.html`).
+
+```html
+<figure data-block="figure" data-fit="cover">
+  <img src="assets/photos/door.jpg" alt="A sectional door on a warehouse">
+  <figcaption>Sectional doors, made to measure</figcaption> <!-- optional, <= 60 chars -->
+</figure>
+```
+
+- The composer moves the `<img>` into its own `.tr-backdrop` element between
+  the ambient layer and the stage (full frame, `object-fit: cover`, under a
+  fixed dark scrim that keeps a hook title, the figcaption and the captions
+  legible). The `<figcaption>` stays in the stage, pinned to its bottom; the
+  beat's other content (a hook `title`, an `<h2>`) keeps its normal place.
+- The backdrop fades in with the `fade` entrance (up to 0.6 s) at the figure's cue
+  (or with its beat) and fades out with its beat (0.3 s). It never moves: a
+  beat's `data-camera` scales only the beat, not the photo.
+- A late entrance is shortened to finish at the beat's fade-out start; if less
+  than one frame at the talk's FPS remains before fade-out, the backdrop is skipped.
+- A cover figure is a direct child of its beat, at most one per beat (`E_FIGURE`).
+  `cover` is the only `data-fit` value (`E_FIGURE`). Time it with the figure's
+  `data-cue`; its `<img>` takes no `data-cue` or `data-anim` (`E_FIGURE`). Image
+  rules are the same as above. Each cover figure in a chapter gets its own backdrop.
+- Prefer large photos with a centred subject: cover crops the sides of a square
+  photo in portrait (it shows about 56 % of the width).
+
+### `device`
+
+A phone or browser frame around one local screenshot. Give it its own beat;
+the viewport is computed in Node to fit the safe area, excluding frame chrome.
+Phone screenshots use a 9:16 viewport; browser screenshots use 16:10. Prepare
+the image at that aspect ratio so its percentage coordinates match the display.
+
+```html
+<div data-block="device" data-frame="browser">
+  <img src="assets/screens/product.png" alt="The product's chapter dashboard">
+  <i data-target="publish" data-x="60%" data-y="20%"
+     data-width="20%" data-height="10%"
+     data-zoom="70,25,2" data-cue="focus"></i>
+  <i data-click="publish" data-cue="publish"></i>
+</div>
+```
+
+- `data-frame` is required: `phone` or `browser`. Exactly one direct `<img>`
+  child follows all the local image, alt-text and SVG rules of `figure`.
+- Targets are empty direct children. `data-target` is unique within the device
+  and uses lowercase letters, digits and hyphens, starting with a letter or digit.
+  `data-x`, `data-y`, `data-width`, `data-height` are percentage strings such as
+  `12.5%`; the rectangle must fit inside 0..100%. These are physical screenshot
+  coordinates, including on RTL pages.
+- `data-zoom="x,y,scale"` on a target needs `data-cue`. x/y are percentages
+  written as numbers (0..100); scale is 1..8. The composer centres that point
+  in the viewport at the requested scale. The zoom starts at the cue and reaches
+  its transform after the target's entrance duration (default 0.6 s; `pop` 0.5 s,
+  `draw` 0.8 s). The target is a marker, with no independent text entrance.
+- An empty direct child with `data-click="target-name"` and `data-cue` moves
+  the cursor over up to 0.6 s **before** the cue. It starts from its previous
+  screenshot position. For the first click, or when that position is off-screen,
+  it enters at the screenshot point shown at 10%,85% of the viewport under the
+  camera at the path's start (a zoom already running uses its end camera; a zoom
+  starting at or after that time does not apply), kept at least 32 px inside the
+  screenshot's right and bottom edges. It follows a quadratic curve and starts
+  the click halo and pressed highlight at the cue. The cursor and halo follow the screenshot
+  camera. A click may share a target's zoom marker and cue.
+- Actions must follow the device entrance. Zooms must not overlap. Clicks must
+  allow the preceding 0.24 s pressed state to finish; the first path is shortened
+  if the device has only just appeared. An unknown target in the same device
+  fails with `E_CLICK_TARGET`; invalid device geometry/timing uses `E_DEVICE`.
+- Default entrance `fade`. Frame and action timing comes solely from cues; no
+  clocks or layout measurements are used. Run `node scripts/determinism.mjs
+  build/en/01` locally to automatically include mid-cursor, mid-zoom and
+  after-zoom (0.2 s after each zoom settles) frames, comparing
+  fresh/sequential/shuffled seeks and workers 1/4. The seek check uses
+  installed HyperFrames dependencies and an existing browser (set
+  `HYPERFRAMES_BROWSER_PATH` if needed); it never downloads one.
+  It also compares every decoded MP4 frame with framemd5, including chunk
+  boundaries and zoom-outs; a match at the sampled times alone is insufficient.
+- Render cost: device chapters render with software raster, the screenshot is
+  repainted into a canvas on every seek (up to three times per zoom frame),
+  and a page with a `<canvas>` skips HyperFrames' static-frame reuse. Expect
+  device chapters to render noticeably slower than other chapters.
+
+### `cta`
+
+A closing card with a local logo, one headline, one action line and an optional
+display URL. URL text is not a fetched resource or link; omit the scheme.
+
+```html
+<div data-block="cta">
+  <img src="assets/logo.svg" alt="Product logo">
+  <h2>Make your next reel</h2>
+  <p class="action">Start a chapter today</p>
+  <p class="url">example.org</p> <!-- optional -->
+</div>
+```
+
+- Exactly one direct logo `<img>`, following the same local asset rules as `figure`.
+- One non-empty `<h2>`, one non-empty `<p class="action">`, at most one
+  non-empty `<p class="url">`. Other direct elements fail with `E_CTA`.
+- Default entrance `fade`. Hold the fully entered card for at least **1.5 s**
+  before the chapter ends. Compose warns below that boundary, including delayed
+  child entrances or a beat that leaves early. Put the closing card in the final
+  beat and leave enough narration for the hold.
+
 ### `code`
 
 Plain monospace, no highlighter. One `[data-line]` per source line.
@@ -169,6 +305,28 @@ add quotation marks; the theme draws one.
 
 Items enter one by one: an item with `data-cue` at its cue, an item without one
 with the block (staggered).
+
+**Checklist** (`data-check`): a checked item shows an empty box and ticks it at
+its cue, like a pipeline chip lighting up.
+
+```html
+<div data-block="list">
+  <h3 class="heading">What every customer gets</h3>
+  <ul>
+    <li data-check data-cue="quote">A free quote within a day</li>
+    <li data-check data-cue="measure">Made to measure</li>
+    <li data-check>Fitted in one visit</li>        <!-- no cue: ticked as it enters -->
+  </ul>
+</div>
+```
+
+- A checked item is on screen with its list (it enters with the block,
+  staggered); its `data-cue` times the tick, not the entrance. The tick (an
+  accent box with a check mark) fades in over 0.35 s at the cue, never before
+  its item has entered. Items without `data-check` keep the rules above.
+- `data-check` is a bare attribute on an `<li>` of a `list` (`E_LIST`).
+- Run `node scripts/determinism.mjs build/<lang>/NN` locally: it adds a mid-tick
+  frame for each checked item and a mid-fade frame for each cover figure.
 
 ### `split`
 
