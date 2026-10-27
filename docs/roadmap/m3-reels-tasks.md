@@ -234,6 +234,17 @@ Acceptance Criteria (rewritten at gate 2):
 - AR and EN versions are not required for M3.
 Verification: `npm run smoke`, `node scripts/determinism.mjs` on the reel chapter (mid-fade, mid-tick, workers 1 vs 4), the frame-review notes and the maintainer's watch.
 Brief: Nothing from `talks/` is committed.
+Outcome (2026-10-27): rendered with Kokoro `ff_siwis` (no own recording, no music yet): 35.3 s, 1080×1920, the safe-zone review was clean. The maintainer rejected it as an ad. The reference is a competitor's 39 s vertical short: a 3D brand mascot, a trending-music remix, fast cuts of real job-site video, bright white brand screens and a phone-number pill. The engine work in M3 stands. The ad bar moves to the next milestone (below), and slice 12 closes on the pipeline proof (smoke, determinism) rather than on the Shasama ad.
+
+## Next Milestone Candidate — ad-grade reels
+
+Scope set by the maintainer's feedback on slice 12. Each needs its own design and gate:
+- **Video B-roll:** full-bleed clips as backgrounds, with a pre-transcode step (all-intra or frame sequence) so seeks stay frame-exact. This revives slice 9's cut.
+- **Music-led cutting:** beats cut on the music instead of only on narration cues (M3 rejected beat sync as a non-goal). Narration becomes optional.
+- **Brand theme:** a light, high-contrast theme with brand colours and a large logo, beside the dark default.
+- **Character or mascot:** an animated brand asset (image sequence, video with alpha, or Lottie), supplied by the maintainer. talkreel places and times it; it does not generate it.
+- **Punchy captions:** big kinetic word-by-word captions and a phone or contact pill CTA.
+- **Rights:** music and any voice or likeness of a real person must be licensed. A remix of a public figure's voice is not usable without clearance.
 
 ## Confirm Gates
 
