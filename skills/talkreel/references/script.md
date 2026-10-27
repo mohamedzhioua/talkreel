@@ -48,9 +48,9 @@ tools. [s:example-survey] {#loop}So I work in a loop.
 - Never put a marker inside a word or between a number and its unit.
 
 For Arabic, keep tashkeel in the script where it helps the narrator. Captions
-strip harakat for display; there is no diacritizer. Spell numbers out for CTC
-alignment and use `[[٣|ثلاثة]]` to display digits. Digit tokens left in the
-spoken text get interpolated timing. See [reel.md](reel.md) for recording and
+strip harakat for display; there is no diacritizer. Spell numbers out for Whisper
+alignment and use `[[٣|ثلاثة]]` to display digits. Words the aligner misses get
+interpolated timing. See [reel.md](reel.md) for recording and
 RTL guidance.
 
 ## Writing for the ear

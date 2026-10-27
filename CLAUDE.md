@@ -8,7 +8,7 @@ Guide for AI agents working on talkreel itself. Using talkreel to make a talk is
 - `src/talk.ts`, `src/schema.ts`: talk folder paths and loading; hand-written validators (no validator dependency).
 - `src/script.ts`: script parsing, spoken text, `[s:id]` and `{#cue}` markers. `src/check.ts`: `talkreel check` rules.
 - `src/state.ts`, `src/stages.ts`, `src/hash.ts`: input hashes and stale/fresh per chapter and stage.
-- `src/align-map.ts`, `src/cues.ts`: map Whisper/CTC words onto script words; resolve cues to times.
+- `src/align-map.ts`, `src/cues.ts`: map Whisper words onto script words; resolve cues to times.
 - `src/geometry.ts`: landscape, portrait and square canvas/stage/caption limits, safe zones, device viewport and camera/cursor geometry.
 - `src/compose.ts`: prepare scenes, hash and copy local assets, build one HyperFrames project per chapter.
 - `src/compose-html.ts`, `src/compose-scene.ts`: HTML parsing and validation, local image slots, RTL/LTR direction, cue timeline.
@@ -18,7 +18,6 @@ Guide for AI agents working on talkreel itself. Using talkreel to make a talk is
 - `src/compose-mix.ts`: music ducking, two-pass loudness normalisation, mix hashes' parameters and credits; automatic only with music.
 - `src/ffmpeg.ts`, `src/proc.ts`, `src/audio-helper.ts`, `src/wav.ts`: tool and process spawning (arrays, never `shell:true`).
 - `py/talkreel_audio/tts.py`, `align.py`, `models.py`, `__main__.py`: Kokoro TTS, faster-whisper, pinned model cache/probes and helper dispatch; JSON on stdout, run via `uv run --project py`.
-- `py/talkreel_audio/ctc_align.py`: optional `ctc-align` with revision-pinned Arabic wav2vec2 weights and vocabulary filtering; `py/pyproject.toml` keeps the `arabic` group opt-in.
 - `src/commands/new.ts`, `status.ts`: portrait `new --reel` skeleton and warn-only portrait length table (fresh narration durations, script estimate fallback). `test/fixtures/m3-portrait-rtl/` and `test/arabic.test.ts`: composed portrait RTL coverage in `npm test`.
 - `themes/default/`: CSS, `blocks.md` (block markup), Mermaid config. `skills/`, `.claude-plugin/`: the plugin.
 

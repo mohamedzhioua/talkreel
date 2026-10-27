@@ -31,9 +31,7 @@ def test_models_report_shape(capsys):
     code, out = run_cli(["models", "--whisper-model", "small"], capsys)
     assert code == 0 and len(out) == 1
     r = json.loads(out[0])
-    assert set(r) == {"cache_dir", "kokoro", "whisper", "ctc"}
-    assert isinstance(r["ctc"]["available"], bool)
-    assert isinstance(r["ctc"]["present"], bool)
+    assert set(r) == {"cache_dir", "kokoro", "whisper"}
     assert isinstance(r["kokoro"]["present"], bool)
     assert [f["name"] for f in r["kokoro"]["files"]] == ["kokoro-v1.0.onnx", "voices-v1.0.bin"]
     assert r["whisper"]["model"] == "small"

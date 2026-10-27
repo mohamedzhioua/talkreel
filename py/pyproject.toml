@@ -11,11 +11,6 @@ dependencies = [
 
 [dependency-groups]
 dev = ["pytest>=8"]
-# Opt-in Arabic engines (`uv sync --project py --group arabic`). Never in the default sync or CI.
-# The aligner's LICENSE is BSD-2; its pyproject metadata still says CC-BY-NC (see docs/design/m3-reels.md).
-arabic = [
-    "ctc-forced-aligner @ git+https://github.com/MahmoudAshraf97/ctc-forced-aligner@64293cc6d711e57666c4a8b098e9fd93b381fd88",
-]
 
 [tool.uv]
 # Not an installable package: the TS CLI puts this directory on PYTHONPATH.

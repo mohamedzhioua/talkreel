@@ -74,17 +74,16 @@ to extract a still rather than running an ad hoc media pipeline.
 
 Use the author's own Arabic recording, including for Saudi Arabic. Set
 `languages: ["ar"]`, `voice: {"mode": "own"}`, and write
-`script/ar/01-reel.md` with the matching scene basename. The optional Arabic
-group provides script-level CTC alignment; without it, `align` warns and falls
-back to Whisper. Arabic pages get `dir="rtl"`, IBM Plex Sans Arabic and
+`script/ar/01-reel.md` with the matching scene basename. Alignment uses
+Whisper. Arabic pages get `dir="rtl"`, IBM Plex Sans Arabic and
 isolated caption words; code and terminal islands remain LTR. Avoid `type`
 entrances on Arabic prose.
 
 Tashkeel can remain in the script as pronunciation guidance. Captions remove
 harakat U+064B–U+065F and U+0670 after NFC normalisation; script and caption
 JSON retain their spelling. There is no automatic diacritizer. Write numbers
-as spoken words for alignment; digit tokens and words outside the CTC
-vocabulary receive interpolated timings. Use display forms when the caption
+as spoken words for alignment; words the aligner misses receive interpolated
+timings. Use display forms when the caption
 should show digits: `[[٣|ثلاثة]]` or `[[90%|تسعون بالمئة]]`. Keep cue names
 stable across languages. Check meaning, vowel choices and caption breaks with
 the author.

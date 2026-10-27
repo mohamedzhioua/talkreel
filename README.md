@@ -104,15 +104,9 @@ Keep text, logos and actions inside the 936×708 stage (x 72..1008, y 340..1048)
 
 ## Arabic
 
-Arabic uses **your own voice + CTC alignment + RTL layout**. Set `languages` to `["ar"]`, `voice` to `{"mode":"own"}`, write `script/ar/NN-<chapter>.md`, and record `audio/ar/NN.wav`. Run `voice`, `align` and `render` as usual. Arabic pages use IBM Plex Sans Arabic, RTL text and isolated caption words; code and terminals remain LTR. Tashkeel can stay in scripts, while captions strip harakat for display. Spell numbers out for alignment; display forms such as `[[٣|ثلاثة]]` show digits in captions.
+Arabic uses **your own voice + Whisper alignment + RTL layout**. Set `languages` to `["ar"]`, `voice` to `{"mode":"own"}`, write `script/ar/NN-<chapter>.md`, and record `audio/ar/NN.wav`. Run `voice`, `align` and `render` as usual. Arabic pages use IBM Plex Sans Arabic, RTL text and isolated caption words; code and terminals remain LTR. Tashkeel can stay in scripts, while captions strip harakat for display. Spell numbers out for alignment; display forms such as `[[٣|ثلاثة]]` show digits in captions.
 
-The `arabic` dependency group is optional and excluded from the default install and CI:
-
-```bash
-uv sync --project py --group arabic
-```
-
-On Windows it needs **MSVC Build Tools**. The group enables script-level alignment with pinned wav2vec2 Arabic CTC weights; without it, `align` warns and falls back to Whisper timing. Digits and words outside the CTC vocabulary get interpolated timings. talkreel has no Arabic TTS; use your own recording. See [THIRD_PARTY.md](THIRD_PARTY.md) for the aligner's licence-metadata discrepancy and the pinned model revision.
+Words the aligner misses get interpolated timings. talkreel has no Arabic TTS; use your own recording.
 
 ## Voice catalogue
 
@@ -168,7 +162,7 @@ talks/<slug>/
 
 ## Roadmap
 
-M3 adds portrait authoring, local images, RTL captions, optional Arabic CTC alignment, device and CTA blocks, checklist ticks, full-bleed cover figures and music mixing. An experimental voice engine with auditions may follow; video blocks, count-up animation and chat are deferred. See [the M3 roadmap](docs/roadmap/m3-reels-tasks.md).
+M3 adds portrait authoring, local images, RTL captions, device and CTA blocks, checklist ticks, full-bleed cover figures and music mixing. CTC alignment follows in a later PR. An experimental voice engine with auditions may follow; video blocks, count-up animation and chat are deferred. See [the M3 roadmap](docs/roadmap/m3-reels-tasks.md).
 
 ## Licence and credits
 

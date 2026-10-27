@@ -24,11 +24,6 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--lang", required=True)
     a.add_argument("--model", default="small")
 
-    c = sub.add_parser("ctc-align", help="align an Arabic script with pinned CTC weights")
-    c.add_argument("--wav", required=True, type=Path)
-    c.add_argument("--text-file", required=True, type=Path)
-    c.add_argument("--lang", required=True, choices=["ar"])
-
     m = sub.add_parser("models", help="report which models are cached")
     m.add_argument("--whisper-model", default="small")
     return p
@@ -50,12 +45,6 @@ def run(args: argparse.Namespace) -> dict:
         from .models import report
 
         return report(args.whisper_model)
-    if args.command == "ctc-align":
-        from .ctc_align import align_script
-
-        if not args.wav.is_file():
-            raise FileNotFoundError(f"no such WAV: {args.wav}")
-        return align_script(args.wav, args.text_file.read_text(encoding="utf-8"), args.lang)
     raise ValueError(f"unknown command {args.command}")
 
 

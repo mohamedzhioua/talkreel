@@ -6,7 +6,6 @@ faster-whisper models live in the Hugging Face cache and are fetched by faster-w
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import os
 import sys
 import urllib.request
@@ -156,21 +155,4 @@ def report(whisper_model: str) -> dict:
         "cache_dir": str(kokoro_dir()),
         "kokoro": {"present": all(f["present"] for f in files), "files": files},
         "whisper": {"present": whisper_present(whisper_model), "model": whisper_model},
-        "ctc": ctc_report(),
-    }
-
-
-def ctc_report() -> dict:
-    """Probe the installed group and pinned cache without importing torch or downloading."""
-    from .ctc_align import MODEL_ID, MODEL_REVISION, model_snapshot
-
-    present = False
-    try:
-        model_snapshot(local_files_only=True)
-        present = True
-    except Exception:
-        pass  # Optional, absent or incomplete cache; never download during a probe.
-    return {
-        "available": importlib.util.find_spec("ctc_forced_aligner") is not None,
-        "present": present, "model": MODEL_ID, "revision": MODEL_REVISION,
     }

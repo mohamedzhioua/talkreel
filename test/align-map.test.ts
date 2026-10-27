@@ -139,3 +139,16 @@ describe("recorded Kokoro + whisper chapter", () => {
     expect(cues.plan).toBeLessThan(rec.duration);
   });
 });
+
+describe("interpolation of words the aligner omits", () => {
+  it.each(["90", "٩٠", "٩٠٪", "talkreel", "AI"])("interpolates an omitted %s between Arabic script words", (omitted) => {
+    const result = alignWords(["هَذا", omitted, "جيد"], [
+      { word: "هذا", start: 0.1, end: 0.3 }, { word: "جيد", start: 0.7, end: 0.9 },
+    ], { duration: 1 });
+    expect(result.words).toEqual([
+      { text: "هَذا", start: 0.1, end: 0.3, matched: true },
+      { text: omitted, start: 0.3, end: 0.7, matched: false },
+      { text: "جيد", start: 0.7, end: 0.9, matched: true },
+    ]);
+  });
+});

@@ -204,6 +204,8 @@ The slices, their order and the gate-2 cut line are in `docs/roadmap/m3-reels-ta
 
 ## Decisions
 
+2026-10-27: gate 3 not signed; the `arabic` group and CTC alignment moved to a follow-up PR (branch m3-arabic-ctc). M3 Arabic uses Whisper alignment.
+
 | Decision | Class | Call | Reversible? |
 |---|---|---|---|
 | Milestone scope | User-Challenge, ruled by Fable | Core: portrait, `<img>`, Arabic path, mix, product blocks, reel skill. `<video>` and count-up are cut candidates at gate 2 | yes |

@@ -1,12 +1,11 @@
 // Current input hashes and freshness per chapter and stage. Shared by voice, align and status.
 import { existsSync, readFileSync } from "node:fs";
 import { sha256File } from "./hash.js";
-import { alignmentModel } from "./audio-helper.js";
 import { CANONICAL_AUDIO_ID } from "./ffmpeg.js";
 import { buildPaths, COMPOSE_VERSION, packageVersion, sceneFile, sceneInputHash, themeHash } from "./compose.js";
 import { MIX_PARAMS, talkBed } from "./compose-mix.js";
 import { parseScriptFile, spokenHash, type ParsedChapter } from "./script.js";
-import { alignInputHash, chapterKey, concatInputHash, CTC_MODEL, mixInputHash, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, WHISPER_MODEL, type StageStatus } from "./state.js";
+import { alignInputHash, chapterKey, concatInputHash, mixInputHash, renderInputHash, stageStatus, TTS_ENGINE, voiceInputHash, WHISPER_MODEL, type StageStatus } from "./state.js";
 import { listChapters, loadSources, paths, type ChapterFile, type Talk } from "./talk.js";
 import type { Source, TalkState } from "./schema.js";
 
@@ -40,33 +39,10 @@ export function voiceOutputs(talk: Talk, ch: ChapterFile): string[] {
 }
 
 /** Align input hash, or null when the canonical narration WAV does not exist yet. */
-export async function currentAlignHash(talk: Talk, ch: ChapterFile, parsed: ParsedChapter, model?: string): Promise<string | null> {
+export async function currentAlignHash(talk: Talk, ch: ChapterFile, parsed: ParsedChapter): Promise<string | null> {
   const wav = paths.narrationWav(talk, ch.lang, ch.chapter);
   if (!existsSync(wav)) return null;
-  return alignInputHash({ wavHash: await sha256File(wav), spokenHash: spokenHash(parsed), model: model ?? await alignmentModel(ch.lang) });
-}
-
-/**
- * Align freshness for status and render. A failed engine probe makes align stale instead of
- * throwing. A recorded hash that matches the other Arabic engine names the engine change.
- */
-async function alignStatus(talk: Talk, state: TalkState, ch: ChapterFile, parsed: ParsedChapter): Promise<StageStatus> {
-  const key = chapterKey(ch.lang, ch.chapter);
-  const outputs = [paths.captions(talk, ch.lang, ch.chapter)];
-  const recorded = state.stages.align[key];
-  // "never run" and "inputs missing" need no engine probe.
-  if (!recorded || !existsSync(paths.narrationWav(talk, ch.lang, ch.chapter))) return stageStatus(state, "align", key, null, outputs);
-  let model: string;
-  try {
-    model = await alignmentModel(ch.lang);
-  } catch (e) {
-    return { status: "stale", reason: `cannot probe alignment engine: ${(e as Error).message.replace(/\s+/g, " ").trim()}` };
-  }
-  const status = stageStatus(state, "align", key, await currentAlignHash(talk, ch, parsed, model), outputs);
-  if (ch.lang !== "ar" || status.reason !== "inputs changed") return status;
-  const other = model === CTC_MODEL ? WHISPER_MODEL : CTC_MODEL;
-  if (recorded.hash !== (await currentAlignHash(talk, ch, parsed, other))) return status;
-  return { status: "stale", reason: "alignment engine changed (arabic group installed/removed)" };
+  return alignInputHash({ wavHash: await sha256File(wav), spokenHash: spokenHash(parsed), model: WHISPER_MODEL });
 }
 
 /** Quality of the last successful render of a chapter, or null when it was never rendered. */
@@ -164,7 +140,7 @@ export async function chapterStatus(talk: Talk, state: TalkState, ch: ChapterFil
     return { lang: ch.lang, chapter: ch.chapter, title: "", script: ch.file, voice: bad, align: bad, render: bad };
   }
   const voice = stageStatus(state, "voice", key, await currentVoiceHash(talk, ch, parsed), voiceOutputs(talk, ch));
-  let align = await alignStatus(talk, state, ch, parsed);
+  let align = stageStatus(state, "align", key, await currentAlignHash(talk, ch, parsed), [paths.captions(talk, ch.lang, ch.chapter)]);
   if (voice.status === "stale" && align.status === "fresh") align = { status: "stale", reason: "voice is stale" };
   let render = stageStatus(state, "render", key, await currentRenderHash(talk, ch), [buildPaths.mp4(talk, ch.lang, ch.chapter)]);
   if (align.status === "stale" && render.status === "fresh") render = { status: "stale", reason: "align is stale" };

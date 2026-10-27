@@ -23,16 +23,6 @@ talkreel's own code is MIT-licensed (see `LICENSE`). Your package managers (`npm
 
 The talkreel CLI talks to the Python audio helper only through a separate process that exchanges JSON. talkreel never ships the GPL-3.0 components; they arrive only through your own `uv sync`.
 
-## Optional Arabic alignment (`uv sync --project py --group arabic`)
-
-| Component | Licence | Revision and use |
-|---|---|---|
-| [ctc-forced-aligner](https://github.com/MahmoudAshraf97/ctc-forced-aligner/tree/64293cc6d711e57666c4a8b098e9fd93b381fd88) | Repository LICENSE: BSD-2-Clause; pyproject metadata: CC-BY-NC-4.0 (unresolved discrepancy) | Code pinned at `64293cc6d711e57666c4a8b098e9fd93b381fd88`; script-level Arabic alignment, opt-in only |
-| [jonatasgrosman/wav2vec2-large-xlsr-53-arabic](https://huggingface.co/jonatasgrosman/wav2vec2-large-xlsr-53-arabic/blob/af46c2d8531b8dcbb5e23b952f739b372c2e5d2d/README.md) | Apache-2.0 | CTC weights pinned at `af46c2d8531b8dcbb5e23b952f739b372c2e5d2d`; downloaded by revision, never a library-default model |
-| [Unidecode](https://github.com/avian2/unidecode) | GPL-2.0-or-later | Transitive dependency pulled in by the optional `arabic` group; installed by the author, behind the Python process boundary, never bundled or vendored |
-
-Default sync and CI do not install this group. Windows installation needs MSVC Build Tools. The aligner's licence-metadata discrepancy is recorded in `docs/design/m3-reels.md` and must be resolved before the optional group merges, or the group moves to a follow-up PR. It does not change the CTC weights' Apache-2.0 licence. Own voice and Kokoro report `Watermark: none` in generated credits. No other voice engine is included.
-
 ## Visual references for product blocks
 
 The HyperFrames registry's `device-frame-stage`, `agent-cursor`,

@@ -105,6 +105,8 @@ Brief: Arabic also works in landscape. Digits are shown as written. Rollback: re
 Review focus: mixed Arabic and Latin brand names in one caption line; أ/إ/آ survive the strip; punctuation attached to RTL words
 
 ### Slice 4 — Arabic CTC forced alignment
+2026-10-27: gate 3 not signed; the `arabic` group and CTC alignment moved to a follow-up PR (branch m3-arabic-ctc). M3 Arabic uses Whisper alignment.
+
 Type: AFK
 Dependencies: 0, 3
 Anchors: `py/talkreel_audio/__main__.py:build_parser`, `src/audio-helper.ts:runHelper`, `src/commands/align.ts`, `src/stages.ts:currentAlignHash`, `src/schema.ts:WhisperResult`
