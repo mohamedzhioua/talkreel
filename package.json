@@ -1,6 +1,6 @@
 {
   "name": "talkreel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn a topic into a narrated explainer video with local, free tools.",
   "license": "MIT",
   "private": true,
